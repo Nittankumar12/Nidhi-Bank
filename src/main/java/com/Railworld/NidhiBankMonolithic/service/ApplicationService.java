@@ -26,4 +26,12 @@ public class ApplicationService {
     public List<Application> getApplications() {
         return applicationRepository.findAll();
     }
+
+    public void removeApplication(int accountId) {
+        System.out.println("application is: " + accountService.getAccountById(accountId).getApplications().get(0));
+        Application application =  accountService.getAccountById(accountId).getApplications().get(0);
+        System.out.println("application id is: "  + application.getId());
+        applicationRepository.deleteById(application.getId());
+        System.out.println("application deleted");
+    }
 }

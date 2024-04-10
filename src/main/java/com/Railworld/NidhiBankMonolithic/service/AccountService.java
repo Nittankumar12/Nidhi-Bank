@@ -2,21 +2,22 @@ package com.Railworld.NidhiBankMonolithic.service;
 
 import com.Railworld.NidhiBankMonolithic.dto.LoanDto;
 import com.Railworld.NidhiBankMonolithic.dto.MemberDto;
-import com.Railworld.NidhiBankMonolithic.model.Account;
-import com.Railworld.NidhiBankMonolithic.model.Loan;
-import com.Railworld.NidhiBankMonolithic.model.LoanStatus;
-import com.Railworld.NidhiBankMonolithic.model.Member;
+import com.Railworld.NidhiBankMonolithic.model.*;
 import com.Railworld.NidhiBankMonolithic.repo.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
 public class AccountService {
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    CompanyService companyService;
 
     public Loan getLoan(Long accountNo) {
         return accountRepository.findByAccountNo(accountNo).getLoan();
@@ -62,6 +63,15 @@ public class AccountService {
     }
 
     public void disburseAmount(Double amount, Account account) {
+        Company company = account.getMember().getCompany();
+        Double companyBalance = company.getCBalance();
+        Double accountBalance = account.getBalance();
 
+        account.setBalance(accountBalance + amount);
+        company.setCBalance(companyBalance-amount);
+
+        accountRepository.save(account);
+        companyService.saveCompany(company);
+        System.out.println("Loan Disbursed");
     }
 }

@@ -31,7 +31,7 @@ public class CompanyService {
         return applicationService.getApplications();
     }
 
-    public void updateLoanStatus(Integer accountId,String loanStatus) {
+    public void updateLoanStatus(int accountId,String loanStatus) {
         Account account = accountService.getAccountById(accountId);
         Loan loan = account.getLoan();
 
@@ -43,13 +43,22 @@ public class CompanyService {
         if(currStatus.equals(LoanStatus.APPROVED)){
             System.out.println("We have to disburse amount");
             accountService.disburseAmount(loan.getAmount(),account);
+            applicationService.removeApplication(accountId);
         }
         else if(currStatus.equals(LoanStatus.HOLD)){
             System.out.println("Loan Approval on Hold");
         }
         else{
             System.out.println("Loan Rejected");
-
+            applicationService.removeApplication(accountId);
         }
+    }
+
+    public void saveCompany(Company company) {
+        companyRepository.save(company);
+    }
+
+    public void deleteApplication(int accountId) {
+        applicationService.removeApplication(accountId);
     }
 }

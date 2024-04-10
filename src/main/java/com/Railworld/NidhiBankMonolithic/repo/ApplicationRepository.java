@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application,Integer> {
+    void deleteByAccountId(int accountId);
 }

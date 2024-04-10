@@ -18,6 +18,8 @@ import java.util.List;
 public class AdminController {
     @Autowired
     CompanyService companyService;
+
+
     @GetMapping("getMembers/{id}")
     public ResponseEntity<List<Member>> getMembers(@PathVariable int id, @RequestBody AdminDto adminDto){
         return new ResponseEntity<>(companyService.getMembers(id), HttpStatus.OK);
@@ -27,9 +29,14 @@ public class AdminController {
         return new ResponseEntity<>(companyService.getApplications(),HttpStatus.OK);
     }
 
-    @PutMapping("updateLoanStatus/{id}/{loanStatus}")
-    public ResponseEntity<String> updateLoanStatus(@PathVariable Integer accountId, @PathVariable String loanStatus){
+    @PutMapping("updateLoanStatus/{accountId}/{loanStatus}")
+    public ResponseEntity<String> updateLoanStatus(@PathVariable int accountId, @PathVariable String loanStatus){
         companyService.updateLoanStatus(accountId,loanStatus);
         return new ResponseEntity<>("updated to "+ loanStatus + "",HttpStatus.OK);
+    }
+    @DeleteMapping("application/delete/{accountId}")
+    public ResponseEntity<String> deleteApplication(@PathVariable int accountId){
+        companyService.deleteApplication(accountId);
+        return new ResponseEntity<>("deleted",HttpStatus.OK);
     }
 }
