@@ -1,7 +1,11 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
+import org.springframework.http.ResponseEntity;
+
 public interface UserServiceInterface {
 
-    boolean verifyMobileOtp(String mobNo);
-    boolean verifyEmailOtp(String mobNo);
+    ResponseEntity<String> sendEmailOtp(String email) throws Exception;
+    ResponseEntity<String> verifyEmailOtp(String email, String sentOtp, String enteredOtp) throws Exception;
+    ResponseEntity<String> sendPhoneOtp(String phoneNumber) throws Exception;
+    ResponseEntity<String> verifyPhoneOtp(String phoneNumber, String sentOtp, String enteredOtp) throws Exception;
 }

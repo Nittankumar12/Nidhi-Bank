@@ -3,6 +3,7 @@ package com.RWI.Nidhi.entity;
 import com.RWI.Nidhi.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 
@@ -14,6 +15,7 @@ import java.util.Date;
 @Entity
 public class KYC {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int kycId;
     private int userId;
     private String firstName;
