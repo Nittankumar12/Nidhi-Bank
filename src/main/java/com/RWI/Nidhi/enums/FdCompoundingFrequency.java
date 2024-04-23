@@ -4,13 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum FdCompoundingFrequency {
-    yearly(12, 12),
-    quarterly(12, 12);
+    yearly(12.0, 12),
+    quarterly(12.0, 12);
 
-    private int fdInterestRate;
+    private double fdInterestRate;
     private int compoundingFreq;
 
-    FdCompoundingFrequency(int fdInterestRate, int compoundingFreq){
+    FdCompoundingFrequency(double fdInterestRate, int compoundingFreq){
         this.fdInterestRate = fdInterestRate;
         this.compoundingFreq = compoundingFreq;
     }
