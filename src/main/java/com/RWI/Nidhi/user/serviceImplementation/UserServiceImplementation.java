@@ -9,6 +9,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import com.RWI.Nidhi.exception.OTPExpireException;
+import com.RWI.Nidhi.exception.OtpNotSendException;
 import com.RWI.Nidhi.user.configuration.TwilioConfig;
 import com.RWI.Nidhi.user.serviceInterface.UserServiceInterface;
 
@@ -47,7 +49,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 
 	// implemented by Mr Piyush
 	@Override
-	public ResponseEntity<String> verifyEmailOtp(String userEmailId,String enteredOTP) throws Exception {
+	public ResponseEntity<String> verifyEmailOtp(String userEmailId, String enteredOTP) throws Exception {
 		if (otp.equals(enteredOTP)) {
 			SimpleMailMessage message = new SimpleMailMessage();
 			message.setTo(userEmailId);
@@ -88,7 +90,21 @@ public class UserServiceImplementation implements UserServiceInterface {
 			// Send SMS using Twilio
 			Message.creator(to, from, otpMessage).create();
 
-			return ResponseEntity.ok("OTP sent successfully.");
+//			return ResponseEntity.ok("OTP sent successfully.");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body("Failed to send OTP.");
+//		}
+//	}
+			// Check if OTP was sent successfully
+			if (otp == null || otp.isEmpty()) {
+				throw new OtpNotSendException("Failed to send OTP."); // Throw OtpNotSendException
+			}
+
+			return ResponseEntity.ok("OTP sent successfully." + otp);
+		} catch (OtpNotSendException e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body("Failed to send OTP.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body("Failed to send OTP.");
@@ -106,11 +122,17 @@ public class UserServiceImplementation implements UserServiceInterface {
 		try {
 			// Adding country code +91 to the phone number
 			phoneNumber = "+91" + phoneNumber;
-			
+
+//			// Check if OTP has expired
+//			long currentTimeMillis = System.currentTimeMillis();
+//			if ((currentTimeMillis - otpGenerationTimeMillis) > OTP_EXPIRY_TIME_MILLIS) {
+//				return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body("OTP has been expired!");
+//			}
+
 			// Check if OTP has expired
 			long currentTimeMillis = System.currentTimeMillis();
 			if ((currentTimeMillis - otpGenerationTimeMillis) > OTP_EXPIRY_TIME_MILLIS) {
-				return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body("OTP has been expired!");
+				throw new OTPExpireException("OTP has been expired!"); // Throw OTPExpireException
 			}
 
 			// Compare the OTP entered by the user with the OTP sent to the phone number
@@ -121,9 +143,14 @@ public class UserServiceImplementation implements UserServiceInterface {
 				// OTP is invalid
 				return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body("Entered OTP is invalid!");
 			}
+		} catch (OTPExpireException e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body("OTP has been expired!");
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body("Failed to verify OTP.");
+
 		}
 
 	}
