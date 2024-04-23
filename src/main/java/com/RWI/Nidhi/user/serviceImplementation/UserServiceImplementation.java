@@ -5,6 +5,8 @@ import java.util.Random;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.RWI.Nidhi.user.configuration.TwilioConfig;
@@ -20,24 +22,42 @@ public class UserServiceImplementation implements UserServiceInterface {
 	@Autowired
 	private TwilioConfig twilioConfig; // Prince twilio config
 
+	@Autowired
+	private JavaMailSender javaMailSender;
+
 	// Expiry time for OTP in milliseconds
 	private static final long OTP_EXPIRY_TIME_MILLIS = 2 * 60 * 1000;
 
 	// in scope of Mr Piyush and Mr Prince
-	private String sentOtp;
+	private String otp;
 
 	private long otpGenerationTimeMillis; // Timestamp for OTP generation
 
 	// implemented by Mr Piyush
 	@Override
-	public ResponseEntity<String> sendEmailOtp(String email) throws Exception {
-		return null;
+	public ResponseEntity<String> sendEmailOtp(String userEmailId) throws Exception {
+		otp = generateOTP();
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(userEmailId);
+		message.setSubject("Email Verification OTP");
+		message.setText("Your OTP for email verification is: " + otp);
+		javaMailSender.send(message);
+		return ResponseEntity.ok("OTP sent to " + userEmailId);
 	}
 
 	// implemented by Mr Piyush
 	@Override
-	public ResponseEntity<String> verifyEmailOtp(String email, String sentOtp, String enteredOtp) throws Exception {
-		return null;
+	public ResponseEntity<String> verifyEmailOtp(String userEmailId,String enteredOTP) throws Exception {
+		if (otp.equals(enteredOTP)) {
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setTo(userEmailId);
+			message.setText("your email verification is done");
+			javaMailSender.send(message);
+			return ResponseEntity.ok("Email " + userEmailId + " verified successfully!");
+		} else {
+			// Incorrect OTP
+			return ResponseEntity.ok("Incorrect OTP. Email verification failed.");
+		}
 	}
 
 	// implemented by Mr Prince
@@ -58,11 +78,11 @@ public class UserServiceImplementation implements UserServiceInterface {
 			System.out.println(to);
 
 			// Generate OTP
-			sentOtp = generateOTP();
+			otp = generateOTP();
 			otpGenerationTimeMillis = System.currentTimeMillis();
 
 			// OTP message
-			String otpMessage = "Dear Customer, your OTP is " + sentOtp
+			String otpMessage = "Dear Customer, your OTP is " + otp
 					+ " for sending SMS through Nidhi Bank application. Thank you.";
 
 			// Send SMS using Twilio
@@ -94,7 +114,7 @@ public class UserServiceImplementation implements UserServiceInterface {
 			}
 
 			// Compare the OTP entered by the user with the OTP sent to the phone number
-			if (sentOtp != null && sentOtp.equals(enteredOtp)) {
+			if (otp != null && otp.equals(enteredOtp)) {
 				// OTP is valid
 				return ResponseEntity.ok("OTP is valid!");
 			} else {
