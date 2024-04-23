@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -21,6 +22,7 @@ public class Loan {
     private int loanId;
     private int loanAmount;
     private int rePaymentTerm;
+    private Date startDate;
     private double interestRate;
     private int EMI;
     private int fine;
@@ -28,6 +30,9 @@ public class Loan {
     private LoanType loanType;
     @Enumerated(EnumType.STRING)
     private LoanStatus status;
+    public void setInterestRate(LoanType loanType) {
+        this.interestRate = loanType.getLoanInterestRate();
+    }
     @ManyToOne
     @JoinColumn
     private Accounts account;
