@@ -1,5 +1,6 @@
 package com.RWI.Nidhi.entity;
 
+import com.RWI.Nidhi.enums.FdCompoundingFrequency;
 import com.RWI.Nidhi.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,10 @@ public class FixedDeposit {
     private double amount;
     private Date depositDate;
     private Date maturityDate;
+    @Transient
+    @Enumerated
+    private FdCompoundingFrequency fdCompoundingFrequency;
+    private int compoundingFrequency;
     private double interestRate;
     private int tenure;
     @Enumerated(EnumType.STRING)
@@ -33,4 +38,8 @@ public class FixedDeposit {
     private Agent agent;
     @OneToMany(mappedBy = "fd", cascade = CascadeType.ALL)
     private List<Transactions> transactionsList;
+    public void setInterestRate(FdCompoundingFrequency fdCompoundingFrequency) {
+        this.interestRate = fdCompoundingFrequency.getFdInterestRate();
+        this.compoundingFrequency = fdCompoundingFrequency.getCompoundingFreq();
+    }
 }
