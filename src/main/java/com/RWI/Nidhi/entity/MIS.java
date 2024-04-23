@@ -1,12 +1,11 @@
 package com.RWI.Nidhi.entity;
 
-import com.RWI.Nidhi.enums.Status;
+import com.RWI.Nidhi.enums.FdStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
@@ -26,7 +25,7 @@ public class MIS {
     private int tenure;
     private double interestRate;
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private FdStatus fdStatus;
     @ManyToOne
     @JoinColumn
     private Accounts account;
