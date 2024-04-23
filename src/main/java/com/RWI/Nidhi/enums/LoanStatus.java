@@ -1,5 +1,13 @@
 package com.RWI.Nidhi.enums;
-
+import lombok.NoArgsConstructor;
+@NoArgsConstructor
 public enum LoanStatus {
-    APPLIED,APPROVED,PENDING,REJECTED,FORECLOSED,CLOSED;
+    APPLIED,
+    APPROVED,
+    SANCTIONED,
+    PENDING,
+    REJECTED,
+    REQUESTEDFORFORECLOSURE,
+    FORECLOSED,
+    CLOSED;
 }
