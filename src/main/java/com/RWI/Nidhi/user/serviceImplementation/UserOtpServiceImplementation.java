@@ -12,14 +12,14 @@ import org.springframework.stereotype.Service;
 import com.RWI.Nidhi.exception.OTPExpireException;
 import com.RWI.Nidhi.exception.OtpNotSendException;
 import com.RWI.Nidhi.user.configuration.TwilioConfig;
-import com.RWI.Nidhi.user.serviceInterface.UserServiceInterface;
+import com.RWI.Nidhi.user.serviceInterface.UserOtpServiceInterface;
 
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 
 @Service
-public class UserServiceImplementation implements UserServiceInterface {
+public class UserOtpServiceImplementation implements UserOtpServiceInterface {
 
 	@Autowired
 	private TwilioConfig twilioConfig; // Prince twilio config

@@ -1,6 +1,6 @@
 package com.RWI.Nidhi.user.controller;
 
-import com.RWI.Nidhi.user.serviceImplementation.UserServiceImplementation;
+import com.RWI.Nidhi.user.serviceImplementation.UserOtpServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
 	@Autowired
-	UserServiceImplementation userService;
+	UserOtpServiceImplementation userService;
 
 	@PostMapping("/sendEmailOtp")
 	public ResponseEntity<String> sendEmailOtp(@RequestParam("email") String email) throws Exception {

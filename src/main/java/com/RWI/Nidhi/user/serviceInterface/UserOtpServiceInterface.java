@@ -2,7 +2,7 @@ package com.RWI.Nidhi.user.serviceInterface;
 
 import org.springframework.http.ResponseEntity;
 
-public interface UserServiceInterface {
+public interface UserOtpServiceInterface {
 
     ResponseEntity<String> sendEmailOtp(String email) throws Exception;
     ResponseEntity<String> verifyEmailOtp(String email, String enteredOtp) throws Exception;
