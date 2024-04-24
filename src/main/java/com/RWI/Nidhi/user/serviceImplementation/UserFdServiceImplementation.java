@@ -2,12 +2,14 @@ package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.FdDto;
 import com.RWI.Nidhi.entity.FixedDeposit;
-import com.RWI.Nidhi.enums.FdStatus;
+import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.user.repository.FixedDepositRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserFdServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class UserFdServiceImplementation implements UserFdServiceInterface {
 
@@ -29,7 +31,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         fd.setFineAmount(0);
 
         fd.setMaturityAmount(calculateFdAmount(fd.getAmount(), fd.getInterestRate(), fd.getCompoundingFrequency(), fd.getTenure()));
-        fd.setFdStatus(FdStatus.ACTIVE);
+        fd.setStatus(Status.ACTIVE);
 
         return fdRepo.save(fd);
 
@@ -56,5 +58,10 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     @Override
     public Double onMaturityFd(FdDto fdDto) {
         return null;
+    }
+
+    private long dateDiff(LocalDate date1, LocalDate date2){
+        long daysDifference = ChronoUnit.DAYS.between(date1, date2);
+        return daysDifference;
     }
 }
