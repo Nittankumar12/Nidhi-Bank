@@ -1,5 +1,5 @@
 package com.RWI.Nidhi.user.serviceImplementation;
-
+import com.RWI.Nidhi.dto.LoanDto;
 import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.entity.Scheme;
 import com.RWI.Nidhi.enums.LoanStatus;
@@ -7,7 +7,6 @@ import com.RWI.Nidhi.user.repository.AccountsRepo;
 import com.RWI.Nidhi.user.repository.LoanRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.List;
 
 public class UserLoanServiceImplementation implements UserLoanServiceInterface {
@@ -34,11 +33,13 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         return maxLoan;
     }
     @Override
-    public void applyLoan(Loan loan) {// For User
+    public void applyLoan(LoanDto loanDto) {// For User
         Loan currentLoan = new Loan();
-        currentLoan.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
-        currentLoan.setLoanType(loan.getLoanType());
-        currentLoan.setRePaymentTerm(loan.getRePaymentTerm());
+        currentLoan.setLoanType(loanDto.getLoanType());
+        currentLoan.setInterestRate(loanDto.getLoanType().getLoanInterestRate());
+        currentLoan.setPrincipalLoanAmount(loanDto.getPrincipalLoanAmount());
+        currentLoan.setRePaymentTerm(loanDto.getRePaymentTerm());
+        currentLoan.setStartDate(loanDto.getStartDate());
         currentLoan.setStatus(LoanStatus.APPLIED);
         loanRepository.save(currentLoan);
     }
@@ -53,4 +54,26 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             currentEMI =+ loanRepository.findFineByLoanId(loanId);
         return currentEMI;
     }
+
+    @Override
+    public String payEMI(int loanId, int payedEMI) {
+        int currentEMI = checkCurrentEMI(loanId);
+        Loan currentLoan = loanRepository.findById(loanId).orElseThrow();
+        if (loanRepository.findEMIByLoanId(loanId) == currentEMI) {
+            currentLoan.setPayableLoanAmount(currentLoan.getPayableLoanAmount() - currentEMI);
+            return "EMI payed";
+        } else if (currentEMI != loanRepository.findEMIByLoanId(loanId)){
+            return  "You have not entered the correct amount. " +
+                    "You need to enter"+currentEMI+
+                    ". Please enter the correct amount before due date";
+        }
+        else
+            return "Invalid data";
+    }
+    @Override
+    public void applyLoanClosure(int loanId){
+        Loan currentLoan = loanRepository.findById(loanId).orElseThrow();
+        currentLoan.setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
+    }
+
 }
