@@ -1,6 +1,6 @@
 package com.RWI.Nidhi.entity;
 
-import com.RWI.Nidhi.enums.Status;
+import com.RWI.Nidhi.enums.FdStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +25,7 @@ public class Accounts {
     @CreatedDate
     private Date accountOpeningDate;
     @Enumerated(EnumType.STRING)
-    private Status accountStatus;
+    private FdStatus accountFdStatus;
     @OneToOne
     @JoinColumn
     private User user;
