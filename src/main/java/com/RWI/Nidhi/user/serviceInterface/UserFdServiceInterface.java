@@ -7,5 +7,4 @@ import org.springframework.http.ResponseEntity;
 public interface UserFdServiceInterface {
     FixedDeposit createFd(FdDto fdDto);
     Double closeFd(int fdId);
-    Double calculateOnMatureFdAmount(int fdId);
 }

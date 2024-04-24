@@ -22,6 +22,7 @@ public class FixedDeposit {
     private LocalDate depositDate;
     private LocalDate maturityDate;
     private LocalDate closingDate;
+
     private int penalty;
 //    @Transient
 //    @Enumerated(EnumType.STRING)
@@ -30,6 +31,7 @@ public class FixedDeposit {
     private double interestRate;
     private int tenure;
     private double maturityAmount;
+
     @Enumerated(EnumType.STRING)
     private Status fdStatus;
     @ManyToOne

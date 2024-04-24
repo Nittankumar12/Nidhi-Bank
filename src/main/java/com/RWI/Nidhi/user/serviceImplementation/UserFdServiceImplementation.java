@@ -27,6 +27,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         fd.setMaturityDate(LocalDate.now().plusYears(fdDto.getTenure()));
         fd.setCompoundingFrequency(fdDto.getFdCompoundingFrequency().getCompoundingFreq());
         fd.setInterestRate(fdDto.getFdCompoundingFrequency().getFdInterestRate());
+
         fd.setPenalty(0);
         int tenureInDays = getCompleteDaysCount(fd.getDepositDate(), fd.getMaturityDate());
 
@@ -56,11 +57,10 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         fd.setMaturityAmount(calculateFdAmount(fd.getAmount(), fd.getInterestRate(), fd.getCompoundingFrequency(), getCompleteDaysCount(fd.getDepositDate(), LocalDate.now())));
 
         fd.setClosingDate(LocalDate.now());
-        if(fd.getClosingDate().isBefore(fd.getMaturityDate())) {
+        if (fd.getClosingDate().isBefore(fd.getMaturityDate())) {
             fd.setPenalty(this.penalty);
             fd.setFdStatus(Status.FORECLOSED);
-        }
-        else {
+        } else {
             fd.setFdStatus(Status.CLOSED);
         }
 
@@ -70,11 +70,4 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
 
         return fd.getMaturityAmount();
     }
-
-    @Override
-    public Double calculateOnMatureFdAmount(int fdId) {
-        return null;
-    }
-
-
 }
