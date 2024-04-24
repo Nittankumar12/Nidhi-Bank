@@ -20,8 +20,9 @@ import java.util.List;
 public class Loan {
     @Id
     private int loanId;
-    private int loanAmount;
-    private int rePaymentTerm;
+    private int PayableLoanAmount;// Total Amount user has to pay - PrincipalLoanAmount + Total EMI for repayTerm
+    private int PrincipalLoanAmount;//Loan Amount user gets as Loan
+    private int rePaymentTerm; //should be counted in days
     private Date startDate;
     private double interestRate;
     private int EMI;
