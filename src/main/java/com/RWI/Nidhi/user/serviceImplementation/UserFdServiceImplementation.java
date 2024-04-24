@@ -16,7 +16,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     @Autowired
     FixedDepositRepo fdRepo;
 
-    private final int fineAmount=500;
+    private final int fineAmount = 500;
     @Override
     public FixedDeposit createFd(FdDto fdDto) {
 
@@ -34,9 +34,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         fd.setStatus(Status.ACTIVE);
 
         return fdRepo.save(fd);
-
     }
-
 
     private double calculateFdAmount(int amount, double interestRate, int compoundingFreq, int tenureInYears){
         double finalAmount;
@@ -51,17 +49,11 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         fd.setClosingDate(LocalDate.now());
         fd.getDepositDate();
 
-
         return null;
     }
 
     @Override
     public Double onMaturityFd(FdDto fdDto) {
         return null;
-    }
-
-    private long dateDiff(LocalDate date1, LocalDate date2){
-        long daysDifference = ChronoUnit.DAYS.between(date1, date2);
-        return daysDifference;
     }
 }
