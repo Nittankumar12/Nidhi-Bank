@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -22,7 +22,7 @@ public class Loan {
     private int PayableLoanAmount;// Total Amount user has to pay - PrincipalLoanAmount + Total EMI for repayTerm
     private int PrincipalLoanAmount;//Loan Amount user gets as Loan
     private int rePaymentTerm; //should be counted in days
-    private Date startDate;
+    private LocalDate startDate;
     private double interestRate;
     private int EMI;
     private int fine;
@@ -30,9 +30,9 @@ public class Loan {
     private LoanType loanType;
     @Enumerated(EnumType.STRING)
     private LoanStatus status;
-    public void setInterestRate(LoanType loanType) {
-        this.interestRate = loanType.getLoanInterestRate();
-    }
+//    public void setInterestRate(LoanType loanType) {
+//        this.interestRate = loanType.getLoanInterestRate();
+//    }
     @ManyToOne
     @JoinColumn
     private Accounts account;
