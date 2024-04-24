@@ -5,16 +5,17 @@ import com.RWI.Nidhi.entity.FixedDeposit;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.user.repository.FixedDepositRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserFdServiceInterface;
-import jakarta.persistence.ManyToOne;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class UserFdServiceImplementation implements UserFdServiceInterface {
 
+    private final int penalty = 500;
     @Autowired
     FixedDepositRepo fdRepo;
+
     @Override
     public FixedDeposit createFd(FdDto fdDto) {
 
@@ -26,17 +27,54 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         fd.setMaturityDate(LocalDate.now().plusYears(fdDto.getTenure()));
         fd.setCompoundingFrequency(fdDto.getFdCompoundingFrequency().getCompoundingFreq());
         fd.setInterestRate(fdDto.getFdCompoundingFrequency().getFdInterestRate());
+        fd.setPenalty(0);
+        int tenureInDays = getCompleteDaysCount(fd.getDepositDate(), fd.getMaturityDate());
 
-        fd.setMaturityAmount(calculateFdAmount(fd.getAmount(), fd.getInterestRate(), fd.getCompoundingFrequency(), fd.getTenure()));
-        fd.setStatus(Status.ACTIVE);
+        fd.setMaturityAmount(calculateFdAmount(fd.getAmount(), fd.getInterestRate(), fd.getCompoundingFrequency(), tenureInDays));
+        fd.setFdStatus(Status.ACTIVE);
 
         return fdRepo.save(fd);
 
     }
-    private double calculateFdAmount(int amount, double interestRate, int compoundingFreq, int tenureInYears){
+
+    private double calculateFdAmount(int amount, double interestRate, int compoundingFreq, int tenureInDays) {
         double finalAmount;
 
-        finalAmount = amount * (Math.pow((1 + (interestRate / (100 * compoundingFreq))),(tenureInYears * compoundingFreq)));
-        return finalAmount;
+        finalAmount = amount * (Math.pow((1 + (interestRate / (100 * compoundingFreq))), ((tenureInDays / 365) * compoundingFreq)));
+        return 0;
     }
+
+    private int getCompleteDaysCount(LocalDate startDate, LocalDate endDate) {
+        double daysDifference = ChronoUnit.DAYS.between(startDate, endDate);
+        return (int) daysDifference;
+    }
+
+    @Override
+    public Double closeFd(int fdId) {
+        FixedDeposit fd = fdRepo.findById(fdId).get();
+
+        fd.setMaturityAmount(calculateFdAmount(fd.getAmount(), fd.getInterestRate(), fd.getCompoundingFrequency(), getCompleteDaysCount(fd.getDepositDate(), LocalDate.now())));
+
+        fd.setClosingDate(LocalDate.now());
+        if(fd.getClosingDate().isBefore(fd.getMaturityDate())) {
+            fd.setPenalty(this.penalty);
+            fd.setFdStatus(Status.FORECLOSED);
+        }
+        else {
+            fd.setFdStatus(Status.CLOSED);
+        }
+
+        fd.setMaturityAmount(fd.getMaturityAmount() - fd.getPenalty());
+
+        fdRepo.save(fd);
+
+        return fd.getMaturityAmount();
+    }
+
+    @Override
+    public Double calculateOnMatureFdAmount(int fdId) {
+        return null;
+    }
+
+
 }

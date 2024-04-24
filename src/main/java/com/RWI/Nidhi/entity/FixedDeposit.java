@@ -1,6 +1,5 @@
 package com.RWI.Nidhi.entity;
 
-import com.RWI.Nidhi.enums.FdCompoundingFrequency;
 import com.RWI.Nidhi.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -23,6 +21,8 @@ public class FixedDeposit {
     private int amount;
     private LocalDate depositDate;
     private LocalDate maturityDate;
+    private LocalDate closingDate;
+    private int penalty;
 //    @Transient
 //    @Enumerated(EnumType.STRING)
 //    private FdCompoundingFrequency fdCompoundingFrequency;
@@ -31,7 +31,7 @@ public class FixedDeposit {
     private int tenure;
     private double maturityAmount;
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Status fdStatus;
     @ManyToOne
     @JoinColumn
     private Accounts account;
