@@ -2,7 +2,6 @@ package com.RWI.Nidhi.entity;
 
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.LoanType;
-import com.RWI.Nidhi.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
