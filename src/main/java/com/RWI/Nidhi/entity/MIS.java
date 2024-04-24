@@ -1,6 +1,6 @@
 package com.RWI.Nidhi.entity;
 
-import com.RWI.Nidhi.enums.FdStatus;
+import com.RWI.Nidhi.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class MIS {
     private int tenure;
     private double interestRate;
     @Enumerated(EnumType.STRING)
-    private FdStatus fdStatus;
+    private Status status;
     @ManyToOne
     @JoinColumn
     private Accounts account;

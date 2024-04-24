@@ -1,6 +1,6 @@
 package com.RWI.Nidhi.entity;
 
-import com.RWI.Nidhi.enums.FdStatus;
+import com.RWI.Nidhi.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class RecurringDeposit {
     private double interestRate;
     private double maturityAmount;
     @Enumerated(EnumType.STRING)
-    private FdStatus fdStatus;
+    private Status status;
     private int tenure; // Number of months
     private Date lastDepositedDate;
     private Date totalAmountDeposited;
