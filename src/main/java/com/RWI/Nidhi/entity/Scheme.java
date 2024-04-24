@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -17,7 +19,8 @@ public class Scheme {
     @Id
     private int schemeId;
     private double monthlyDepositAmount;
-    private int tenure;
+    private LocalDate startDate;
+    private int tenure;// should be counted in days
     private double totalDepositAmount;
     private double totalInterestEarn;
     @ManyToOne
