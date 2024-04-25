@@ -1,10 +1,13 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 import com.RWI.Nidhi.dto.LoanDto;
+import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.entity.Scheme;
+import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.user.repository.AccountsRepo;
 import com.RWI.Nidhi.user.repository.LoanRepo;
+import com.RWI.Nidhi.user.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,8 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     @Autowired
     AccountsRepo accountsRepo;
     @Autowired
+    UserServiceImplementation userService;
+    @Autowired
     AccountsServiceImplementation accountsService;
     @Autowired
     SchemeServiceImplementation schemeService;
@@ -28,7 +33,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             List<Scheme> currentScheme = accountsRepo.findSchemeListByAccountId(accountId);
             for (int i = 0; i < currentScheme.size(); i++) {
                 Scheme sc = currentScheme.get(i);
-                maxLoan =+ schemeService.findLoanOnSchemeBasis(sc.getSchemeId());
+                maxLoan += schemeService.findLoanOnSchemeBasis(sc.getSchemeId());
             }
         }
         else
@@ -38,13 +43,18 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     @Override
     public void applyLoan(LoanDto loanDto) {// For User
         Loan currentLoan = new Loan();
-        currentLoan.setLoanType(loanDto.getLoanType());
-        currentLoan.setInterestRate(loanDto.getLoanType().getLoanInterestRate());
-        currentLoan.setPrincipalLoanAmount(loanDto.getPrincipalLoanAmount());
-        currentLoan.setRePaymentTerm(loanDto.getRePaymentTerm());
-        currentLoan.setStartDate(loanDto.getStartDate());
-        currentLoan.setStatus(LoanStatus.APPLIED);
-        loanRepository.save(currentLoan);
+        String accNo = loanDto.getAccountNumber();
+        String email = loanDto.getEmail();
+        if(accNo == accountsRepo.findAccountNumberByAccountId(userService.getAccountIdByUserEmail(email))){
+            currentLoan.setAccount(accountsRepo.findById(userService.getAccountIdByUserEmail(email)).orElseThrow());
+            currentLoan.setLoanType(loanDto.getLoanType());
+            currentLoan.setInterestRate(loanDto.getLoanType().getLoanInterestRate());
+            currentLoan.setPrincipalLoanAmount(loanDto.getPrincipalLoanAmount());
+            currentLoan.setRePaymentTerm(loanDto.getRePaymentTerm());
+            currentLoan.setStartDate(loanDto.getStartDate());
+            currentLoan.setStatus(LoanStatus.APPLIED);
+            loanRepository.save(currentLoan);
+        }
     }
     @Override
     public LoanStatus checkLoanStatus(int loanId) {// For User

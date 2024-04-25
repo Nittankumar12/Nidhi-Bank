@@ -2,6 +2,7 @@ package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Scheme;
+import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.exception.AccountIdNotFoundException;
 import com.RWI.Nidhi.exception.AccountNotFoundException;
@@ -74,7 +75,6 @@ public class AccountsServiceImplementation implements AccountsService {
  		try {
  			// Retrieve account from the database
  			Optional<Accounts> optionalAccount = accountsRepo.findById(accountId);
-
  			// Check if the account exists
  			if (optionalAccount.isPresent()) {
  				Accounts account = optionalAccount.get();

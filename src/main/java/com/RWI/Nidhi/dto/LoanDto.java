@@ -7,6 +7,8 @@ import java.time.LocalDate;
 
 @Data
 public class LoanDto {
+    private String accountNumber;
+    private String email;
     private int rePaymentTerm;
     private int PrincipalLoanAmount;
     private LoanType loanType;
