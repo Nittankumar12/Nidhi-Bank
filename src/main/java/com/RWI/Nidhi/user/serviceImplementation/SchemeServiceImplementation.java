@@ -23,7 +23,7 @@ public class SchemeServiceImplementation implements SchemeService {
 
     @Override
     public double findLoanOnSchemeBasis(int schemeId) {
-        double schemeLoan = schemeRepo.findMonthlyDepositAmountBySchemeID(schemeId) / 30 * findSchemeRemainingDays(schemeId);
+        double schemeLoan = schemeRepo.findMonthlyDepositAmountBySchemeId(schemeId) / 30 * findSchemeRemainingDays(schemeId);
         return schemeLoan;
     }
 }

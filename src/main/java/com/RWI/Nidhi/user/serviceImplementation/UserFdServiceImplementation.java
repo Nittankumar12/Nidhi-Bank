@@ -35,7 +35,6 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         fd.setFdStatus(Status.ACTIVE);
 
         return fdRepo.save(fd);
-
     }
 
     private double calculateFdAmount(int amount, double interestRate, int compoundingFreq, int tenureInDays) {
