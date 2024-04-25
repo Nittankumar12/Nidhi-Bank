@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -17,17 +17,18 @@ import java.util.List;
 @NoArgsConstructor
 public class RecurringDeposit {
     @Id
-    private int recurrenceId;
-    private Date startDate;
-    private Date maturityDate;
+    private int rdId;
     private double monthlyDepositAmount;
     private double interestRate;
     private double maturityAmount;
-    @Enumerated(EnumType.STRING)
-    private Status status;
     private int tenure; // Number of months
-    private Date lastDepositedDate;
-    private Date totalAmountDeposited;
+    private LocalDate startDate;
+    private LocalDate maturityDate;
+    private LocalDate lastDepositedDate;
+    private LocalDate totalAmountDeposited;
+    @Enumerated(EnumType.STRING)
+    private Status rdStatus;
+
     @ManyToOne
     @JoinColumn
     private Accounts account;

@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -19,8 +19,8 @@ public class MIS {
     @Id
     private int misId;
     private double totalDepositedAmount;
-    private Date startDate;
-    private Date maturityDate;
+    private LocalDate startDate;
+    private LocalDate maturityDate;
     private double monthlyIncome;
     private int tenure;
     private double interestRate;
