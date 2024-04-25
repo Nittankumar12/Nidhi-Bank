@@ -1,4 +1,4 @@
-package com.aws.serviceS3;
+package com.RWI.Nidhi.user.imageUpload.serviceS3;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;

@@ -1,4 +1,4 @@
-package com.aws.serviceS3;
+package com.RWI.Nidhi.user.imageUpload.serviceS3;
 
 import org.springframework.web.multipart.MultipartFile;
 
