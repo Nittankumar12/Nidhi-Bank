@@ -1,4 +1,4 @@
-package com.aws.ControllerS3;
+package com.RWI.Nidhi.user.imageUpload.ControllerS3;
 
 import com.aws.serviceS3.FileService;
 import com.aws.serviceS3.FileUpload;

@@ -1,4 +1,4 @@
-package com.aws.configs3;
+package com.RWI.Nidhi.user.imageUpload.configs3;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
