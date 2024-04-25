@@ -2,14 +2,12 @@ package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Scheme;
+import com.RWI.Nidhi.enums.Status;
+import com.RWI.Nidhi.exception.AccountIdNotFoundException;
+import com.RWI.Nidhi.exception.AccountNotFoundException;
 import com.RWI.Nidhi.user.repository.AccountsRepo;
 import com.RWI.Nidhi.user.serviceInterface.AccountsService;
 import com.RWI.Nidhi.user.serviceInterface.SchemeService;
-import com.railworld.entity.Accounts;
-import com.railworld.enums.Status;
-import com.railworld.exception.AccoutNotFoundException;
-import com.railworld.exception.AcoountIdNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Optional;
@@ -20,22 +18,25 @@ public class AccountsServiceImplementation implements AccountsService {
     AccountsRepo accountsRepo;
     @Autowired
     SchemeService schemeService;
-    @Override
-    public Boolean schemeRunning(int accountId) {
-        List<Scheme> currentScheme = accountsRepo.findSchemeListByAccountId(accountId);
-        for(int i=0; i<currentScheme.size();i++) {
-            Scheme sc = currentScheme.get(i);
-            int remainingDays = schemeService.findSchemeRemainingDays(sc.getSchemeId());
-            if (remainingDays != 0)
-                return Boolean.TRUE;
-        }
-           return Boolean.FALSE;
-    }
+
+	// Define the length of the account number
+	private static final int ACCOUNT_NUMBER_LENGTH = 5;
+
+
+	@Override
+	public Boolean schemeRunning(int accountId) {
+		List<Scheme> currentScheme = accountsRepo.findSchemeListByAccountId(accountId);
+		for (Scheme sc : currentScheme) {
+			int remainingDays = schemeService.findSchemeRemainingDays(sc.getSchemeId());
+			if (remainingDays != 0)
+				return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
+	}
     
     //Prince code
     
- // Define the length of the account number
- 	private static final int ACCOUNT_NUMBER_LENGTH = 5;
+
 
  	// Generate a unique account number
  	private String generateRandomAccountNumber() {
@@ -62,25 +63,25 @@ public class AccountsServiceImplementation implements AccountsService {
  		newAccount.setAccountNumber(accountNumber);
  		newAccount.setCurrentBalance(0); // Set the initial balance to 0
  		newAccount.setAccountStatus(Status.ACTIVE);
- 		return accountRepository.save(newAccount);
+ 		return accountsRepo.save(newAccount);
  	}
 
  	@Override
  	public Status getAccountStatus(int accountId) {
  		try {
  			// Retrieve account from the database
- 			Optional<Accounts> optionalAccount = accountRepository.findById(accountId);
+ 			Optional<Accounts> optionalAccount = accountsRepo.findById(accountId);
 
  			// Check if the account exists
  			if (optionalAccount.isPresent()) {
  				Accounts account = optionalAccount.get();
  				return account.getAccountStatus(); // Return the account status
  			} else {
- 				throw new AcoountIdNotFoundException("Account with ID " + accountId + " not found");
+ 				throw new AccountIdNotFoundException("Account with ID " + accountId + " not found");
  			}
  		} catch (Exception ex) {
  			ex.printStackTrace();
- 			throw new AcoountIdNotFoundException("Error occurred while fetching account status");
+ 			throw new AccountIdNotFoundException("Error occurred while fetching account status");
  		}
  	}
 
@@ -88,18 +89,18 @@ public class AccountsServiceImplementation implements AccountsService {
  	public double checkAccountBalanceByNumber(String accountNumber) {
  		try {
  			// Retrieve account from the database by account number
- 			Optional<Accounts> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
+ 			Optional<Accounts> optionalAccount = accountsRepo.findByAccountNumber(accountNumber);
 
  			// Check if the account exists
  			if (optionalAccount.isPresent()) {
  				Accounts account = optionalAccount.get();
  				return account.getCurrentBalance(); // Return the account balance
  			} else {
- 				throw new AccoutNotFoundException("Account with number " + accountNumber + " not found");
+ 				throw new AccountNotFoundException("Account with number " + accountNumber + " not found");
  			}
  		} catch (Exception ex) {
  			ex.printStackTrace();
- 			throw new AccoutNotFoundException("Error occurred while fetching account balance");
+ 			throw new AccountNotFoundException("Error occurred while fetching account balance");
  		}
  	}
 }
