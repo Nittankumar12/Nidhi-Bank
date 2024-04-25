@@ -1,4 +1,4 @@
-package com.aws.configs3;
+package com.RWI.Nidhi.user.imageUpload.configs3;
 
 import com.aws.serviceS3.FileUpload;
 import org.springframework.context.annotation.Bean;

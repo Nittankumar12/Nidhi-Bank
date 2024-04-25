@@ -63,9 +63,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         } else {
             fd.setFdStatus(Status.CLOSED);
         }
-
         fd.setMaturityAmount(fd.getMaturityAmount() - fd.getPenalty());
-
         fdRepo.save(fd);
 
         return fd.getMaturityAmount();
