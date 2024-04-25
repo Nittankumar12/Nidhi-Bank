@@ -6,10 +6,12 @@ import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.user.repository.FixedDepositRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserFdServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+@Service
 public class UserFdServiceImplementation implements UserFdServiceInterface {
 
     private final int penalty = 500;
