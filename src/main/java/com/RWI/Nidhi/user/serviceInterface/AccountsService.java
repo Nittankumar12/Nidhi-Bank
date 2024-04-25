@@ -5,9 +5,10 @@ import com.RWI.Nidhi.enums.Status;
 
 public interface AccountsService {
     Boolean schemeRunning(int accountId);
-    public  Accounts openAccount();
 
-	public  Status getAccountStatus(int accountId);
+    Accounts openAccount();
 
-	public double checkAccountBalanceByNumber(String accountNumber);
+    Status getAccountStatus(int accountId);
+
+    double checkAccountBalanceByNumber(String accountNumber);
 }

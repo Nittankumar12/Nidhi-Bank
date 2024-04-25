@@ -13,7 +13,7 @@ import lombok.Setter;
 @Entity
 public class User {
     @Id
-    private int usedId;
+    private int userId;
     private String userName;
     private String phoneNumber;
     private String email;
