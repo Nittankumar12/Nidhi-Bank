@@ -11,6 +11,10 @@ public interface AccountsService {
     Status getAccountStatus(int accountId);
 
     double checkAccountBalanceByNumber(String accountNumber);
+    
+    public String generateRandomAccountPIN();
+
+	public void updateAccountPIN(String accountNumber, String newPIN);
 
 
 }
