@@ -15,5 +15,8 @@ public interface AccountsService {
 	public String generateRandomAccountPIN();
 
 	public void updateAccountPIN(String accountNumber, String newPIN);
+    double checkAccountBalanceByNumber(String accountNumber);
 
-}
+
+
+
