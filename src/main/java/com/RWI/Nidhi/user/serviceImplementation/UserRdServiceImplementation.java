@@ -5,9 +5,11 @@ import com.RWI.Nidhi.entity.RecurringDeposit;
 import com.RWI.Nidhi.user.repository.RecurringDepositRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserRdServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
+@Service
 public class UserRdServiceImplementation implements UserRdServiceInterface {
 
     @Autowired

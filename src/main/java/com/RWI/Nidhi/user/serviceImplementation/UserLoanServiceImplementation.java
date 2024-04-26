@@ -7,8 +7,11 @@ import com.RWI.Nidhi.user.repository.AccountsRepo;
 import com.RWI.Nidhi.user.repository.LoanRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
+@Service
 public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     @Autowired
     LoanRepo loanRepository;

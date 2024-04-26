@@ -4,7 +4,9 @@ import com.RWI.Nidhi.entity.MIS;
 import com.RWI.Nidhi.user.repository.MisRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserMisServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserMisServiceImplementation implements UserMisServiceInterface {
     @Autowired
     private MisRepo misRepo;
