@@ -4,11 +4,16 @@ import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.enums.Status;
 
 public interface AccountsService {
-    Boolean schemeRunning(int accountId);
+	Boolean schemeRunning(int accountId);
 
-    Accounts openAccount();
+	public Accounts openAccount();
 
-    Status getAccountStatus(int accountId);
+	public Status getAccountStatus(int accountId);
 
-    double checkAccountBalanceByNumber(String accountNumber);
+	public double checkAccountBalanceByNumber(String accountNumber);
+
+	public String generateRandomAccountPIN();
+
+	public void updateAccountPIN(String accountNumber, String newPIN);
+
 }

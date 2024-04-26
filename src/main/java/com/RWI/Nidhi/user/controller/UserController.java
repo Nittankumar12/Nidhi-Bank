@@ -18,7 +18,8 @@ public class UserController {
 	}
 
 	@PostMapping("/verifyEmailOtp")
-	public ResponseEntity<String> verifyEmailOtp(@RequestParam("email") String email, @RequestParam("enteredOTP") String enteredOTP) throws Exception {
+	public ResponseEntity<String> verifyEmailOtp(@RequestParam("email") String email,
+			@RequestParam("enteredOTP") String enteredOTP) throws Exception {
 		return userService.verifyEmailOtp(email, enteredOTP);
 	}
 
@@ -28,7 +29,9 @@ public class UserController {
 	}
 
 	@PostMapping("/verifyPhoneOtp")
-	public ResponseEntity<String> verifyPhoneOtp(@RequestParam("phoneNumber") String phoneNumber, @RequestParam("receivedOtp") String enteredOtp) throws Exception {
+	public ResponseEntity<String> verifyPhoneOtp(@RequestParam("phoneNumber") String phoneNumber,
+			@RequestParam("receivedOtp") String enteredOtp) throws Exception {
 		return userService.verifyPhoneOtp(phoneNumber, enteredOtp);
 	}
+
 }
