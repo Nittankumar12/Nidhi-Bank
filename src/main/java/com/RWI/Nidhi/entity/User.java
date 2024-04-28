@@ -13,6 +13,7 @@ import lombok.Setter;
 @Entity
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int userId;
     private String userName;
     private String phoneNumber;

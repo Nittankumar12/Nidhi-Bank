@@ -15,6 +15,7 @@ import java.util.List;
 @Entity
 public class Agent {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int agentId;
     private String agentName;
     private String agentPhoneNum;
