@@ -1,6 +1,6 @@
 package com.RWI.Nidhi.user.controller;
 
-import com.RWI.Nidhi.otpSendAndVerify.UserOtpServiceImplementation;
+import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
 	@Autowired
-	UserOtpServiceImplementation userService;
+    OtpServiceImplementation userService;
 
 	@PostMapping("/sendEmailOtp")
 	public ResponseEntity<String> sendEmailOtp(@RequestParam("email") String email) throws Exception {
-		return userService.sendEmailOtp(email);
+		return userService.sendEmailOtp(email, "Email verification OTP", "Your OTP for email verification is: ");
 	}
 
 	@PostMapping("/verifyEmailOtp")

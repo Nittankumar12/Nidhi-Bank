@@ -18,7 +18,7 @@ import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 
 @Service
-public class UserOtpServiceImplementation implements UserOtpServiceInterface {
+public class OtpServiceImplementation implements OtpServiceInterface {
 
 	@Autowired
 	private TwilioConfig twilioConfig; // Prince twilio config
@@ -36,12 +36,12 @@ public class UserOtpServiceImplementation implements UserOtpServiceInterface {
 
 	// implemented by Mr Piyush
 	@Override
-	public ResponseEntity<String> sendEmailOtp(String userEmailId) throws Exception {
+	public ResponseEntity<String> sendEmailOtp(String userEmailId,String subject, String messageToSend) throws Exception {
 		otp = generateOTP();
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(userEmailId);
-		message.setSubject("Email Verification OTP");
-		message.setText("Your OTP for email verification is: " + otp);
+		message.setSubject(subject);
+		message.setText(messageToSend + otp);
 		javaMailSender.send(message);
 		return ResponseEntity.ok("OTP sent to " + userEmailId);
 	}
@@ -110,7 +110,7 @@ public class UserOtpServiceImplementation implements UserOtpServiceInterface {
 		}
 	}
 
-	private String generateOTP() {
+	public String generateOTP() {
 		// Generate a 6-digit OTP
 		return String.format("%06d", new Random().nextInt(999999));
 	}

@@ -3,7 +3,7 @@ package com.RWI.Nidhi.user.serviceImplementation;
 import com.RWI.Nidhi.dto.FdDto;
 import com.RWI.Nidhi.entity.FixedDeposit;
 import com.RWI.Nidhi.enums.Status;
-import com.RWI.Nidhi.user.repository.FixedDepositRepo;
+import com.RWI.Nidhi.repository.FixedDepositRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserFdServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

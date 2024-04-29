@@ -13,9 +13,12 @@ import com.RWI.Nidhi.entity.Scheme;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.exception.AccountIdNotFoundException;
 import com.RWI.Nidhi.exception.AccountNotFoundException;
-import com.RWI.Nidhi.user.repository.AccountsRepo;
+
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.SchemeServiceInterface;
+
+import com.RWI.Nidhi.repository.AccountsRepo;
+
 
 @Service
 public class AccountsServiceImplementation implements AccountsServiceInterface {

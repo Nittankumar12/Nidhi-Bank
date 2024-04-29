@@ -3,7 +3,7 @@ package com.RWI.Nidhi.user.serviceImplementation;
 import com.RWI.Nidhi.dto.RdDto;
 import com.RWI.Nidhi.entity.RecurringDeposit;
 import com.RWI.Nidhi.enums.Status;
-import com.RWI.Nidhi.user.repository.RecurringDepositRepo;
+import com.RWI.Nidhi.repository.RecurringDepositRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserRdServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
