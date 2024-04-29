@@ -14,15 +14,15 @@ import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.exception.AccountIdNotFoundException;
 import com.RWI.Nidhi.exception.AccountNotFoundException;
 import com.RWI.Nidhi.user.repository.AccountsRepo;
-import com.RWI.Nidhi.user.serviceInterface.AccountsService;
-import com.RWI.Nidhi.user.serviceInterface.SchemeService;
+import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
+import com.RWI.Nidhi.user.serviceInterface.SchemeServiceInterface;
 
 @Service
-public class AccountsServiceImplementation implements AccountsService {
+public class AccountsServiceImplementation implements AccountsServiceInterface {
 	@Autowired
 	AccountsRepo accountsRepo;
 	@Autowired
-	SchemeService schemeService;
+	SchemeServiceInterface schemeServiceInterface;
 
 	// Define the length of the account number
 	private static final int ACCOUNT_NUMBER_LENGTH = 8;
@@ -33,7 +33,7 @@ public class AccountsServiceImplementation implements AccountsService {
 	public Boolean schemeRunning(int accountId) {
 		List<Scheme> currentScheme = accountsRepo.findSchemeListByAccountId(accountId);
 		for (Scheme sc : currentScheme) {
-			int remainingDays = schemeService.findSchemeRemainingDays(sc.getSchemeId());
+			int remainingDays = schemeServiceInterface.findSchemeRemainingDays(sc.getSchemeId());
 			if (remainingDays != 0)
 				return Boolean.TRUE;
 		}

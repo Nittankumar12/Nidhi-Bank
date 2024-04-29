@@ -2,7 +2,7 @@ package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.enums.Status;
-import com.RWI.Nidhi.user.serviceInterface.AccountsService;
+import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,36 +11,36 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/accounts")
 public class AccountController {
 	@Autowired
-	private AccountsService accountsService;
+	private AccountsServiceInterface accountsServiceInterface;
 
 	// End point to open a new account
 	@PostMapping("/open")
 	public Accounts openAccount() {
-		return accountsService.openAccount();
+		return accountsServiceInterface.openAccount();
 	}
 
 	// End point to get account status
 	@GetMapping("/status/{accountId}")
 	public Status getAccountStatus(@PathVariable int accountId) {
-		return accountsService.getAccountStatus(accountId);
+		return accountsServiceInterface.getAccountStatus(accountId);
 	}
 
 	// End point to get account balance
 	@GetMapping("/balance/{accountNumber}")
 	public double checkAccountBalanceByNumber(@PathVariable String accountNumber) {
-		return accountsService.checkAccountBalanceByNumber(accountNumber);
+		return accountsServiceInterface.checkAccountBalanceByNumber(accountNumber);
 	}
 
 	@PutMapping("")
 	public ResponseEntity<String> updateAccountPin(@RequestParam String accountNumber, @RequestParam String newPin) {
-		accountsService.updateAccountPIN(accountNumber, newPin);
+		accountsServiceInterface.updateAccountPIN(accountNumber, newPin);
 		return ResponseEntity.ok("Account PIN updated successfully");
 	}
 
 	@PutMapping("/")
 	public String fundTransfer(@RequestParam String sourceAccountNumber, @RequestParam String destinationAccountNumber,
 			double amount) {
-		accountsService.fundTransfer(sourceAccountNumber, destinationAccountNumber, amount);
+		accountsServiceInterface.fundTransfer(sourceAccountNumber, destinationAccountNumber, amount);
 		return "Money Transfer Done";
 	}
 
