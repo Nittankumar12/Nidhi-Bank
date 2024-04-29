@@ -1,4 +1,4 @@
-package com.RWI.Nidhi.user.repository;
+package com.RWI.Nidhi.repository;
 
 import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.enums.LoanStatus;

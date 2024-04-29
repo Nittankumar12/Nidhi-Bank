@@ -13,7 +13,7 @@ import com.RWI.Nidhi.entity.Scheme;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.exception.AccountIdNotFoundException;
 import com.RWI.Nidhi.exception.AccountNotFoundException;
-import com.RWI.Nidhi.user.repository.AccountsRepo;
+import com.RWI.Nidhi.repository.AccountsRepo;
 import com.RWI.Nidhi.user.serviceInterface.AccountsService;
 import com.RWI.Nidhi.user.serviceInterface.SchemeService;
 
