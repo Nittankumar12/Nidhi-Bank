@@ -110,6 +110,16 @@ public class AgentServiceInterfaceImplementation implements AgentServiceInterfac
 
     @Override
     public ResponseEntity<String> forgetPassword(String email) throws Exception {
+        //check if user already exists
+        if(!userRepo.existsByEmail(email)){
+            throw new Exception("You are not registered");
+        }
+        //
+
+        try{
+            String otp = userOtpServiceImplementation.generateOTP();
+            userOtpServiceImplementation.sendEmailOtp(email)
+        }
         return null;
     }
 }
