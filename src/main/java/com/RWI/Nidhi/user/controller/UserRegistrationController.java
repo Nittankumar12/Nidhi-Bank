@@ -1,20 +1,21 @@
 package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
+import com.RWI.Nidhi.user.serviceImplementation.UserRegistrationServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class UserRegistrationController {
 
 	@Autowired
-    OtpServiceImplementation userService;
+	UserRegistrationServiceImplementation userService;
 
 	@PostMapping("/sendEmailOtp")
 	public ResponseEntity<String> sendEmailOtp(@RequestParam("email") String email) throws Exception {
-		return userService.sendEmailOtp(email, "Email verification OTP", "Your OTP for email verification is: ");
+		return userService.sendEmailOtp(email);
 	}
 
 	@PostMapping("/verifyEmailOtp")

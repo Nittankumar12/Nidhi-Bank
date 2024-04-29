@@ -26,6 +26,8 @@ public class RecurringDeposit {
     private LocalDate maturityDate;
     private LocalDate lastDepositedDate;
     private LocalDate totalAmountDeposited;
+    private int penalty;
+    private int compoundingFrequency;
     @Enumerated(EnumType.STRING)
     private Status rdStatus;
 

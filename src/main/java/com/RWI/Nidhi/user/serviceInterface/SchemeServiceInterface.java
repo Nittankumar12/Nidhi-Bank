@@ -1,7 +1,7 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
 
-public interface SchemeService {
+public interface SchemeServiceInterface {
     int findSchemeRemainingDays(int schemeId);
     double findLoanOnSchemeBasis(int schemeId);
 }

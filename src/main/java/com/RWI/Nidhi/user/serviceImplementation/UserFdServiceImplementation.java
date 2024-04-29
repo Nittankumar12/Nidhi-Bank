@@ -22,20 +22,16 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     public FixedDeposit createFd(FdDto fdDto) {
 
         FixedDeposit fd = new FixedDeposit();
-
         fd.setAmount(fdDto.getAmount());
         fd.setDepositDate(LocalDate.now());
         fd.setTenure(fdDto.getTenure());
         fd.setMaturityDate(LocalDate.now().plusYears(fdDto.getTenure()));
         fd.setCompoundingFrequency(fdDto.getFdCompoundingFrequency().getCompoundingFreq());
         fd.setInterestRate(fdDto.getFdCompoundingFrequency().getFdInterestRate());
-
         fd.setPenalty(0);
         int tenureInDays = getCompleteDaysCount(fd.getDepositDate(), fd.getMaturityDate());
-
         fd.setMaturityAmount(calculateFdAmount(fd.getAmount(), fd.getInterestRate(), fd.getCompoundingFrequency(), tenureInDays));
         fd.setFdStatus(Status.ACTIVE);
-
         return fdRepo.save(fd);
     }
 
@@ -54,9 +50,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     @Override
     public Double closeFd(int fdId) {
         FixedDeposit fd = fdRepo.findById(fdId).get();
-
         fd.setMaturityAmount(calculateFdAmount(fd.getAmount(), fd.getInterestRate(), fd.getCompoundingFrequency(), getCompleteDaysCount(fd.getDepositDate(), LocalDate.now())));
-
         fd.setClosingDate(LocalDate.now());
         if (fd.getClosingDate().isBefore(fd.getMaturityDate())) {
             fd.setPenalty(this.penalty);
@@ -66,7 +60,6 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         }
         fd.setMaturityAmount(fd.getMaturityAmount() - fd.getPenalty());
         fdRepo.save(fd);
-
         return fd.getMaturityAmount();
     }
 }

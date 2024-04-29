@@ -6,16 +6,20 @@ import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
-public class AgentServiceInterfaceImplementation implements AgentServiceInterface {
+@Service
+public class AgentServiceImplementation implements AgentServiceInterface {
 
     @Autowired
     UserRepo userRepo;
     @Autowired
-    OtpServiceImplementation userOtpServiceImplementation;
+    OtpServiceImplementation otpServiceImplementation;
 
     @Override
     public User addUser(AddUserDto addUserDto) throws Exception{
@@ -33,9 +37,11 @@ public class AgentServiceInterfaceImplementation implements AgentServiceInterfac
         newUser.setPhoneNumber(addUserDto.getPhoneNumber());
 
         try {
-            String tempPassword = userOtpServiceImplementation.generateOTP();
-            userOtpServiceImplementation.sendEmailOtp(newUser.getEmail(), "Your temporary password",
-                    "Your temporary system generated password is");
+            String tempPassword = otpServiceImplementation.generateOTP();
+            String subject = "Your temporary password";
+            String messageToSend = "Your temporary system generated password is: ";
+
+            otpServiceImplementation.sendEmailOtp(newUser.getEmail(), subject, messageToSend,tempPassword);
             newUser.setPassword(tempPassword);
             userRepo.save(newUser);
         }
@@ -88,6 +94,20 @@ public class AgentServiceInterfaceImplementation implements AgentServiceInterfac
     }
 
     @Override
+    public User updateUserPassword(String email, String password) throws Exception {
+        User currUser = userRepo.findByEmail(email);
+
+        currUser.setPassword(password);
+        try {
+            userRepo.save(currUser);
+        }
+        catch (Exception e){
+            throw new Exception(e.getMessage());
+        }
+        return currUser;
+    }
+
+    @Override
     public boolean deleteUserById(int id) throws Exception {
         try{
             userRepo.deleteById(id);
@@ -109,17 +129,27 @@ public class AgentServiceInterfaceImplementation implements AgentServiceInterfac
     }
 
     @Override
-    public ResponseEntity<String> forgetPassword(String email) throws Exception {
+    public ResponseEntity<String> forgetPasswordSendVerificationCode(String email) throws Exception {
         //check if user already exists
         if(!userRepo.existsByEmail(email)){
-            throw new Exception("You are not registered");
+            throw new Exception("This email is not registered with us");
         }
         //
-
-        try{
-            String otp = userOtpServiceImplementation.generateOTP();
-            userOtpServiceImplementation.sendEmailOtp(email)
+        try {
+            String otp = otpServiceImplementation.generateOTP();
+            String subject = "Forgot password attempted";
+            String messageToSend = "Your verification OTP is: ";
+            otpServiceImplementation.sendEmailOtp(email, subject, messageToSend, otp);
         }
-        return null;
+        catch (Exception e){
+            throw new Exception(e.getMessage());
+        }
+
+        return new ResponseEntity("OTP send", HttpStatus.OK );
+    }
+
+    @Override
+    public ResponseEntity<String> forgetPasswordVerifyVerificationCode(String email, String enteredOtp) throws Exception {
+        return otpServiceImplementation.verifyEmailOtp(email, enteredOtp);
     }
 }

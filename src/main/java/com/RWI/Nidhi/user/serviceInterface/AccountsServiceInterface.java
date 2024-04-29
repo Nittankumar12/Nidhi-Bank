@@ -3,7 +3,7 @@ package com.RWI.Nidhi.user.serviceInterface;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.enums.Status;
 
-public interface AccountsService {
+public interface AccountsServiceInterface {
     Boolean schemeRunning(int accountId);
 
     Accounts openAccount();

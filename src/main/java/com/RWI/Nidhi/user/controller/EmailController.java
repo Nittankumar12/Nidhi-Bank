@@ -1,6 +1,6 @@
 package com.RWI.Nidhi.user.controller;
 
-import com.RWI.Nidhi.user.serviceImplementation.EmailServiceImpl;
+import com.RWI.Nidhi.user.serviceImplementation.EmailServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/email")
 public class EmailController {
     @Autowired
-    private EmailServiceImpl emailService;
+    private EmailServiceImplementation emailService;
 
     @PostMapping("/send-with-multiple-file")
     public ResponseEntity<String> sendEmailWithAttachments(@RequestParam("to") List<String> toList, @RequestParam("subject") String subject,

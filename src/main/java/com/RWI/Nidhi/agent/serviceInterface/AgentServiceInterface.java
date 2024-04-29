@@ -11,9 +11,11 @@ public interface AgentServiceInterface {
     User updateUserName(int id,String userName) throws Exception;
     User updateUserEmail(int id,String userEmail) throws Exception;
     User updateUserPhoneNum(int id,String phoneNum) throws Exception;
+    User updateUserPassword(String email, String password) throws Exception;
     boolean deleteUserById(int id) throws Exception;
     List<User> getAllUsers();
     User findUserById(int id) throws Exception;
-    ResponseEntity<String> forgetPassword(String email)throws Exception;
+    ResponseEntity<String> forgetPasswordSendVerificationCode(String email)throws Exception;
+    ResponseEntity<String> forgetPasswordVerifyVerificationCode(String email, String otp) throws Exception;
 }
 
