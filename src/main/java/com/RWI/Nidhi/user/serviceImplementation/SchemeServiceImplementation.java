@@ -1,6 +1,6 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
-import com.RWI.Nidhi.user.repository.SchemeRepo;
+import com.RWI.Nidhi.repository.SchemeRepo;
 import com.RWI.Nidhi.user.serviceInterface.SchemeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

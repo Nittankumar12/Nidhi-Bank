@@ -1,4 +1,4 @@
-package com.RWI.Nidhi.user.repository;
+package com.RWI.Nidhi.repository;
 
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Scheme;
