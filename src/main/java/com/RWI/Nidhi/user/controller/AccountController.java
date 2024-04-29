@@ -37,4 +37,11 @@ public class AccountController {
 		return ResponseEntity.ok("Account PIN updated successfully");
 	}
 
+	@PutMapping("/")
+	public String fundTransfer(@RequestParam String sourceAccountNumber, @RequestParam String destinationAccountNumber,
+			double amount) {
+		accountsService.fundTransfer(sourceAccountNumber, destinationAccountNumber, amount);
+		return "Money Transfer Done";
+	}
+
 }

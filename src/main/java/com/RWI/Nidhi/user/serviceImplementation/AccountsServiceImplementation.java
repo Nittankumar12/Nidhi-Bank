@@ -1,7 +1,6 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -144,6 +143,44 @@ public class AccountsServiceImplementation implements AccountsService {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new AccountIdNotFoundException("Error occurred while updating account PIN");
+		}
+
+	}
+
+	@Override
+	public void fundTransfer(String sourceAccountNumber, String destinationAccountNumber, double amount) {
+
+		try {
+			// Retrieve source account from the database
+			Optional<Accounts> optionalSourceAccount = accountsRepo.findByAccountNumber(sourceAccountNumber);
+			// Retrieve destination account from the database
+			Optional<Accounts> optionalDestinationAccount = accountsRepo.findByAccountNumber(destinationAccountNumber);
+			System.out.println("HIi");
+
+			// Check if both accounts exist
+			if (optionalSourceAccount.isPresent() && optionalDestinationAccount.isPresent()) {
+				Accounts sourceAccount = optionalSourceAccount.get();
+				Accounts destinationAccount = optionalDestinationAccount.get();
+
+				// Check if source account has sufficient balance
+				if (sourceAccount.getCurrentBalance() >= amount) {
+					// Deduct the amount from the source account
+					sourceAccount.setCurrentBalance(sourceAccount.getCurrentBalance() - amount);
+					// Add the amount to the destination account
+					destinationAccount.setCurrentBalance(destinationAccount.getCurrentBalance() + amount);
+
+					// Save updated accounts to the database
+					accountsRepo.save(sourceAccount);
+					accountsRepo.save(destinationAccount);
+				} else {
+					throw new IllegalArgumentException("Insufficient balance in the source account");
+				}
+			} else {
+				throw new AccountNotFoundException("One of the accounts involved in the transfer was not found");
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("Error occurred during fund transfer");
 		}
 
 	}
