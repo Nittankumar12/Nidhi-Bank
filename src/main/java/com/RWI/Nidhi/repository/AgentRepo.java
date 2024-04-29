@@ -1,4 +1,4 @@
-package com.RWI.Nidhi.agent.repository;
+package com.RWI.Nidhi.repository;
 
 import com.RWI.Nidhi.entity.Agent;
 import org.springframework.data.jpa.repository.JpaRepository;

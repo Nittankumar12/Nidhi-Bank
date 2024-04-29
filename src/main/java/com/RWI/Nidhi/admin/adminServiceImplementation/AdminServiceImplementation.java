@@ -1,9 +1,9 @@
 package com.RWI.Nidhi.admin.adminServiceImplementation;
 
 import com.RWI.Nidhi.admin.adminServiceInterface.AdminServiceInterface;
-import com.RWI.Nidhi.admin.repository.AgentRepo;
 import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.entity.Agent;
+import com.RWI.Nidhi.repository.AgentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
