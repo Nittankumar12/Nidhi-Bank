@@ -1,4 +1,4 @@
-package com.RWI.Nidhi.user.serviceImplementation;
+package com.RWI.Nidhi.otpSendAndVerify;
 
 import java.util.Random;
 
@@ -11,8 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.RWI.Nidhi.exception.OTPExpireException;
 import com.RWI.Nidhi.exception.OtpNotSendException;
-import com.RWI.Nidhi.user.configuration.TwilioConfig;
-import com.RWI.Nidhi.user.serviceInterface.UserOtpServiceInterface;
+import com.RWI.Nidhi.configuration.TwilioConfig;
 
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;

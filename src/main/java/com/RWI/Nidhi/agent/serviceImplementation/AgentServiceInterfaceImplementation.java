@@ -18,7 +18,6 @@ public class AgentServiceInterfaceImplementation implements AgentServiceInterfac
         User newUser = new User();
         newUser.setUserName(addUserDto.getUserName());
         newUser.setEmail(addUserDto.getEmail());
-        newUser.setPassword(addUserDto.getPassword());
         newUser.setPhoneNumber(addUserDto.getPhoneNumber());
 
         try {

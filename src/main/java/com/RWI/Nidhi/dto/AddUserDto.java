@@ -7,5 +7,4 @@ public class AddUserDto {
     String userName;
     String phoneNumber;
     String email;
-    String password;
 }

@@ -1,6 +1,6 @@
 package com.RWI.Nidhi.user.controller;
 
-import com.RWI.Nidhi.user.serviceImplementation.UserOtpServiceImplementation;
+import com.RWI.Nidhi.otpSendAndVerify.UserOtpServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
