@@ -36,14 +36,14 @@ public class OtpServiceImplementation implements OtpServiceInterface {
 
 	// implemented by Mr Piyush
 	@Override
-	public ResponseEntity<String> sendEmailOtp(String userEmailId,String subject, String messageToSend) throws Exception {
-		otp = generateOTP();
+	public ResponseEntity<String> sendEmailOtp(String userEmailId,String subject, String messageToSend, String otp) throws Exception {
+		this.otp = otp;
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(userEmailId);
 		message.setSubject(subject);
-		message.setText(messageToSend + otp);
+		message.setText(messageToSend + this.otp);
 		javaMailSender.send(message);
-		return ResponseEntity.ok("OTP sent to " + userEmailId);
+		return ResponseEntity.ok("Message sent to " + userEmailId);
 	}
 
 	// implemented by Mr Piyush
