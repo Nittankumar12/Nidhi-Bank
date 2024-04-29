@@ -1,5 +1,6 @@
 package com.RWI.Nidhi;
 
+import com.RWI.Nidhi.configuration.TwilioConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,7 +13,7 @@ import jakarta.annotation.PostConstruct;
 public class NidhiEntityDemoApplication {
 
 	@Autowired
-	private com.RWI.Nidhi.user.configuration.TwilioConfig twilioConfig;
+	private TwilioConfig twilioConfig;
 
 	@PostConstruct
 	public void setup() {
