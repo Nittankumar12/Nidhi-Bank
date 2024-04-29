@@ -5,6 +5,7 @@ import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
 import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -90,5 +91,10 @@ public class AgentServiceInterfaceImplementation implements AgentServiceInterfac
     @Override
     public User findUserById(int id) throws Exception{
         return userRepo.findById(id).orElseThrow(() -> {return new Exception("User not found");});
+    }
+
+    @Override
+    public ResponseEntity<String> forgetPassword(String email) throws Exception {
+        return null;
     }
 }
