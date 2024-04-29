@@ -150,6 +150,12 @@ public class AgentServiceImplementation implements AgentServiceInterface {
 
     @Override
     public ResponseEntity<String> forgetPasswordVerifyVerificationCode(String email, String enteredOtp) throws Exception {
-        return otpServiceImplementation.verifyEmailOtp(email, enteredOtp);
+         try{
+             otpServiceImplementation.verifyEmailOtp(email, enteredOtp);
+         }
+         catch (Exception e){
+             throw new Exception(e.getMessage());
+         }
+        return new ResponseEntity("Email Verify Successfully", HttpStatus.OK );
     }
 }
