@@ -1,4 +1,4 @@
-package com.RWI.Nidhi.user.serviceInterface;
+package com.RWI.Nidhi.otpSendAndVerify;
 
 import org.springframework.http.ResponseEntity;
 
