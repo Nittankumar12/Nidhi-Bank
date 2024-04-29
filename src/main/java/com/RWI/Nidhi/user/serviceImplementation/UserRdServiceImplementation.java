@@ -2,15 +2,22 @@ package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.RdDto;
 import com.RWI.Nidhi.entity.RecurringDeposit;
+import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.repository.RecurringDepositRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserRdServiceInterface;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 @Service
 public class UserRdServiceImplementation implements UserRdServiceInterface {
+
+    private final int penalty = 500;
+    double currentInterest;
 
     @Autowired
     private RecurringDepositRepo rdRepo;
@@ -22,13 +29,52 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         rd.setStartDate(LocalDate.now());
         rd.setTenure(rdDto.getTenure());
         rd.setMaturityDate(LocalDate.now().plusYears(rdDto.getTenure()));
-
-        return null;
+        rd.setCompoundingFrequency(rdDto.getRdCompoundingFrequency().getCompoundingFreq());
+        rd.setInterestRate(rdDto.getRdCompoundingFrequency().getRdInterestRate());
+        rd.setPenalty(0);
+        int tenureInDays = getCompleteDaysCount(rd.getStartDate(), rd.getMaturityDate());
+        rd.setMaturityAmount(calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getInterestRate(),rd.getMaturityDate()));
+        rd.setRdStatus(Status.ACTIVE);
+        return rdRepo.save(rd);
     }
 
+    private int getCompleteDaysCount(LocalDate startDate, LocalDate endDate) {
+        double daysDifference = ChronoUnit.DAYS.between(startDate, endDate);
+        return (int) daysDifference;
+    }
+
+    private double calculateRdAmount(double monthlyDepositAmount, double interestRate, LocalDate maturityDate) {
+        double currentAmount = 0;
+        double ratePerMonth = interestRate/365;
+        int numberOfDays = getCompleteDaysCount(LocalDate.now(), maturityDate);
+
+        for(int i=1; i<=numberOfDays; i++){
+            currentAmount += monthlyDepositAmount;
+//            System.out.print(currentAmount + "    ");
+            double currInterest = (currentAmount * ratePerMonth)/100;
+//            System.out.print(currInterest + "    ");
+            currentAmount += currInterest;
+//            System.out.println(currentAmount);
+        }
+        return currentAmount;
+    }
+
+
     @Override
-    public Double closeRd(int rdId) {
-        return null;
+    public RecurringDeposit closeRd(int rdId) {
+        Optional<RecurringDeposit> optionalRd = rdRepo.findById(rdId);
+        if (optionalRd.isPresent()) {
+            RecurringDeposit rd = optionalRd.get();
+            if (rd.getMaturityAmount() == 0) {
+                double interest = calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getInterestRate(),rd.getMaturityDate());
+                rd.setMaturityAmount(rd.getMonthlyDepositAmount() * rd.getTenure() + interest);
+            }
+            rd.setRdStatus(Status.CLOSED);
+            rdRepo.save(rd);
+            return rd;
+        } else {
+            throw new EntityNotFoundException("Recurring Deposit not found with ID: " + rdId);
+        }
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
-import com.RWI.Nidhi.user.serviceInterface.EmailService;
+import com.RWI.Nidhi.user.serviceInterface.EmailServiceInterface;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +18,8 @@ import java.util.Objects;
 
 @Slf4j
 @Service
-public class EmailServiceImpl implements EmailService {
-    private Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
+public class EmailServiceImplementation implements EmailServiceInterface {
+    private Logger logger = LoggerFactory.getLogger(EmailServiceImplementation.class);
     @Autowired
     private JavaMailSender mailSender;
 

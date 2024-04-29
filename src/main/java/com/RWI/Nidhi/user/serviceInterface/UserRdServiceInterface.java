@@ -6,7 +6,7 @@ import com.RWI.Nidhi.entity.RecurringDeposit;
 public interface UserRdServiceInterface {
 
     RecurringDeposit createRd(RdDto rdDto);
-    Double closeRd(int rdId);
+    RecurringDeposit closeRd(int rdId);
 
     Double onMaturity(Double amount, Integer tenure, Double interestRate);
 }
