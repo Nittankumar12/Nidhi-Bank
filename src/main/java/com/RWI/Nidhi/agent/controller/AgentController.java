@@ -1,6 +1,6 @@
 package com.RWI.Nidhi.agent.controller;
 
-import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceInterfaceImplementation;
+import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceImplementation;
 import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import java.util.List;
 public class AgentController {
 
     @Autowired
-    AgentServiceInterfaceImplementation agentService;
+    AgentServiceImplementation agentService;
 
     @PostMapping("/addUser")
     public User addUser(@RequestBody AddUserDto addUserDto) throws Exception{
