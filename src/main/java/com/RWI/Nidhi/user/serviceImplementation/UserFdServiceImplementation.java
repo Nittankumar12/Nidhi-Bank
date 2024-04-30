@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserFdServiceImplementation implements UserFdServiceInterface {
@@ -60,5 +62,15 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         fd.setMaturityAmount(fd.getMaturityAmount() - fd.getPenalty());
         fdRepo.save(fd);
         return fd.getMaturityAmount();
+    }
+
+    @Override
+    public List<FixedDeposit> getAllFds() {
+        return fdRepo.findAll();
+    }
+
+    @Override
+    public Optional<FixedDeposit> getFdById(int fdId) {
+        return fdRepo.findById(fdId);
     }
 }

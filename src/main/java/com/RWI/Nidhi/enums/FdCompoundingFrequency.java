@@ -4,8 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum FdCompoundingFrequency {
-    yearly(12.0, 12),
-    quarterly(12.0, 12);
+    yearly(12.0, 1),// Payable yearly compounding yearly
+    quarterly(12.0, 4);// Payable yearly compounding quarterly
+    // Payable maturity compounding yearly
 
     private double fdInterestRate;
     private int compoundingFreq;
