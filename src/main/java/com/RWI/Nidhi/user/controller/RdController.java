@@ -20,7 +20,7 @@ public class RdController {
         return service.createRd(rdDto);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @PutMapping("/update/{id}")
     public void closeRd(@PathVariable("id") int rdId) {
         System.out.println(rdId);
         service.closeRd(rdId);
