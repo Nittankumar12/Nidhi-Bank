@@ -5,31 +5,34 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import com.RWI.Nidhi.dto.BankDetailsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.RWI.Nidhi.entity.Accounts;
+import com.RWI.Nidhi.entity.BankDetails;
 import com.RWI.Nidhi.entity.Scheme;
+import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.exception.AccountIdNotFoundException;
 import com.RWI.Nidhi.exception.AccountNotFoundException;
-
+import com.RWI.Nidhi.repository.AccountsRepo;
+import com.RWI.Nidhi.repository.BankRepo;
+import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.SchemeServiceInterface;
 
-import com.RWI.Nidhi.repository.AccountsRepo;
-
-
 @Service
 public class AccountsServiceImplementation implements AccountsServiceInterface {
-	@Autowired
-	AccountsRepo accountsRepo;
-	@Autowired
-	SchemeServiceInterface schemeServiceInterface;
-
 	// Define the length of the account number
-	private static final int ACCOUNT_NUMBER_LENGTH = 8;
-
+	private static final int ACCOUNT_NUMBER_LENGTH = 10;
+	@Autowired
+	private AccountsRepo accountsRepo;
+	@Autowired
+	private SchemeServiceInterface schemeServiceInterface;
+	@Autowired
+	private BankRepo bankRepo;
+	@Autowired
+	private UserRepo userRepo;
 	String accountPIN = generateRandomAccountPIN();
 
 	@Override
@@ -185,7 +188,32 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 			ex.printStackTrace();
 			throw new RuntimeException("Error occurred during fund transfer");
 		}
-
 	}
 
+	@Override
+	public void addBankUserDetails(BankDetailsDTO bankDto, String emailId) {
+		Optional<User> userOptional = userRepo.findUserByEmail(emailId);
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+
+			BankDetails bankDetails = new BankDetails();
+
+			bankDetails.setAccHolderName(bankDto.getName());
+
+			bankDetails.setAccNumber(bankDto.getAccNumber());
+			bankDetails.setBankBranch(bankDto.getBranchName());
+//			System.out.println("ifsc code: " + bankDto.getIFSCCode());
+			bankDetails.setIFSCCode(bankDto.getIfsc());
+			System.out.println(bankDto.getIfsc());
+//			bankDetails.setIFSCCode(bankDto.getIfsc());
+			user.setBankDetails(bankDetails);
+			// userRepo.save(user);
+			bankDetails.setUser(user);
+			bankRepo.save(bankDetails);
+		} else {
+			// when the user is not found
+			System.out.println("User with email " + emailId + " not found");
+		}
+
+	}
 }
