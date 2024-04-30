@@ -1,5 +1,21 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
+<<<<<<< HEAD
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+
+import com.RWI.Nidhi.dto.BankDetailsDTO;
+import com.RWI.Nidhi.entity.BankDetails;
+import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.repository.BankRepo;
+import com.RWI.Nidhi.repository.UserRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+=======
+>>>>>>> 3e169838e4f10e3e980ffdc40f1efae9df0f950d
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Scheme;
 import com.RWI.Nidhi.enums.Status;
@@ -19,6 +35,16 @@ import java.util.Random;
 
 @Service
 public class AccountsServiceImplementation implements AccountsServiceInterface {
+<<<<<<< HEAD
+	@Autowired
+	AccountsRepo accountsRepo;
+	@Autowired
+	UserRepo userRepo;
+    @Autowired
+	BankRepo bankRepo;
+	@Autowired
+	SchemeServiceInterface schemeServiceInterface;
+=======
     // Define the length of the account number
     private static final int ACCOUNT_NUMBER_LENGTH = 8;
     @Autowired
@@ -26,6 +52,7 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
     @Autowired
     SchemeServiceInterface schemeServiceInterface;
     String accountPIN = generateRandomAccountPIN();
+>>>>>>> 3e169838e4f10e3e980ffdc40f1efae9df0f950d
 
     @Override
     public Boolean schemeRunning(int accountId) {
@@ -160,12 +187,69 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
                 Accounts sourceAccount = optionalSourceAccount.get();
                 Accounts destinationAccount = optionalDestinationAccount.get();
 
+<<<<<<< HEAD
+		try {
+			// Retrieve source account from the database
+			Optional<Accounts> optionalSourceAccount = accountsRepo.findByAccountNumber(sourceAccountNumber);
+			// Retrieve destination account from the database
+			Optional<Accounts> optionalDestinationAccount = accountsRepo.findByAccountNumber(destinationAccountNumber);
+			System.out.println("HIi");
+
+			// Check if both accounts exist
+			if (optionalSourceAccount.isPresent() && optionalDestinationAccount.isPresent()) {
+				Accounts sourceAccount = optionalSourceAccount.get();
+				Accounts destinationAccount = optionalDestinationAccount.get();
+
+				// Check if source account has sufficient balance
+				if (sourceAccount.getCurrentBalance() >= amount) {
+					// Deduct the amount from the source account
+					sourceAccount.setCurrentBalance(sourceAccount.getCurrentBalance() - amount);
+					// Add the amount to the destination account
+					destinationAccount.setCurrentBalance(destinationAccount.getCurrentBalance() + amount);
+
+					// Save updated accounts to the database
+					accountsRepo.save(sourceAccount);
+					accountsRepo.save(destinationAccount);
+				} else {
+					throw new IllegalArgumentException("Insufficient balance in the source account");
+				}
+			} else {
+				throw new AccountNotFoundException("One of the accounts involved in the transfer was not found");
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("Error occurred during fund transfer");
+		}
+
+//@Override
+//        public void addBankUserDetails(BankDetailsDTO bankDto, String emailId) {
+//		Optional<User> userOptional = userRepo.findUserByEmail(emailId);
+//		if (userOptional.isPresent()) {
+//			User user = userOptional.get();
+//
+//			BankDetails bankDetails = new BankDetails();
+//			bankDetails.setAccHolderName(bankDto.getAccHolderName());
+//			bankDetails.setAccNumber(bankDto.getAccountNumber());
+//			bankDetails.setBankBranch(bankDto.getBranchName());
+//			bankDetails.setIFSCCode(bankDto.getIFSCCode());
+//
+//			user.setBankDetails(bankDetails);
+//
+//			userRepo.save(user);
+//		} else {
+//			// when the user is not found
+//			System.out.println("User with email " + emailId + " not found");
+//		}
+//
+//	}
+=======
                 // Check if source account has sufficient balance
                 if (sourceAccount.getCurrentBalance() >= amount) {
                     // Deduct the amount from the source account
                     sourceAccount.setCurrentBalance(sourceAccount.getCurrentBalance() - amount);
                     // Add the amount to the destination account
                     destinationAccount.setCurrentBalance(destinationAccount.getCurrentBalance() + amount);
+>>>>>>> 3e169838e4f10e3e980ffdc40f1efae9df0f950d
 
                     // Save updated accounts to the database
                     accountsRepo.save(sourceAccount);
@@ -181,4 +265,31 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
             throw new RuntimeException("Error occurred during fund transfer");
         }
     }
+}
+
+	@Override
+	public void addBankUserDetails(BankDetailsDTO bankDto, String emailId) {
+		Optional<User> userOptional = userRepo.findUserByEmail(emailId);
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+
+			BankDetails bankDetails = new BankDetails();
+
+			bankDetails.setAccHolderName(bankDto.getName());
+
+			bankDetails.setAccNumber(bankDto.getAccNumber());
+			bankDetails.setBankBranch(bankDto.getBranchName());
+//			System.out.println("ifsc code: " + bankDto.getIFSCCode());
+			bankDetails.setIFSCCode(bankDto.getIfsc());
+			System.out.println(bankDto.getIfsc());
+//			bankDetails.setIFSCCode(bankDto.getIfsc());
+			user.setBankDetails(bankDetails);
+			//userRepo.save(user);
+			bankDetails.setUser(user);
+			bankRepo.save(bankDetails);
+		} else {
+			// when the user is not found
+			System.out.println("User with email " + emailId + " not found");
+		}
+	}
 }
