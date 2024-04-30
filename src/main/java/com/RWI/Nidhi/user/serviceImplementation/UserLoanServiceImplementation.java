@@ -1,11 +1,12 @@
 package com.RWI.Nidhi.user.serviceImplementation;
+
 import com.RWI.Nidhi.dto.LoanDto;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Loan;
-import com.RWI.Nidhi.entity.Scheme;
+
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanStatus;
-import com.RWI.Nidhi.repository.AccountsRepo;
+
 import com.RWI.Nidhi.repository.LoanRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
