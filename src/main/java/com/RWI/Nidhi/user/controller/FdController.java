@@ -18,8 +18,9 @@ public class FdController {
         return service.createFd(fdDto);
     }
 
-    @DeleteMapping("/{id}")
-    public void closeFd(@PathVariable int fdId) {
+    @DeleteMapping("/delete/{id}")
+    public void closeFd(@PathVariable("id") int fdId) {
+        System.out.println(fdId);
         service.closeFd(fdId);
     }
 }
