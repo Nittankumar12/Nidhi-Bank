@@ -3,10 +3,7 @@ package com.RWI.Nidhi.entity;
 import com.RWI.Nidhi.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.Date;
-
 
 @NoArgsConstructor
 @AllArgsConstructor
