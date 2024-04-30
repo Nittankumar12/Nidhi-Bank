@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import com.RWI.Nidhi.dto.BankDetailsDTO;
+import com.RWI.Nidhi.entity.BankDetails;
+import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.repository.BankRepo;
+import com.RWI.Nidhi.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +29,10 @@ import com.RWI.Nidhi.repository.AccountsRepo;
 public class AccountsServiceImplementation implements AccountsServiceInterface {
 	@Autowired
 	AccountsRepo accountsRepo;
+	@Autowired
+	UserRepo userRepo;
+    @Autowired
+	BankRepo bankRepo;
 	@Autowired
 	SchemeServiceInterface schemeServiceInterface;
 
@@ -186,6 +195,53 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 			throw new RuntimeException("Error occurred during fund transfer");
 		}
 
-	}
+//@Override
+//        public void addBankUserDetails(BankDetailsDTO bankDto, String emailId) {
+//		Optional<User> userOptional = userRepo.findUserByEmail(emailId);
+//		if (userOptional.isPresent()) {
+//			User user = userOptional.get();
+//
+//			BankDetails bankDetails = new BankDetails();
+//			bankDetails.setAccHolderName(bankDto.getAccHolderName());
+//			bankDetails.setAccNumber(bankDto.getAccountNumber());
+//			bankDetails.setBankBranch(bankDto.getBranchName());
+//			bankDetails.setIFSCCode(bankDto.getIFSCCode());
+//
+//			user.setBankDetails(bankDetails);
+//
+//			userRepo.save(user);
+//		} else {
+//			// when the user is not found
+//			System.out.println("User with email " + emailId + " not found");
+//		}
+//
+//	}
 
+}
+
+	@Override
+	public void addBankUserDetails(BankDetailsDTO bankDto, String emailId) {
+		Optional<User> userOptional = userRepo.findUserByEmail(emailId);
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+
+			BankDetails bankDetails = new BankDetails();
+
+			bankDetails.setAccHolderName(bankDto.getName());
+
+			bankDetails.setAccNumber(bankDto.getAccNumber());
+			bankDetails.setBankBranch(bankDto.getBranchName());
+//			System.out.println("ifsc code: " + bankDto.getIFSCCode());
+			bankDetails.setIFSCCode(bankDto.getIfsc());
+			System.out.println(bankDto.getIfsc());
+//			bankDetails.setIFSCCode(bankDto.getIfsc());
+			user.setBankDetails(bankDetails);
+			//userRepo.save(user);
+			bankDetails.setUser(user);
+			bankRepo.save(bankDetails);
+		} else {
+			// when the user is not found
+			System.out.println("User with email " + emailId + " not found");
+		}
+	}
 }
