@@ -34,7 +34,7 @@ public class Loan {
 //    public void setInterestRate(LoanType loanType) {
 //        this.interestRate = loanType.getLoanInterestRate();
 //    }
-    @ManyToOne
+    @OneToOne
     @JoinColumn
     private Accounts account;
     @ManyToOne

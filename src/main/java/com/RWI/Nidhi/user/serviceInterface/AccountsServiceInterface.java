@@ -17,8 +17,6 @@ public interface AccountsServiceInterface {
 	public void updateAccountPIN(String accountNumber, String newPIN);
 	
 	public void fundTransfer(String sourceAccountNumber, String destinationAccountNumber, double amount);
-	
-	
 
 
 }
