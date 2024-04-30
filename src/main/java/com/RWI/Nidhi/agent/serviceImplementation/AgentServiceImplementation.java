@@ -6,6 +6,8 @@ import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -90,6 +92,20 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     }
 
     @Override
+    public User updateUserPassword(String email, String password) throws Exception {
+        User currUser = userRepo.findByEmail(email);
+
+        currUser.setPassword(password);
+        try {
+            userRepo.save(currUser);
+        }
+        catch (Exception e){
+            throw new Exception(e.getMessage());
+        }
+        return currUser;
+    }
+
+    @Override
     public boolean deleteUserById(int id) throws Exception {
         try{
             userRepo.deleteById(id);
@@ -108,5 +124,36 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     @Override
     public User findUserById(int id) throws Exception{
         return userRepo.findById(id).orElseThrow(() -> {return new Exception("User not found");});
+    }
+
+    @Override
+    public ResponseEntity<String> forgetPasswordSendVerificationCode(String email) throws Exception {
+        //check if user already exists
+        if(!userRepo.existsByEmail(email)){
+            throw new Exception("This email is not registered with us");
+        }
+        //
+        try {
+            String otp = otpServiceImplementation.generateOTP();
+            String subject = "Forgot password attempted";
+            String messageToSend = "Your verification OTP is: ";
+            otpServiceImplementation.sendEmailOtp(email, subject, messageToSend, otp);
+        }
+        catch (Exception e){
+            throw new Exception(e.getMessage());
+        }
+
+        return new ResponseEntity("OTP send", HttpStatus.OK );
+    }
+
+    @Override
+    public ResponseEntity<String> forgetPasswordVerifyVerificationCode(String email, String enteredOtp) throws Exception {
+         try{
+             otpServiceImplementation.verifyEmailOtp(email, enteredOtp);
+         }
+         catch (Exception e){
+             throw new Exception(e.getMessage());
+         }
+        return new ResponseEntity("Email Verify Successfully", HttpStatus.OK );
     }
 }
