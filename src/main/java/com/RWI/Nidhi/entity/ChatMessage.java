@@ -4,18 +4,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.sql.Timestamp;
 import java.time.LocalTime;
 
-@Entity
 @Getter
 @Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,13 +22,6 @@ public class ChatMessage {
     private String sender;
     private String recipient;
     private String message;
-    private LocalTime currTime;
-
-    public ChatMessage(String sender, String recipient, String message, LocalTime currTime) {
-        this.sender = sender;
-        this.recipient = recipient;
-        this.message = message;
-        this.currTime = currTime;
-    }
+    private Timestamp currTime;
 
 }
