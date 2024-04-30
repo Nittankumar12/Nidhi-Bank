@@ -28,4 +28,9 @@ public class User {
     private BankDetails bankDetails;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private KYC kyc;
+
+    public User(int userId, String userName) {
+        this.userId = userId;
+        this.userName = userName;
+    }
 }

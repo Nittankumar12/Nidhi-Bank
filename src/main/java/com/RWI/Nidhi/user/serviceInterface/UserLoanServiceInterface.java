@@ -5,9 +5,9 @@ import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.enums.LoanStatus;
 
 public interface UserLoanServiceInterface {
+    double maxApplicableLoan(String email);
     void applyLoan(LoanDto loanDto);
-    LoanStatus checkLoanStatus(int loanId);
-    int checkCurrentEMI(int loanId);
-    public String payEMI(int loanId, int payedEMI);
-    public void applyLoanClosure(int loanId);
+    Boolean checkForExistingLoan(String email);
+    public Boolean checkForLoanBound(String email, int principalLoanAmount);
+    LoanDto getLoanInfo(String email);
 }

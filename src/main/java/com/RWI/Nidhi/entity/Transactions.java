@@ -1,6 +1,5 @@
 package com.RWI.Nidhi.entity;
 
-import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.TransactionStatus;
 import com.RWI.Nidhi.enums.TransactionType;
 import jakarta.persistence.*;
@@ -9,10 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.query.sql.internal.ParameterRecognizerImpl;
-
-import java.sql.Time;
 import java.util.Date;
+
 @Getter
 @Setter
 @NoArgsConstructor

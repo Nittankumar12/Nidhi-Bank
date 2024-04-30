@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,9 +17,10 @@ import java.util.List;
 @Entity
 public class Loan {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int loanId;
     private int PayableLoanAmount;// Total Amount user has to pay - PrincipalLoanAmount + Total EMI for repayTerm
-    private int PrincipalLoanAmount;//Loan Amount user gets as Loan
+    private int principalLoanAmount;//Loan Amount user gets as Loan
     private int rePaymentTerm; //should be counted in days
     private LocalDate startDate;
     private double interestRate;
@@ -30,10 +30,10 @@ public class Loan {
     private LoanType loanType;
     @Enumerated(EnumType.STRING)
     private LoanStatus status;
-//    public void setInterestRate(LoanType loanType) {
+    //    public void setInterestRate(LoanType loanType) {
 //        this.interestRate = loanType.getLoanInterestRate();
 //    }
-    @ManyToOne
+    @OneToOne
     @JoinColumn
     private Accounts account;
     @ManyToOne

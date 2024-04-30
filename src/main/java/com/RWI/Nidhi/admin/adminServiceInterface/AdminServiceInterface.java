@@ -2,7 +2,6 @@ package com.RWI.Nidhi.admin.adminServiceInterface;
 
 import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.entity.Agent;
-
 import java.util.List;
 
 public interface AdminServiceInterface {

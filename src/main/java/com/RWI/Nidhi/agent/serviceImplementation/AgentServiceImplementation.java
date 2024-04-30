@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-
 import java.util.List;
 
 @Service
@@ -150,6 +148,12 @@ public class AgentServiceImplementation implements AgentServiceInterface {
 
     @Override
     public ResponseEntity<String> forgetPasswordVerifyVerificationCode(String email, String enteredOtp) throws Exception {
-        return otpServiceImplementation.verifyEmailOtp(email, enteredOtp);
+         try{
+             otpServiceImplementation.verifyEmailOtp(email, enteredOtp);
+         }
+         catch (Exception e){
+             throw new Exception(e.getMessage());
+         }
+        return new ResponseEntity("Email Verify Successfully", HttpStatus.OK );
     }
 }
