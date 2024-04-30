@@ -30,10 +30,10 @@ public class Loan {
     private LoanType loanType;
     @Enumerated(EnumType.STRING)
     private LoanStatus status;
-//    public void setInterestRate(LoanType loanType) {
+    //    public void setInterestRate(LoanType loanType) {
 //        this.interestRate = loanType.getLoanInterestRate();
 //    }
-    @ManyToOne
+    @OneToOne
     @JoinColumn
     private Accounts account;
     @ManyToOne
