@@ -17,9 +17,10 @@ import java.util.List;
 @Entity
 public class Loan {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int loanId;
     private int PayableLoanAmount;// Total Amount user has to pay - PrincipalLoanAmount + Total EMI for repayTerm
-    private int PrincipalLoanAmount;//Loan Amount user gets as Loan
+    private int principalLoanAmount;//Loan Amount user gets as Loan
     private int rePaymentTerm; //should be counted in days
     private LocalDate startDate;
     private double interestRate;
