@@ -21,7 +21,7 @@ public class FdController {
         return service.createFd(fdDto);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @PutMapping("/update/{id}")
     public void closeFd(@PathVariable("id") int fdId) {
         System.out.println(fdId);
         service.closeFd(fdId);
