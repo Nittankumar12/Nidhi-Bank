@@ -16,13 +16,16 @@ import java.util.List;
 @NoArgsConstructor
 public class MIS {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int misId;
     private double totalDepositedAmount;
     private LocalDate startDate;
     private LocalDate maturityDate;
+    private LocalDate closingDate;
     private double monthlyIncome;
     private int tenure;
     private double interestRate;
+    private double totalInterestEarned;
     @Enumerated(EnumType.STRING)
     private Status status;
     @ManyToOne

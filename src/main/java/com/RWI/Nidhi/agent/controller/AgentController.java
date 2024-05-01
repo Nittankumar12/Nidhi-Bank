@@ -24,7 +24,7 @@ public class AgentController {
         return agentService.updateUserName(id, userName);
     }
     @PutMapping("updateEmail")
-    public User updateUserEmail(@RequestParam("id") int id,@RequestParam("userName") String userEmail) throws Exception{
+    public User updateUserEmail(@RequestParam("id") int id,@RequestParam("userEmail") String userEmail) throws Exception{
         return agentService.updateUserEmail(id, userEmail);
     }
     @PutMapping("updatePhoneNumber")
