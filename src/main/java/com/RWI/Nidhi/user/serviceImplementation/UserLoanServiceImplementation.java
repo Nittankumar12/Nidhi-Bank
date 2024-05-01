@@ -18,18 +18,13 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     @Autowired
     LoanRepo loanRepository;
     @Autowired
-    AccountsServiceImplementation accountsService;
-    @Autowired
-    SchemeServiceImplementation schemeService;
-    @Autowired
     UserService userService;
 
     @Override
     public double maxApplicableLoan(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
-        double maxApplicableLoan = acc.getCurrentBalance() * 5;
-        return maxApplicableLoan;
+        return acc.getCurrentBalance() * 5;
     }
 
     @Override
@@ -43,10 +38,18 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         loan.setPrincipalLoanAmount(loanDto.getPrincipalLoanAmount());
         loan.setStartDate(loanDto.getStartDate());
         loan.setInterestRate(loanDto.getLoanType().getLoanInterestRate());
+        //Payable
+        loanDto.setPayableLoanAmount(calculatePayableAmount(loanDto));
+        loan.setPayableLoanAmount(loanDto.getPayableLoanAmount());
+        //EMI
+        loanDto.setMonthlyEMI(calculateEMI(loanDto));
+        loan.setMonthlyEMI(loanDto.getMonthlyEMI());
+
         loan.setStatus(LoanStatus.APPLIED);
         loan.setAccount(acc);// save acc in loan
         acc.setLoan(loan);// save loan in acc
         loanRepository.save(loan);//save loan in loan
+
     }
 
     @Override
@@ -61,7 +64,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     }
 
     @Override
-    public Boolean checkForLoanBound(String email, int principalLoanAmount) {
+    public Boolean checkForLoanBound(String email, double principalLoanAmount) {
         double maxLoan = maxApplicableLoan(email);
         if (principalLoanAmount > maxLoan)
             return Boolean.FALSE;
@@ -82,10 +85,41 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         loanDto.setInterestRate(loan.getInterestRate());
         loanDto.setPayableLoanAmount(loan.getPayableLoanAmount());
         loanDto.setEmail(email);
-        loanDto.setEMI(loan.getEMI());
+        loanDto.setMonthlyEMI(loan.getMonthlyEMI());
         loanDto.setFine(loan.getFine());
         loanDto.setStartDate(loan.getStartDate());
         loanDto.setRePaymentTerm(loan.getRePaymentTerm());
         return loanDto;
+    }
+    @Override
+    public double calculatePayableAmount(LoanDto loanDto){//Internal Methods for apply Loan, only to be used when initially
+        double p = loanDto.getPrincipalLoanAmount();
+        double r = loanDto.getInterestRate();
+        int n = loanDto.getRePaymentTerm();
+        double payable = p*r*n*(Math.pow((1+r),n))/((Math.pow((1+r),n))-1);
+        return payable;
+    }
+    @Override
+    public double calculateEMI(LoanDto loanDto){//Internal Methods for apply Loan
+        double p = loanDto.getPrincipalLoanAmount();
+        double r = loanDto.getInterestRate();
+        int n = loanDto.getRePaymentTerm();
+        double monthlyEMI = p*r*(Math.pow((1+r),n))/((Math.pow((1+r),n))-1);
+        return monthlyEMI;
+    }
+    @Override
+    public Boolean payEMI(String email, double payedAmount){
+        User user = userService.getByEmail(email);
+        Accounts acc = user.getAccounts();
+        Loan loan = acc.getLoan();
+        double payable;
+        double temp = loan.getPayableLoanAmount();
+        if(loan.getMonthlyEMI() == payedAmount) {
+            payable = temp - payedAmount;
+            loan.setPayableLoanAmount(payable);
+            return Boolean.TRUE;
+        }
+        else
+            return Boolean.FALSE;
     }
 }
