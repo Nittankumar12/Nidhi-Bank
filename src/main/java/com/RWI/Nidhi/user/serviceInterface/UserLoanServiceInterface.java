@@ -1,13 +1,14 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
 import com.RWI.Nidhi.dto.LoanDto;
-import com.RWI.Nidhi.entity.Loan;
-import com.RWI.Nidhi.enums.LoanStatus;
 
 public interface UserLoanServiceInterface {
+    double maxApplicableLoan(String email);
     void applyLoan(LoanDto loanDto);
-    LoanStatus checkLoanStatus(int loanId);
-    int checkCurrentEMI(int loanId);
-    public String payEMI(int loanId, int payedEMI);
-    public void applyLoanClosure(int loanId);
+    Boolean checkForExistingLoan(String email);
+    Boolean checkForLoanBound(String email, double principalLoanAmount);
+    LoanDto getLoanInfo(String email);
+    double calculatePayableAmount(LoanDto loanDto);
+    double calculateEMI(LoanDto loanDto);
+    Boolean payEMI(String email, double payedAmount);
 }

@@ -9,6 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.List;
 
 @Service
@@ -40,7 +45,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
             String messageToSend = "Your temporary system generated password is: ";
 
             otpServiceImplementation.sendEmailOtp(newUser.getEmail(), subject, messageToSend,tempPassword);
-            newUser.setPassword(tempPassword);
+            newUser.setPassword(getEncryptedPassword(tempPassword));
             userRepo.save(newUser);
         }
         catch (Exception e){
@@ -95,7 +100,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     public User updateUserPassword(String email, String password) throws Exception {
         User currUser = userRepo.findByEmail(email);
 
-        currUser.setPassword(password);
+        currUser.setPassword(getEncryptedPassword(password));
         try {
             userRepo.save(currUser);
         }
@@ -155,5 +160,27 @@ public class AgentServiceImplementation implements AgentServiceInterface {
              throw new Exception(e.getMessage());
          }
         return new ResponseEntity("Email Verify Successfully", HttpStatus.OK );
+    }
+
+    private byte[] getSHA(String input){
+        try{
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            return messageDigest.digest(input.getBytes(StandardCharsets.UTF_8));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String getEncryptedPassword(String password){
+        String encryptedPassword = "";
+        try{
+            BigInteger number = new BigInteger(1, getSHA(password));
+            StringBuilder hexString = new StringBuilder(number.toString(16));
+            return hexString.toString();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

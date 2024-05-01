@@ -43,21 +43,18 @@ public class AgentController {
     public User findUserById(@RequestParam("id") int id) throws Exception{
         return agentService.findUserById(id);
     }
-    @PostMapping("/forgetPassword")
-    public ResponseEntity<String> forgetPassword(@RequestParam String email) throws Exception {
-        agentService.forgetPasswordSendVerificationCode(email);
-        return ResponseEntity.ok("OTP send to provided Email");
+    @PostMapping("/verifyEmail")
+    public ResponseEntity<String> verifyEmail(@RequestParam("email") String email) throws Exception {
+        return agentService.forgetPasswordSendVerificationCode(email);
     }
 
-    @PostMapping("/verifiedPassword")
-    public ResponseEntity<String> verifiedPassword(@RequestParam String email, @RequestParam String enteredOtp ) throws Exception {
-        agentService.forgetPasswordVerifyVerificationCode(email, enteredOtp);
-        return ResponseEntity.ok("Password Verified");
+    @PostMapping("/verifyOtp")
+    public ResponseEntity<String> verifyOtp(@RequestParam("email") String email, @RequestParam("enteredOtp") String enteredOtp ) throws Exception {
+        return agentService.forgetPasswordVerifyVerificationCode(email, enteredOtp);
     }
 
     @PostMapping("/updatePassword")
-    public ResponseEntity<String> updatePassword(@RequestParam String email, @RequestParam String password ) throws Exception {
-        agentService.updateUserPassword(email, password);
-        return ResponseEntity.ok("Update Successfully");
+    public User updatePassword(@RequestParam("email") String email, @RequestParam("password") String password ) throws Exception {
+       return agentService.updateUserPassword(email, password);
     }
 }
