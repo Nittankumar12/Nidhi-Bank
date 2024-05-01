@@ -16,6 +16,7 @@ import java.util.List;
 @Entity
 public class FixedDeposit {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int fdId;
     private int amount;
     private LocalDate depositDate;

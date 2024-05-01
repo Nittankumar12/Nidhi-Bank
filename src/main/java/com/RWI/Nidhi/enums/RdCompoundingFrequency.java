@@ -3,7 +3,6 @@ package com.RWI.Nidhi.enums;
 import lombok.Getter;
 
 @Getter
-
 public enum RdCompoundingFrequency {
     yearly(12.0, 12),
     quarterly(12.0, 12);
