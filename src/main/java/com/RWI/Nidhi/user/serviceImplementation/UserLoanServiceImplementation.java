@@ -1,82 +1,125 @@
 package com.RWI.Nidhi.user.serviceImplementation;
+
 import com.RWI.Nidhi.dto.LoanDto;
+import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Loan;
-import com.RWI.Nidhi.entity.Scheme;
+
+import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanStatus;
-import com.RWI.Nidhi.repository.AccountsRepo;
+
 import com.RWI.Nidhi.repository.LoanRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
+import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     @Autowired
     LoanRepo loanRepository;
     @Autowired
-    AccountsRepo accountsRepo;
-    @Autowired
-    AccountsServiceImplementation accountsService;
-    @Autowired
-    SchemeServiceImplementation schemeService;
+    UserService userService;
 
-    public double maxApplicableLoan(int accountId) {
-        double maxLoan = 0;
-        if((accountsRepo.findSchemeListByAccountId(accountId) != null && accountsService.schemeRunning(accountId)) == Boolean.TRUE) {
-            List<Scheme> currentScheme = accountsRepo.findSchemeListByAccountId(accountId);
-            for (int i = 0; i < currentScheme.size(); i++) {
-                Scheme sc = currentScheme.get(i);
-                maxLoan =+ schemeService.findLoanOnSchemeBasis(sc.getSchemeId());
-            }
-        }
-        else
-            maxLoan = (accountsRepo.findCurrentBalanceByAccountId(accountId) * 10);
-        return maxLoan;
+    @Override
+    public double maxApplicableLoan(String email) {
+        User user = userService.getByEmail(email);
+        Accounts acc = user.getAccounts();
+        return acc.getCurrentBalance() * 5;
     }
+
     @Override
     public void applyLoan(LoanDto loanDto) {// For User
-        Loan currentLoan = new Loan();
-        currentLoan.setLoanType(loanDto.getLoanType());
-        currentLoan.setInterestRate(loanDto.getLoanType().getLoanInterestRate());
-        currentLoan.setPrincipalLoanAmount(loanDto.getPrincipalLoanAmount());
-        currentLoan.setRePaymentTerm(loanDto.getRePaymentTerm());
-        currentLoan.setStartDate(loanDto.getStartDate());
-        currentLoan.setStatus(LoanStatus.APPLIED);
-        loanRepository.save(currentLoan);
-    }
-    @Override
-    public LoanStatus checkLoanStatus(int loanId) {// For User
-        return loanRepository.findStatusByLoanId(loanId);
-    }
-    @Override
-    public int checkCurrentEMI(int loanId){
-        int currentEMI = loanRepository.findEMIByLoanId(loanId);
-        if(loanRepository.findFineByLoanId(loanId) != 0)
-            currentEMI =+ loanRepository.findFineByLoanId(loanId);
-        return currentEMI;
+
+        User user = userService.getByEmail(loanDto.getEmail());
+        Accounts acc = user.getAccounts();
+        Loan loan = new Loan();
+        loan.setLoanType(loanDto.getLoanType());
+        loan.setRePaymentTerm(loanDto.getRePaymentTerm());
+        loan.setPrincipalLoanAmount(loanDto.getPrincipalLoanAmount());
+        loan.setStartDate(loanDto.getStartDate());
+        loan.setInterestRate(loanDto.getLoanType().getLoanInterestRate());
+        //Payable
+        loanDto.setPayableLoanAmount(calculatePayableAmount(loanDto));
+        loan.setPayableLoanAmount(loanDto.getPayableLoanAmount());
+        //EMI
+        loanDto.setMonthlyEMI(calculateEMI(loanDto));
+        loan.setMonthlyEMI(loanDto.getMonthlyEMI());
+
+        loan.setStatus(LoanStatus.APPLIED);
+        loan.setAccount(acc);// save acc in loan
+        acc.setLoan(loan);// save loan in acc
+        loanRepository.save(loan);//save loan in loan
+
     }
 
     @Override
-    public String payEMI(int loanId, int payedEMI) {
-        int currentEMI = checkCurrentEMI(loanId);
-        Loan currentLoan = loanRepository.findById(loanId).orElseThrow();
-        if (loanRepository.findEMIByLoanId(loanId) == currentEMI) {
-            currentLoan.setPayableLoanAmount(currentLoan.getPayableLoanAmount() - currentEMI);
-            return "EMI payed";
-        } else if (currentEMI != loanRepository.findEMIByLoanId(loanId)){
-            return  "You have not entered the correct amount. " +
-                    "You need to enter"+currentEMI+
-                    ". Please enter the correct amount before due date";
+    public Boolean checkForExistingLoan(String email) {
+        User user = userService.getByEmail(email);
+        Accounts acc = user.getAccounts();
+        Loan loan = acc.getLoan();
+        if (loan == null)
+            return Boolean.TRUE;
+        else
+            return Boolean.FALSE;
+    }
+
+    @Override
+    public Boolean checkForLoanBound(String email, double principalLoanAmount) {
+        double maxLoan = maxApplicableLoan(email);
+        if (principalLoanAmount > maxLoan)
+            return Boolean.FALSE;
+        else
+            return Boolean.TRUE;
+
+    }
+
+    @Override
+    public LoanDto getLoanInfo(String email) {
+        User user = userService.getByEmail(email);
+        Accounts acc = user.getAccounts();
+        Loan loan = acc.getLoan();
+        LoanDto loanDto = new LoanDto();
+        loanDto.setLoanType(loan.getLoanType());
+        loanDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
+        loanDto.setStatus(loan.getStatus());
+        loanDto.setInterestRate(loan.getInterestRate());
+        loanDto.setPayableLoanAmount(loan.getPayableLoanAmount());
+        loanDto.setEmail(email);
+        loanDto.setMonthlyEMI(loan.getMonthlyEMI());
+        loanDto.setFine(loan.getFine());
+        loanDto.setStartDate(loan.getStartDate());
+        loanDto.setRePaymentTerm(loan.getRePaymentTerm());
+        return loanDto;
+    }
+    @Override
+    public double calculatePayableAmount(LoanDto loanDto){//Internal Methods for apply Loan, only to be used when initially
+        double p = loanDto.getPrincipalLoanAmount();
+        double r = loanDto.getInterestRate();
+        int n = loanDto.getRePaymentTerm();
+        double payable = p*r*n*(Math.pow((1+r),n))/((Math.pow((1+r),n))-1);
+        return payable;
+    }
+    @Override
+    public double calculateEMI(LoanDto loanDto){//Internal Methods for apply Loan
+        double p = loanDto.getPrincipalLoanAmount();
+        double r = loanDto.getInterestRate();
+        int n = loanDto.getRePaymentTerm();
+        double monthlyEMI = p*r*(Math.pow((1+r),n))/((Math.pow((1+r),n))-1);
+        return monthlyEMI;
+    }
+    @Override
+    public Boolean payEMI(String email, double payedAmount){
+        User user = userService.getByEmail(email);
+        Accounts acc = user.getAccounts();
+        Loan loan = acc.getLoan();
+        double payable;
+        double temp = loan.getPayableLoanAmount();
+        if(loan.getMonthlyEMI() == payedAmount) {
+            payable = temp - payedAmount;
+            loan.setPayableLoanAmount(payable);
+            return Boolean.TRUE;
         }
         else
-            return "Invalid data";
+            return Boolean.FALSE;
     }
-    @Override
-    public void applyLoanClosure(int loanId){
-        Loan currentLoan = loanRepository.findById(loanId).orElseThrow();
-        currentLoan.setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
-    }
-
 }

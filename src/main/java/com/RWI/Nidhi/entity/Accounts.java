@@ -5,10 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.CreatedDate;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -35,8 +32,8 @@ public class Accounts {
 	private User user;
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<FixedDeposit> fdList;
-	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-	private List<Loan> loanList;
+	@OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+	private Loan loan;
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<MIS> misList;
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)

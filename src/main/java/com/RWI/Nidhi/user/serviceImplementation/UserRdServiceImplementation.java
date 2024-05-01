@@ -8,9 +8,9 @@ import com.RWI.Nidhi.user.serviceInterface.UserRdServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,10 +29,10 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         rd.setStartDate(LocalDate.now());
         rd.setTenure(rdDto.getTenure());
         rd.setMaturityDate(LocalDate.now().plusYears(rdDto.getTenure()));
-        rd.setCompoundingFrequency(rdDto.getRdCompoundingFrequency().getCompoundingFreq());
         rd.setInterestRate(rdDto.getRdCompoundingFrequency().getRdInterestRate());
-        rd.setPenalty(0);
         int tenureInDays = getCompleteDaysCount(rd.getStartDate(), rd.getMaturityDate());
+        rd.setPenalty(0);
+        rd.setCompoundingFrequency(rdDto.getRdCompoundingFrequency().getCompoundingFreq());
         rd.setMaturityAmount(calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getInterestRate(),rd.getMaturityDate()));
         rd.setRdStatus(Status.ACTIVE);
         return rdRepo.save(rd);
@@ -75,6 +75,16 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         } else {
             throw new EntityNotFoundException("Recurring Deposit not found with ID: " + rdId);
         }
+    }
+
+    @Override
+    public List<RecurringDeposit> getAllRds() {
+        return rdRepo.findAll();
+    }
+
+    @Override
+    public Optional<RecurringDeposit> getRdById(int rdId) {
+        return rdRepo.findById(rdId);
     }
 
     @Override

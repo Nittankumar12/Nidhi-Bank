@@ -1,5 +1,6 @@
 package com.RWI.Nidhi.user.controller;
 
+import com.RWI.Nidhi.dto.BankDetailsDTO;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
@@ -42,6 +43,17 @@ public class AccountController {
 			double amount) {
 		accountsServiceInterface.fundTransfer(sourceAccountNumber, destinationAccountNumber, amount);
 		return "Money Transfer Done";
+	}
+
+	@PostMapping("/addBankDetails")
+	public ResponseEntity<String> addBankUserDetails(@RequestBody BankDetailsDTO bankDto,
+													 @RequestParam String emailId) {
+		try {
+			accountsServiceInterface.addBankUserDetails(bankDto, emailId);
+			return ResponseEntity.ok("Bank details added successfully");
+		} catch (Exception e) {
+			return ResponseEntity.ok("Bank details not  added");
+		}
 	}
 
 }

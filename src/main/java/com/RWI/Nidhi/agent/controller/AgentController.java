@@ -4,8 +4,8 @@ import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceImplementation;
 import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -42,5 +42,19 @@ public class AgentController {
     @GetMapping("findUserById")
     public User findUserById(@RequestParam("id") int id) throws Exception{
         return agentService.findUserById(id);
+    }
+    @PostMapping("/verifyEmail")
+    public ResponseEntity<String> verifyEmail(@RequestParam("email") String email) throws Exception {
+        return agentService.forgetPasswordSendVerificationCode(email);
+    }
+
+    @PostMapping("/verifyOtp")
+    public ResponseEntity<String> verifyOtp(@RequestParam("email") String email, @RequestParam("enteredOtp") String enteredOtp ) throws Exception {
+        return agentService.forgetPasswordVerifyVerificationCode(email, enteredOtp);
+    }
+
+    @PostMapping("/updatePassword")
+    public User updatePassword(@RequestParam("email") String email, @RequestParam("password") String password ) throws Exception {
+       return agentService.updateUserPassword(email, password);
     }
 }
