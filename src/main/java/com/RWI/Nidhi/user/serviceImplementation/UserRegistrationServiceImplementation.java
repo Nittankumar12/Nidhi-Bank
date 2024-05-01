@@ -26,16 +26,16 @@ public class UserRegistrationServiceImplementation implements UserRegistrationIn
 
     @Override
     public ResponseEntity<String> verifyEmailOtp(String email, String enteredOtp) throws Exception {
-        return null;
+        return otpServiceImplementation.verifyEmailOtp(email, enteredOtp);
     }
 
     @Override
     public ResponseEntity<String> sendPhoneOtp(String phoneNumber) throws Exception {
-        return null;
+        return otpServiceImplementation.sendPhoneOtp(phoneNumber);
     }
 
     @Override
     public ResponseEntity<String> verifyPhoneOtp(String phoneNumber, String enteredOtp) throws Exception {
-        return null;
+        return otpServiceImplementation.verifyPhoneOtp(phoneNumber, enteredOtp);
     }
 }

@@ -21,6 +21,11 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     @Override
     public FixedDeposit createFd(FdDto fdDto) {
 
+        System.out.println(fdDto.getAmount());
+        System.out.println(fdDto.getTenure());
+        System.out.println(fdDto.getFdCompoundingFrequency().getCompoundingFreq());
+        System.out.println(fdDto.getFdCompoundingFrequency().getFdInterestRate());
+
         FixedDeposit fd = new FixedDeposit();
         fd.setAmount(fdDto.getAmount());
         fd.setDepositDate(LocalDate.now());
