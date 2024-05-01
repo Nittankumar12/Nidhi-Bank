@@ -1,14 +1,17 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
-import com.RWI.Nidhi.dto.LoanDto;
+import com.RWI.Nidhi.dto.LoanApplyDto;
+import com.RWI.Nidhi.dto.LoanCalcDto;
+import com.RWI.Nidhi.dto.LoanInfoDto;
+import com.RWI.Nidhi.dto.MonthlyEmiDto;
 
 public interface UserLoanServiceInterface {
     double maxApplicableLoan(String email);
-    void applyLoan(LoanDto loanDto);
     Boolean checkForExistingLoan(String email);
     Boolean checkForLoanBound(String email, double principalLoanAmount);
-    LoanDto getLoanInfo(String email);
-    double calculatePayableAmount(LoanDto loanDto);
-    double calculateEMI(LoanDto loanDto);
-    Boolean payEMI(String email, double payedAmount);
+    LoanInfoDto getLoanInfo(String email);
+    double calculatePayableAmount(LoanCalcDto loanCalcDto);
+    double calculateEMI(LoanCalcDto loanCalcDto);
+    void applyLoan(LoanApplyDto loanApplyDto);
+    MonthlyEmiDto payEMI(String email);
 }
