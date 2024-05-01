@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ValueGenerationType;
 
 @Entity
 @Getter
@@ -13,6 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BankDetails {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String accHolderName;
     private long accNumber;
@@ -20,6 +22,5 @@ public class BankDetails {
     private String bankBranch;
     private String IFSCCode;
     @OneToOne
-    @JoinColumn
     private User user;
 }

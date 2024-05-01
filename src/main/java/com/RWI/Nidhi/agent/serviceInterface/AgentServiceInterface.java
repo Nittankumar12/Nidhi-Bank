@@ -3,7 +3,6 @@ package com.RWI.Nidhi.agent.serviceInterface;
 import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.entity.User;
 import org.springframework.http.ResponseEntity;
-
 import java.util.List;
 
 public interface AgentServiceInterface {

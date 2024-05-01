@@ -4,10 +4,7 @@ import com.RWI.Nidhi.admin.adminServiceImplementation.AdminServiceImplementation
 import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController

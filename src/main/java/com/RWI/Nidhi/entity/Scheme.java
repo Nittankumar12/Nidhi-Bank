@@ -5,9 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -21,7 +19,7 @@ public class Scheme {
     private double monthlyDepositAmount;
     private LocalDate startDate;
     private int tenure;// should be counted in days
-    private double totalDepositAmount;
+    private double totalDepositAmount;// total amount till date
     private double totalInterestEarn;
     @ManyToOne
     @JoinColumn
