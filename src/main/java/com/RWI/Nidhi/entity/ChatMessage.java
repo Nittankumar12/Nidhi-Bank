@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
+import java.sql.Timestamp;
 
 
 @Getter
@@ -18,9 +19,13 @@ public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String content;
     private String sender;
-    private String recipient;
-    private String message;
-    private Timestamp currTime;
+    private String receiver;
+    private MessageType type;
+
+    public enum MessageType {
+        CHAT, JOIN, LEAVE
+    }
 
 }
