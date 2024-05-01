@@ -69,13 +69,13 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         return fd.getMaturityAmount();
     }
 
-    @Override
     public List<FixedDeposit> getAllFds() {
         return fdRepo.findAll();
     }
 
     @Override
-    public Optional<FixedDeposit> getFdById(int fdId) {
-        return fdRepo.findById(fdId);
+    public FixedDeposit getFdById(int fdId) {
+        return fdRepo.findById(fdId).get();
     }
+
 }
