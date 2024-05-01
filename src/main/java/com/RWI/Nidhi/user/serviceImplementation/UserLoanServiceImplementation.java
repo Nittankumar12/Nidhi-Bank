@@ -1,6 +1,9 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
-import com.RWI.Nidhi.dto.LoanDto;
+import com.RWI.Nidhi.dto.LoanApplyDto;
+import com.RWI.Nidhi.dto.LoanCalcDto;
+import com.RWI.Nidhi.dto.LoanInfoDto;
+import com.RWI.Nidhi.dto.MonthlyEmiDto;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Loan;
 
@@ -12,6 +15,9 @@ import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Service
 public class UserLoanServiceImplementation implements UserLoanServiceInterface {
@@ -26,32 +32,34 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         Accounts acc = user.getAccounts();
         return acc.getCurrentBalance() * 5;
     }
-
     @Override
-    public void applyLoan(LoanDto loanDto) {// For User
+    public void applyLoan(LoanApplyDto loanApplyDto) {// For User
 
-        User user = userService.getByEmail(loanDto.getEmail());
+        User user = userService.getByEmail(loanApplyDto.getEmail());
         Accounts acc = user.getAccounts();
-        Loan loan = new Loan();
-        loan.setLoanType(loanDto.getLoanType());
-        loan.setRePaymentTerm(loanDto.getRePaymentTerm());
-        loan.setPrincipalLoanAmount(loanDto.getPrincipalLoanAmount());
-        loan.setStartDate(loanDto.getStartDate());
-        loan.setInterestRate(loanDto.getLoanType().getLoanInterestRate());
-        //Payable
-        loanDto.setPayableLoanAmount(calculatePayableAmount(loanDto));
-        loan.setPayableLoanAmount(loanDto.getPayableLoanAmount());
-        //EMI
-        loanDto.setMonthlyEMI(calculateEMI(loanDto));
-        loan.setMonthlyEMI(loanDto.getMonthlyEMI());
 
+        LoanCalcDto loanCalcDto = new LoanCalcDto();
+        loanCalcDto.setLoanType(loanApplyDto.getLoanType());
+        loanCalcDto.setRePaymentTerm(loanApplyDto.getRePaymentTerm());
+        loanCalcDto.setPrincipalLoanAmount(loanApplyDto.getPrincipalLoanAmount());
+        loanCalcDto.setInterestRate(loanApplyDto.getLoanType().getLoanInterestRate());
+
+        Loan loan = new Loan();
+        loan.setLoanType(loanApplyDto.getLoanType());
+        loan.setInterestRate(loanApplyDto.getLoanType().getLoanInterestRate());
+        loan.setRePaymentTerm(loanApplyDto.getRePaymentTerm());
+        loan.setPrincipalLoanAmount(loanApplyDto.getPrincipalLoanAmount());
+        loan.setStartDate(LocalDate.now());
+        //Payable
+        loan.setPayableLoanAmount(calculatePayableAmount(loanCalcDto));
+        //MonthlyEMI
+        loan.setMonthlyEMI(calculateEMI(loanCalcDto));
+        //Status
         loan.setStatus(LoanStatus.APPLIED);
         loan.setAccount(acc);// save acc in loan
         acc.setLoan(loan);// save loan in acc
         loanRepository.save(loan);//save loan in loan
-
     }
-
     @Override
     public Boolean checkForExistingLoan(String email) {
         User user = userService.getByEmail(email);
@@ -62,7 +70,6 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         else
             return Boolean.FALSE;
     }
-
     @Override
     public Boolean checkForLoanBound(String email, double principalLoanAmount) {
         double maxLoan = maxApplicableLoan(email);
@@ -70,56 +77,62 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             return Boolean.FALSE;
         else
             return Boolean.TRUE;
-
     }
-
+    public double calculatePayableAmount(LoanCalcDto loanCalcDto){
+        //Internal Methods for apply Loan, only to be used when initially
+        double p = loanCalcDto.getPrincipalLoanAmount();
+        double r = loanCalcDto.getLoanType().getLoanInterestRate();
+        int n = loanCalcDto.getRePaymentTerm();
+        loanCalcDto.setPayableLoanAmount(p*r*n*(Math.pow((1+r),n))/((Math.pow((1+r),n))-1));
+        return loanCalcDto.getPayableLoanAmount();
+    }
     @Override
-    public LoanDto getLoanInfo(String email) {
+    public double calculateEMI(LoanCalcDto loanCalcDto){
+        //Internal Methods for apply Loan
+        double p = loanCalcDto.getPrincipalLoanAmount();
+        double r = loanCalcDto.getLoanType().getLoanInterestRate();
+        int n = loanCalcDto.getRePaymentTerm();
+        loanCalcDto.setMonthlyEMI(p*r*(Math.pow((1+r),n))/((Math.pow((1+r),n))-1));
+        return loanCalcDto.getMonthlyEMI();
+    }
+    @Override
+    public LoanInfoDto getLoanInfo(String email){
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
         Loan loan = acc.getLoan();
-        LoanDto loanDto = new LoanDto();
-        loanDto.setLoanType(loan.getLoanType());
-        loanDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
-        loanDto.setStatus(loan.getStatus());
-        loanDto.setInterestRate(loan.getInterestRate());
-        loanDto.setPayableLoanAmount(loan.getPayableLoanAmount());
-        loanDto.setEmail(email);
-        loanDto.setMonthlyEMI(loan.getMonthlyEMI());
-        loanDto.setFine(loan.getFine());
-        loanDto.setStartDate(loan.getStartDate());
-        loanDto.setRePaymentTerm(loan.getRePaymentTerm());
-        return loanDto;
+        LoanInfoDto loanInfoDto = new LoanInfoDto();
+        loanInfoDto.setLoanType(loan.getLoanType());
+        loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
+        loanInfoDto.setStatus(loan.getStatus());
+        loanInfoDto.setInterestRate(loan.getInterestRate());
+        loanInfoDto.setPayableLoanAmount(loan.getPayableLoanAmount());
+        loanInfoDto.setEmail(email);
+        loanInfoDto.setMonthlyEMI(loan.getMonthlyEMI());
+        loanInfoDto.setFine(loan.getFine());
+        loanInfoDto.setStartDate(loan.getStartDate());
+        loanInfoDto.setRePaymentTerm(loan.getRePaymentTerm());
+        return loanInfoDto;
     }
     @Override
-    public double calculatePayableAmount(LoanDto loanDto){//Internal Methods for apply Loan, only to be used when initially
-        double p = loanDto.getPrincipalLoanAmount();
-        double r = loanDto.getInterestRate();
-        int n = loanDto.getRePaymentTerm();
-        double payable = p*r*n*(Math.pow((1+r),n))/((Math.pow((1+r),n))-1);
-        return payable;
-    }
-    @Override
-    public double calculateEMI(LoanDto loanDto){//Internal Methods for apply Loan
-        double p = loanDto.getPrincipalLoanAmount();
-        double r = loanDto.getInterestRate();
-        int n = loanDto.getRePaymentTerm();
-        double monthlyEMI = p*r*(Math.pow((1+r),n))/((Math.pow((1+r),n))-1);
-        return monthlyEMI;
-    }
-    @Override
-    public Boolean payEMI(String email, double payedAmount){
+    public MonthlyEmiDto payEMI(String email){
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
         Loan loan = acc.getLoan();
-        double payable;
-        double temp = loan.getPayableLoanAmount();
-        if(loan.getMonthlyEMI() == payedAmount) {
-            payable = temp - payedAmount;
-            loan.setPayableLoanAmount(payable);
-            return Boolean.TRUE;
-        }
-        else
-            return Boolean.FALSE;
+
+        MonthlyEmiDto monthlyEmiDto = new MonthlyEmiDto();
+
+        double payableLoanAmount = loan.getPayableLoanAmount();
+        double temp = payableLoanAmount;
+        payableLoanAmount = temp - loan.getMonthlyEMI();
+        loan.setPayableLoanAmount(payableLoanAmount);
+        LocalDate endDate = ChronoUnit.DAYS.addTo(loan.getStartDate(), loan.getRePaymentTerm());
+        int rePaymentTermLeft = (int) ChronoUnit.DAYS.between(endDate,LocalDate.now());
+
+        monthlyEmiDto.setPayableLoanAmount(payableLoanAmount);
+        monthlyEmiDto.setMonthlyEMI(loan.getMonthlyEMI());
+        monthlyEmiDto.setRePaymentTermLeft(rePaymentTermLeft);
+        monthlyEmiDto.setPaymentDate(LocalDate.now());
+        return monthlyEmiDto;
+        // In return - EMI paid, EMI month, Months left, amount left
     }
 }
