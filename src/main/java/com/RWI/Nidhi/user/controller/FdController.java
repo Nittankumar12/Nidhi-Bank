@@ -17,8 +17,7 @@ public class FdController {
     private UserFdServiceImplementation service;
 
     @PostMapping("/createFd")
-    public FixedDeposit createFd(@RequestBody FdDto fdDto) {
-        return service.createFd(fdDto);
+    public FixedDeposit createFd(@RequestBody FdDto fdDto) { return service.createFd(fdDto);
     }
 
     @PutMapping("/update/{id}")
