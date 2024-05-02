@@ -4,9 +4,9 @@ import com.RWI.Nidhi.enums.LoanType;
 import lombok.Data;
 
 @Data
-public class LoanCalcDto {
-    private LoanType loanType;
-    private double interestRate = loanType.getLoanInterestRate();
+public class SchLoanCalcDto {
+    private final LoanType loanType = LoanType.Scheme;
+    private double interestRate = LoanType.Scheme.getLoanInterestRate();
     private int rePaymentTerm;
     private double principalLoanAmount;
     private double payableLoanAmount;

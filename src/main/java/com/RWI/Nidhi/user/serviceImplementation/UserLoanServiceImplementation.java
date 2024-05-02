@@ -1,15 +1,13 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
-import com.RWI.Nidhi.dto.LoanApplyDto;
-import com.RWI.Nidhi.dto.LoanCalcDto;
-import com.RWI.Nidhi.dto.LoanInfoDto;
-import com.RWI.Nidhi.dto.MonthlyEmiDto;
+import com.RWI.Nidhi.dto.*;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Loan;
 
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanStatus;
 
+import com.RWI.Nidhi.enums.LoanType;
 import com.RWI.Nidhi.repository.LoanRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
@@ -113,6 +111,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         loanInfoDto.setRePaymentTerm(loan.getRePaymentTerm());
         return loanInfoDto;
     }
+    // From here
     @Override
     public MonthlyEmiDto payEMI(String email){
         User user = userService.getByEmail(email);
@@ -135,4 +134,45 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         return monthlyEmiDto;
         // In return - EMI paid, EMI month, Months left, amount left
     }
+    @Override
+    public LoanClosureDto getLoanClosureDetails(String email) {
+        User user = userService.getByEmail(email);
+        Accounts acc = user.getAccounts();
+        Loan loan = acc.getLoan();
+        LoanClosureDto loanClosureDto = new LoanClosureDto();
+        double monthlyEMI = loan.getMonthlyEMI();
+        loanClosureDto.setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
+        loanClosureDto.setLoanType(loan.getLoanType());
+        loanClosureDto.setFine(monthlyEMI/100);
+        loanClosureDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
+        loanClosureDto.setLastEMIDate(firstDateOfNextMonth(LocalDate.now()));
+        loanClosureDto.setStartDate(loan.getStartDate());
+        loanClosureDto.setMonthlyEMI(loan.getPayableLoanAmount() + monthlyEMI/100);
+        loanClosureDto.setRePaymentTerm((int) ChronoUnit.DAYS.between(loan.getStartDate(),firstDateOfNextMonth(LocalDate.now())));
+        loanClosureDto.setFinalStatement("The Loan Closure for your loan");
+        return loanClosureDto;
+    }
+    public String applyForLoanClosure(String email){
+        User user = userService.getByEmail(email);
+        Accounts acc = user.getAccounts();
+        Loan loan = acc.getLoan();
+        if(loan.getStatus() == LoanStatus.APPROVED||loan.getStatus() == LoanStatus.SANCTIONED) {
+            double monthlyEMI = loan.getMonthlyEMI();
+            loan.setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
+            loan.setLoanType(loan.getLoanType());
+            loan.setFine(monthlyEMI/100);
+            loan.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
+            loan.setStartDate(loan.getStartDate());
+            loan.setMonthlyEMI(loan.getPayableLoanAmount() + monthlyEMI/100);
+            loan.setRePaymentTerm((int) ChronoUnit.DAYS.between(loan.getStartDate(),firstDateOfNextMonth(LocalDate.now())));
+            return "Applied For Closure";
+        }
+        else
+            return "Error";
+    }
+    public LocalDate firstDateOfNextMonth(LocalDate date) {
+        LocalDate nextMonth = date.plusMonths(1);
+        return nextMonth.withDayOfMonth(1);
+    }
+    // to here
 }
