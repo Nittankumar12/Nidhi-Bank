@@ -18,4 +18,5 @@ public class LoanInfoDto {
     private double monthlyEMI;
     private double fine;
     private LoanStatus status;
+
 }
