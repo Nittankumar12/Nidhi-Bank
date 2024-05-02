@@ -23,13 +23,13 @@ public class LoanController {
     }
     @PostMapping("/applyLoan")
     public ResponseEntity<String> applyLoan(@RequestBody LoanApplyDto loanApplyDto){
-        if(userLoanService.checkForExistingLoan(loanApplyDto.getEmail())==Boolean.TRUE)
-            if(userLoanService.checkForLoanBound(loanApplyDto.getEmail(),loanApplyDto.getPrincipalLoanAmount()) == Boolean.TRUE) {
+        if(userLoanService.checkForExistingLoan(loanApplyDto.getEmail())==Boolean.TRUE) {
+            if (userLoanService.checkForLoanBound(loanApplyDto.getEmail(), loanApplyDto.getPrincipalLoanAmount()) == Boolean.TRUE) {
                 userLoanService.applyLoan(loanApplyDto);
-                return new ResponseEntity<>("Loan Has been successfully requested",HttpStatus.ACCEPTED);
-            }
-            else
+                return new ResponseEntity<>("Loan Has been successfully requested", HttpStatus.ACCEPTED);
+            } else
                 return new ResponseEntity<>("Loan Amount Request exceed allowed amount", HttpStatus.BAD_REQUEST);
+        }
         else
             return new ResponseEntity<>("You have another active loan",HttpStatus.BAD_REQUEST);
     }

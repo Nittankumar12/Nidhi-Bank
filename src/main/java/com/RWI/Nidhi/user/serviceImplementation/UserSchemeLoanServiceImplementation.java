@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServiceInterface{
@@ -54,7 +56,9 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
         loan.setMonthlyEMI(calculateSchLoanEMI(schLoanCalcDto));
         loan.setStatus(LoanStatus.APPLIED);
         loan.setAccount(acc);
-        acc.setLoan(loan);
+        List<Loan> loanList = new ArrayList<>();
+        loanList.add(loan);
+        acc.setLoanList(loanList);// save loan in acc
         loanRepo.save(loan);
     }
     public double calculatePayableSchLoanAmount(SchLoanCalcDto schLoanCalcDto){
@@ -74,10 +78,14 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     public Boolean checkForExistingLoan(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
-        Loan loan = acc.getLoan();
-        if (loan == null)
-            return Boolean.TRUE;
-        else
-            return Boolean.FALSE;
+        Boolean b = Boolean.FALSE;
+        List<Loan> loanList = acc.getLoanList();
+        for (int i = 0; i < loanList.size(); i++) {
+            if (loanList.get(i).getStatus() == LoanStatus.CLOSED || loanList.get(i).getStatus() == LoanStatus.FORECLOSED || loanList.get(i).getStatus() == LoanStatus.REJECTED)
+                b = Boolean.TRUE;
+            else
+                b = Boolean.FALSE;
+        }
+        return b;
     }
 }

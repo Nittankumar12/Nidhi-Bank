@@ -7,7 +7,6 @@ import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanStatus;
 
-import com.RWI.Nidhi.enums.LoanType;
 import com.RWI.Nidhi.repository.LoanRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
@@ -16,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserLoanServiceImplementation implements UserLoanServiceInterface {
@@ -30,6 +31,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         Accounts acc = user.getAccounts();
         return acc.getCurrentBalance() * 5;
     }
+
     @Override
     public void applyLoan(LoanApplyDto loanApplyDto) {// For User
 
@@ -48,26 +50,40 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         loan.setRePaymentTerm(loanApplyDto.getRePaymentTerm());
         loan.setPrincipalLoanAmount(loanApplyDto.getPrincipalLoanAmount());
         loan.setStartDate(LocalDate.now());
+        loan.setEmiDate(calcFirstEMIDate(loan.getStartDate()));
         //Payable
-        loan.setPayableLoanAmount(calculatePayableAmount(loanCalcDto));
+        loan.setPayableLoanAmount(calculateFirstPayableAmount(loanCalcDto));
         //MonthlyEMI
         loan.setMonthlyEMI(calculateEMI(loanCalcDto));
         //Status
         loan.setStatus(LoanStatus.APPLIED);
         loan.setAccount(acc);// save acc in loan
-        acc.setLoan(loan);// save loan in acc
+        List<Loan> loanList = new ArrayList<>();
+        loanList.add(loan);
+        acc.setLoanList(loanList);// save loan in acc
         loanRepository.save(loan);//save loan in loan
     }
+
+    @Override
+    public LocalDate calcFirstEMIDate(LocalDate startDate) {
+        return firstDateOfNextMonth(startDate);
+    }
+
     @Override
     public Boolean checkForExistingLoan(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
-        Loan loan = acc.getLoan();
-        if (loan == null)
-            return Boolean.TRUE;
-        else
-            return Boolean.FALSE;
+        Boolean b = Boolean.FALSE;
+        List<Loan> loanList = acc.getLoanList();
+        for (int i = 0; i < loanList.size(); i++) {
+            if (loanList.get(i).getStatus() == LoanStatus.CLOSED || loanList.get(i).getStatus() == LoanStatus.FORECLOSED || loanList.get(i).getStatus() == LoanStatus.REJECTED)
+                b = Boolean.TRUE;
+            else
+                b = Boolean.FALSE;
+        }
+        return b;
     }
+
     @Override
     public Boolean checkForLoanBound(String email, double principalLoanAmount) {
         double maxLoan = maxApplicableLoan(email);
@@ -76,99 +92,124 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         else
             return Boolean.TRUE;
     }
-    public double calculatePayableAmount(LoanCalcDto loanCalcDto){
+
+    public double calculateFirstPayableAmount(LoanCalcDto loanCalcDto) {
         //Internal Methods for apply Loan, only to be used when initially
         double p = loanCalcDto.getPrincipalLoanAmount();
         double r = loanCalcDto.getLoanType().getLoanInterestRate();
         int n = loanCalcDto.getRePaymentTerm();
-        loanCalcDto.setPayableLoanAmount(p*r*n*(Math.pow((1+r),n))/((Math.pow((1+r),n))-1));
+        loanCalcDto.setPayableLoanAmount(p * r * n * (Math.pow((1 + r), n)) / ((Math.pow((1 + r), n)) - 1));
         return loanCalcDto.getPayableLoanAmount();
     }
+
     @Override
-    public double calculateEMI(LoanCalcDto loanCalcDto){
+    public double calculateEMI(LoanCalcDto loanCalcDto) {
         //Internal Methods for apply Loan
         double p = loanCalcDto.getPrincipalLoanAmount();
         double r = loanCalcDto.getLoanType().getLoanInterestRate();
         int n = loanCalcDto.getRePaymentTerm();
-        loanCalcDto.setMonthlyEMI(p*r*(Math.pow((1+r),n))/((Math.pow((1+r),n))-1));
+        loanCalcDto.setMonthlyEMI(p * r * (Math.pow((1 + r), n)) / ((Math.pow((1 + r), n)) - 1));
         return loanCalcDto.getMonthlyEMI();
     }
+
     @Override
-    public LoanInfoDto getLoanInfo(String email){
+    public LoanInfoDto getLoanInfo(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
-        Loan loan = acc.getLoan();
         LoanInfoDto loanInfoDto = new LoanInfoDto();
-        loanInfoDto.setLoanType(loan.getLoanType());
-        loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
-        loanInfoDto.setStatus(loan.getStatus());
-        loanInfoDto.setInterestRate(loan.getInterestRate());
-        loanInfoDto.setPayableLoanAmount(loan.getPayableLoanAmount());
-        loanInfoDto.setEmail(email);
-        loanInfoDto.setMonthlyEMI(loan.getMonthlyEMI());
-        loanInfoDto.setFine(loan.getFine());
-        loanInfoDto.setStartDate(loan.getStartDate());
-        loanInfoDto.setRePaymentTerm(loan.getRePaymentTerm());
+        List<Loan> loanList = acc.getLoanList();
+        for (int i = 0; i < loanList.size(); i++) {
+            if (checkForExistingLoan(email) == Boolean.FALSE) {
+                loanInfoDto.setLoanType(loanList.get(i).getLoanType());
+                loanInfoDto.setPrincipalLoanAmount(loanList.get(i).getPrincipalLoanAmount());
+                loanInfoDto.setStatus(loanList.get(i).getStatus());
+                loanInfoDto.setInterestRate(loanList.get(i).getInterestRate());
+                loanInfoDto.setPayableLoanAmount(loanList.get(i).getPayableLoanAmount());
+                loanInfoDto.setEmail(email);
+                loanInfoDto.setMonthlyEMI(loanList.get(i).getMonthlyEMI());
+                loanInfoDto.setFine(loanList.get(i).getFine());
+                loanInfoDto.setStartDate(loanList.get(i).getStartDate());
+                loanInfoDto.setRePaymentTerm(loanList.get(i).getRePaymentTerm());
+            } else
+                return new LoanInfoDto();
+        }
         return loanInfoDto;
     }
+
     // From here
     @Override
-    public MonthlyEmiDto payEMI(String email){
+    public MonthlyEmiDto payEMI(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
-        Loan loan = acc.getLoan();
-
         MonthlyEmiDto monthlyEmiDto = new MonthlyEmiDto();
+        List<Loan> loanList = acc.getLoanList();
+        for (int i = 0; i < loanList.size(); i++) {
+            if (checkForExistingLoan(email) == Boolean.FALSE) {
+                double payableLoanAmount = loanList.get(i).getPayableLoanAmount();
+                double temp = payableLoanAmount;
+                payableLoanAmount = temp - loanList.get(i).getMonthlyEMI();
 
-        double payableLoanAmount = loan.getPayableLoanAmount();
-        double temp = payableLoanAmount;
-        payableLoanAmount = temp - loan.getMonthlyEMI();
-        loan.setPayableLoanAmount(payableLoanAmount);
-        LocalDate endDate = ChronoUnit.DAYS.addTo(loan.getStartDate(), loan.getRePaymentTerm());
-        int rePaymentTermLeft = (int) ChronoUnit.DAYS.between(endDate,LocalDate.now());
+                loanList.get(i).setPayableLoanAmount(payableLoanAmount);
+                loanList.get(i).setEmiDate(firstDateOfNextMonth(LocalDate.now()));
 
-        monthlyEmiDto.setPayableLoanAmount(payableLoanAmount);
-        monthlyEmiDto.setMonthlyEMI(loan.getMonthlyEMI());
-        monthlyEmiDto.setRePaymentTermLeft(rePaymentTermLeft);
-        monthlyEmiDto.setPaymentDate(LocalDate.now());
+                LocalDate endDate = ChronoUnit.DAYS.addTo(loanList.get(i).getStartDate(), loanList.get(i).getRePaymentTerm());
+                int rePaymentTermLeft = (int) ChronoUnit.DAYS.between(endDate, LocalDate.now());
+
+                monthlyEmiDto.setPayableLoanAmount(payableLoanAmount);
+                monthlyEmiDto.setMonthlyEMI(loanList.get(i).getMonthlyEMI());
+                monthlyEmiDto.setRePaymentTermLeft(rePaymentTermLeft);
+                monthlyEmiDto.setPaymentDate(LocalDate.now());
+                monthlyEmiDto.setNextEMIDate(firstDateOfNextMonth(LocalDate.now()));
+            } else
+                return new MonthlyEmiDto();
+        }
         return monthlyEmiDto;
-        // In return - EMI paid, EMI month, Months left, amount left
+        // In return - EMI paid, EMI month, Months left, amount left, next payment date
     }
+
     @Override
     public LoanClosureDto getLoanClosureDetails(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
-        Loan loan = acc.getLoan();
         LoanClosureDto loanClosureDto = new LoanClosureDto();
-        double monthlyEMI = loan.getMonthlyEMI();
-        loanClosureDto.setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
-        loanClosureDto.setLoanType(loan.getLoanType());
-        loanClosureDto.setFine(monthlyEMI/100);
-        loanClosureDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
-        loanClosureDto.setLastEMIDate(firstDateOfNextMonth(LocalDate.now()));
-        loanClosureDto.setStartDate(loan.getStartDate());
-        loanClosureDto.setMonthlyEMI(loan.getPayableLoanAmount() + monthlyEMI/100);
-        loanClosureDto.setRePaymentTerm((int) ChronoUnit.DAYS.between(loan.getStartDate(),firstDateOfNextMonth(LocalDate.now())));
-        loanClosureDto.setFinalStatement("The Loan Closure for your loan");
+        List<Loan> loanList = acc.getLoanList();
+        for (int i = 0; i < loanList.size(); i++) {
+            if (checkForExistingLoan(email) == Boolean.FALSE) {
+                double monthlyEMI = loanList.get(i).getMonthlyEMI();
+                loanClosureDto.setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
+                loanClosureDto.setLoanType(loanList.get(i).getLoanType());
+                loanClosureDto.setFine(monthlyEMI / 100);
+                loanClosureDto.setPrincipalLoanAmount(loanList.get(i).getPrincipalLoanAmount());
+                loanClosureDto.setLastEMIDate(firstDateOfNextMonth(LocalDate.now()));
+                loanClosureDto.setStartDate(loanList.get(i).getStartDate());
+                loanClosureDto.setMonthlyEMI(loanList.get(i).getPayableLoanAmount() + monthlyEMI / 100);
+                loanClosureDto.setRePaymentTerm((int) ChronoUnit.DAYS.between(loanList.get(i).getStartDate(), firstDateOfNextMonth(LocalDate.now())));
+                loanClosureDto.setFinalStatement("The Loan Closure for your loan");
+            }
+            else
+                return new LoanClosureDto();
+        }
         return loanClosureDto;
     }
-    public String applyForLoanClosure(String email){
+    public String applyForLoanClosure(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
-        Loan loan = acc.getLoan();
-        if(loan.getStatus() == LoanStatus.APPROVED||loan.getStatus() == LoanStatus.SANCTIONED) {
-            double monthlyEMI = loan.getMonthlyEMI();
-            loan.setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
-            loan.setLoanType(loan.getLoanType());
-            loan.setFine(monthlyEMI/100);
-            loan.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
-            loan.setStartDate(loan.getStartDate());
-            loan.setMonthlyEMI(loan.getPayableLoanAmount() + monthlyEMI/100);
-            loan.setRePaymentTerm((int) ChronoUnit.DAYS.between(loan.getStartDate(),firstDateOfNextMonth(LocalDate.now())));
-            return "Applied For Closure";
+        List<Loan> loanList = acc.getLoanList();
+        for (int i = 0; i < loanList.size(); i++) {
+            if (checkForExistingLoan(email) == Boolean.FALSE) {
+                if (loanList.get(i).getStatus() == LoanStatus.APPROVED || loanList.get(i).getStatus() == LoanStatus.SANCTIONED) {
+                    double monthlyEMI = loanList.get(i).getMonthlyEMI();
+                    loanList.get(i).setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
+                    loanList.get(i).setFine(monthlyEMI / 100);
+                    loanList.get(i).setMonthlyEMI(loanList.get(i).getPayableLoanAmount() + monthlyEMI / 100);
+                    loanList.get(i).setRePaymentTerm((int) ChronoUnit.DAYS.between(loanList.get(i).getStartDate(), firstDateOfNextMonth(LocalDate.now())));
+                } else
+                    return "Error";
+            }
+            else
+                return "Error";
         }
-        else
-            return "Error";
+        return "Applied For Closure";
     }
     public LocalDate firstDateOfNextMonth(LocalDate date) {
         LocalDate nextMonth = date.plusMonths(1);
