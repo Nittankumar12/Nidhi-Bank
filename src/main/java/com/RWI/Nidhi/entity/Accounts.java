@@ -32,8 +32,8 @@ public class Accounts {
 	private User user;
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<FixedDeposit> fdList;
-	@OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
-	private Loan loan;
+	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+	private List<Loan> loanList;
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<MIS> misList;
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
