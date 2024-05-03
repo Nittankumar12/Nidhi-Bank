@@ -4,13 +4,12 @@ import com.RWI.Nidhi.dto.*;
 
 import java.time.LocalDate;
 
-public interface UserLoanServiceInterface {
-    double maxApplicableLoan(String email);
+public interface UserSchemeLoanServiceInterface {
+    double schemeLoan(String email);//maxLoan for scheme
     Boolean checkForExistingLoan(String email);
-    Boolean checkForLoanBound(String email, double principalLoanAmount);
-    double calculateFirstPayableAmount(LoanCalcDto loanCalcDto);
-    double calculateEMI(LoanCalcDto loanCalcDto);
-    void applyLoan(LoanApplyDto loanApplyDto);
+    void applySchemeLoan(String email); // apply for schemeLoan
+    double calculateFirstPayableSchLoanAmount(SchLoanCalcDto schLoanCalcDto);
+    double calculateSchLoanEMI(SchLoanCalcDto schLoanCalcDto);
     LoanInfoDto getLoanInfo(String email);
     MonthlyEmiDto payEMI(String email);
     LoanClosureDto getLoanClosureDetails(String email);

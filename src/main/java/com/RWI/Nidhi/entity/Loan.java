@@ -26,11 +26,12 @@ public class Loan {
     private double interestRate;
     private double monthlyEMI;
     private double fine;
+    private LocalDate emiDate;
     @Enumerated(EnumType.STRING)
     private LoanType loanType;
     @Enumerated(EnumType.STRING)
     private LoanStatus status;
-    @OneToOne
+    @ManyToOne
     @JoinColumn
     private Accounts account;
     @ManyToOne

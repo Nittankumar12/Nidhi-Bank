@@ -7,7 +7,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LoanRepo extends JpaRepository<Loan, Integer> {
-    LoanStatus findStatusByLoanId(int loanId);
-    double findEMIByLoanId(int loanId);
-    double findFineByLoanId(int loanId);
 }
