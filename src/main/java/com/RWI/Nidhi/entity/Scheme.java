@@ -15,6 +15,9 @@ import java.util.List;
 @Entity
 public class Scheme {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "six_digit_id_generator")
+//    @org.hibernate.annotations.GenericGenerator(name = "six_digit_id_generator", strategy = "path.to.SixDigitIdGenerator")
     private int schemeId;
     private double monthlyDepositAmount;
     private LocalDate startDate;

@@ -21,6 +21,7 @@ public class NidhiEntityDemoApplication {
 	}
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(NidhiEntityDemoApplication.class, args);
 	}
 }

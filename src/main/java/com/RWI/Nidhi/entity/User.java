@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -28,6 +30,7 @@ public class User {
     private BankDetails bankDetails;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private KYC kyc;
+
 
     public User(int userId, String userName) {
         this.userId = userId;

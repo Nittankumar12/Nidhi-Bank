@@ -16,17 +16,12 @@ import java.util.List;
 @Entity
 public class FixedDeposit {
     @Id
-<<<<<<< HEAD
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-=======
     @GeneratedValue(strategy = GenerationType.AUTO)
->>>>>>> d375cc96b0d56df75adc06958bc42ab6a5694bb1
     private int fdId;
     private int amount;
     private LocalDate depositDate;
     private LocalDate maturityDate;
     private LocalDate closingDate;
-
     private int penalty;
 //    @Transient
 //    @Enumerated(EnumType.STRING)
@@ -46,8 +41,8 @@ public class FixedDeposit {
     private Agent agent;
     @OneToMany(mappedBy = "fd", cascade = CascadeType.ALL)
     private List<Transactions> transactionsList;
-//    public void setInterestRate(FdCompoundingFrequency fdCompoundingFrequency) {
-//        this.interestRate = fdCompoundingFrequency.getFdInterestRate();
-//        this.compoundingFrequency = fdCompoundingFrequency.getCompoundingFreq();
-//    }
+
+
+
+
 }
