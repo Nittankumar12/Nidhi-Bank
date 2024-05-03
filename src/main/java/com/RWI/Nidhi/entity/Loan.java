@@ -19,20 +19,18 @@ public class Loan {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int loanId;
-    private int PayableLoanAmount;// Total Amount user has to pay - PrincipalLoanAmount + Total EMI for repayTerm
-    private int principalLoanAmount;//Loan Amount user gets as Loan
-    private int rePaymentTerm; //should be counted in days
+    private double payableLoanAmount;// Total Amount user has to pay - PrincipalLoanAmount + Total EMI for repayTerm
+    private double principalLoanAmount;//Loan Amount user gets as Loan
+    private int rePaymentTerm; //should be counted in terms EMI is paid in
     private LocalDate startDate;
     private double interestRate;
-    private int EMI;
-    private int fine;
+    private double monthlyEMI;
+    private double fine;
+    private LocalDate emiDate;
     @Enumerated(EnumType.STRING)
     private LoanType loanType;
     @Enumerated(EnumType.STRING)
     private LoanStatus status;
-//    public void setInterestRate(LoanType loanType) {
-//        this.interestRate = loanType.getLoanInterestRate();
-//    }
     @ManyToOne
     @JoinColumn
     private Accounts account;

@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class RecurringDeposit {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int rdId;
     private double monthlyDepositAmount;
     private double interestRate;

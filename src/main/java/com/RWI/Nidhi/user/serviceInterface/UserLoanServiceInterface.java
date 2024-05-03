@@ -1,11 +1,20 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
-import com.RWI.Nidhi.dto.LoanDto;
-import com.RWI.Nidhi.entity.Loan;
-import com.RWI.Nidhi.enums.LoanStatus;
+import com.RWI.Nidhi.dto.*;
+
+import java.time.LocalDate;
 
 public interface UserLoanServiceInterface {
-    // int maxApplicableLoan(int accNo);
-    void applyLoan(LoanDto loanDto);
-    Boolean checkForLoan(String email);
+    double maxApplicableLoan(String email);
+    Boolean checkForExistingLoan(String email);
+    Boolean checkForLoanBound(String email, double principalLoanAmount);
+    double calculateFirstPayableAmount(LoanCalcDto loanCalcDto);
+    double calculateEMI(LoanCalcDto loanCalcDto);
+    void applyLoan(LoanApplyDto loanApplyDto);
+    LoanInfoDto getLoanInfo(String email);
+    MonthlyEmiDto payEMI(String email);
+    LoanClosureDto getLoanClosureDetails(String email);
+    LocalDate firstDateOfNextMonth(LocalDate date);
+    String applyForLoanClosure(String email);
+    LocalDate calcFirstEMIDate(LocalDate startDate);
 }

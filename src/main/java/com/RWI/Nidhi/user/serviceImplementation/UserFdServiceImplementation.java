@@ -7,9 +7,10 @@ import com.RWI.Nidhi.repository.FixedDepositRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserFdServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserFdServiceImplementation implements UserFdServiceInterface {
@@ -20,6 +21,11 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
 
     @Override
     public FixedDeposit createFd(FdDto fdDto) {
+
+        System.out.println(fdDto.getAmount());
+        System.out.println(fdDto.getTenure());
+        System.out.println(fdDto.getFdCompoundingFrequency().getCompoundingFreq());
+        System.out.println(fdDto.getFdCompoundingFrequency().getFdInterestRate());
 
         FixedDeposit fd = new FixedDeposit();
         fd.setAmount(fdDto.getAmount());
@@ -39,7 +45,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         double finalAmount;
 
         finalAmount = amount * (Math.pow((1 + (interestRate / (100 * compoundingFreq))), ((tenureInDays / 365) * compoundingFreq)));
-        return 0;
+        return finalAmount;
     }
 
     private int getCompleteDaysCount(LocalDate startDate, LocalDate endDate) {
@@ -62,4 +68,14 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         fdRepo.save(fd);
         return fd.getMaturityAmount();
     }
+
+    public List<FixedDeposit> getAllFds() {
+        return fdRepo.findAll();
+    }
+
+    @Override
+    public FixedDeposit getFdById(int fdId) {
+        return fdRepo.findById(fdId).get();
+    }
+
 }

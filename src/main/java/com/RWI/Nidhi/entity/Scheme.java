@@ -19,9 +19,9 @@ public class Scheme {
     private double monthlyDepositAmount;
     private LocalDate startDate;
     private int tenure;// should be counted in days
-    private double totalDepositAmount;
+    private double totalDepositAmount;// total amount till date
     private double totalInterestEarn;
-    @ManyToOne
+    @OneToOne
     @JoinColumn
     private Accounts account;
     @ManyToOne
@@ -30,3 +30,4 @@ public class Scheme {
     @OneToMany(mappedBy = "scheme", cascade = CascadeType.ALL)
     private List<Transactions> transactionsList;
 }
+//
