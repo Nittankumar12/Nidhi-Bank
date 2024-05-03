@@ -1,5 +1,6 @@
 package com.RWI.Nidhi.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,5 +21,8 @@ public interface LoanRepo extends JpaRepository<Loan, Integer> {
 	List<Loan> findLoanByLoanType(String loanType);
 
 	List<Loan> findLoanByStatus(String status);
+
+	List<Loan> findByemiDateBetween(LocalDate startDate, LocalDate endDate);
+
 
 }
