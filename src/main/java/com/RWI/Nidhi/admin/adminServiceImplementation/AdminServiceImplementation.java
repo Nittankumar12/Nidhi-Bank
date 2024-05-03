@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.admin.adminServiceImplementation;
 
 import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
+import com.RWI.Nidhi.admin.ResponseDto.AgentMinimalDto;
 import com.RWI.Nidhi.admin.adminServiceInterface.AdminServiceInterface;
 import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.entity.*;
@@ -8,6 +9,7 @@ import com.RWI.Nidhi.repository.AgentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminServiceImplementation implements AdminServiceInterface {
@@ -114,8 +116,12 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     }
 
     @Override
-    public List<Agent> getAllAgents() {
-        return agentRepo.findAll();
+    public List<AgentMinimalDto> getAllAgents() {
+        List<Agent> allAgents = agentRepo.findAll();
+        List<AgentMinimalDto> idUsernameAgent = allAgents.stream()
+                .map(agent -> new AgentMinimalDto(agent.getAgentId(),agent.getAgentName()))
+                .collect(Collectors.toList());
+        return idUsernameAgent;
     }
 
     @Override
