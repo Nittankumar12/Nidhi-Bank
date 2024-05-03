@@ -1,5 +1,6 @@
 package com.RWI.Nidhi.admin.adminServiceInterface;
 
+import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
 import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.entity.Agent;
 import java.util.List;
@@ -13,5 +14,5 @@ public interface AdminServiceInterface {
     Agent updateAgentPhoneNum(int id,String phoneNum) throws Exception;
     boolean deleteAgentById(int id) throws Exception;
     List<Agent> getAllAgents();
-    Agent findAgentById(int id) throws Exception;
+    AdminViewsAgentDto getAgentById(int id) throws Exception;
 }
