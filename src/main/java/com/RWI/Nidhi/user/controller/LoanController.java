@@ -15,23 +15,23 @@ public class LoanController {
     UserLoanServiceInterface userLoanService;
 
     @GetMapping("/maxLoan/{email}")
-    public ResponseEntity<Double> maxLoan(@PathVariable String email){
+    public ResponseEntity<Double> maxLoan(@PathVariable("email") String email){
         if(userLoanService.checkForExistingLoan(email)==Boolean.TRUE)
             return new ResponseEntity<>( userLoanService.maxApplicableLoan(email),HttpStatus.FOUND);
         else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
     }
     @PostMapping("/applyLoan")
-    public ResponseEntity<String> applyLoan(@RequestBody LoanApplyDto loanApplyDto){
+    public ResponseEntity<?> applyLoan(@RequestBody LoanApplyDto loanApplyDto){
         if(userLoanService.checkForExistingLoan(loanApplyDto.getEmail())==Boolean.TRUE) {
             if (userLoanService.checkForLoanBound(loanApplyDto.getEmail(), loanApplyDto.getPrincipalLoanAmount()) == Boolean.TRUE) {
                 userLoanService.applyLoan(loanApplyDto);
-                return new ResponseEntity<>("Loan Has been successfully requested", HttpStatus.ACCEPTED);
+                return new ResponseEntity<>(userLoanService.getLoanInfo(loanApplyDto.getEmail()), HttpStatus.ACCEPTED);
             } else
                 return new ResponseEntity<>("Loan Amount Request exceed allowed amount", HttpStatus.BAD_REQUEST);
         }
         else
-            return new ResponseEntity<>("You have another active loan",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("You have another active loan",HttpStatus.I_AM_A_TEAPOT);
     }
     @GetMapping("/getLoanInfo/{email}")
     public ResponseEntity<LoanInfoDto> getLoanInfo(@PathVariable String email){
@@ -40,7 +40,7 @@ public class LoanController {
         }
         else {
             System.out.println("loan does not exist");
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.HTTP_VERSION_NOT_SUPPORTED);
         }
     }
     @PutMapping("/payEMI/{email}")
