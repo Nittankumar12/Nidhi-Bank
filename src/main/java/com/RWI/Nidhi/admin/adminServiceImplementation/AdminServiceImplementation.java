@@ -1,12 +1,15 @@
 package com.RWI.Nidhi.admin.adminServiceImplementation;
 
+import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
+import com.RWI.Nidhi.admin.ResponseDto.AgentMinimalDto;
 import com.RWI.Nidhi.admin.adminServiceInterface.AdminServiceInterface;
 import com.RWI.Nidhi.dto.AddAgentDto;
-import com.RWI.Nidhi.entity.Agent;
+import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.repository.AgentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminServiceImplementation implements AdminServiceInterface {
@@ -113,13 +116,38 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     }
 
     @Override
-    public List<Agent> getAllAgents() {
-        return agentRepo.findAll();
+    public List<AgentMinimalDto> getAllAgents() {
+        List<Agent> allAgents = agentRepo.findAll();
+        List<AgentMinimalDto> idUsernameAgent = allAgents.stream()
+                .map(agent -> new AgentMinimalDto(agent.getAgentId(),agent.getAgentName()))
+                .collect(Collectors.toList());
+        return idUsernameAgent;
     }
 
     @Override
-    public Agent findAgentById(int id) throws Exception{
-        return agentRepo.findById(id).orElseThrow(() -> {return new Exception("agent not found");});
+    public AdminViewsAgentDto getAgentById(int id) throws Exception{
+        Agent agent = agentRepo.findById(id).orElseThrow(() -> {return new Exception("agent not found");});
+        AdminViewsAgentDto responseDto = new AdminViewsAgentDto();
+        responseDto.setAgentId(agent.getAgentId());
+        responseDto.setAgentName(agent.getAgentName());
+        responseDto.setAgentPhoneNum(agent.getAgentPhoneNum());
+        responseDto.setAgentEmail(agent.getAgentEmail());
+        responseDto.setAgentAddress(agent.getAgentAddress());
+
+        List<FixedDeposit> fdList = agent.getFixedDepositList();
+        responseDto.setNumberOfFd(fdList.size());
+
+        List<MIS> misList = agent.getMisList();
+        responseDto.setNumberOfMis(misList.size());
+
+        List<RecurringDeposit> rdList = agent.getRecurringDepositList();
+        responseDto.setNumberOfRd(rdList.size());
+
+        List<Scheme> schemeList = agent.getSchemeList();
+        responseDto.setNumberOfScheme(schemeList.size());
+
+        return responseDto;
+
     }
 
 }

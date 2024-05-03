@@ -4,8 +4,11 @@ import com.RWI.Nidhi.dto.BankDetailsDTO;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
+
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.objenesis.instantiator.basic.NewInstanceInstantiator;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,10 +18,17 @@ public class AccountController {
 	private AccountsServiceInterface accountsServiceInterface;
 
 	// End point to open a new account
-	@PostMapping("/open")
-	public Accounts openAccount() {
-		return accountsServiceInterface.openAccount();
+	@GetMapping("/open")
+	public ResponseEntity<Accounts> openAccount(@RequestParam String email) {
+
+		Accounts newAccount = accountsServiceInterface.openAccount(email);
+		return ResponseEntity.ok(newAccount);
+
 	}
+
+//	public Accounts openAccount() {
+//		return accountsServiceInterface.openAccount();
+//	}
 
 	// End point to get account status
 	@GetMapping("/status/{accountId}")
@@ -47,7 +57,7 @@ public class AccountController {
 
 	@PostMapping("/addBankDetails")
 	public ResponseEntity<String> addBankUserDetails(@RequestBody BankDetailsDTO bankDto,
-													 @RequestParam String emailId) {
+			@RequestParam String emailId) {
 		try {
 			accountsServiceInterface.addBankUserDetails(bankDto, emailId);
 			return ResponseEntity.ok("Bank details added successfully");
