@@ -105,7 +105,7 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
                 if (loanList.get(i).getStatus() == LoanStatus.APPROVED || loanList.get(i).getStatus() == LoanStatus.SANCTIONED) {
                     double monthlyEMI = loanList.get(i).getMonthlyEMI();
                     loanList.get(i).setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
-                    loanList.get(i).setFine(monthlyEMI / 100);
+                    loanList.get(i).setCurrentFine(monthlyEMI / 100);
                     loanList.get(i).setMonthlyEMI(loanList.get(i).getPayableLoanAmount() + monthlyEMI / 100);
                     loanList.get(i).setRePaymentTerm((int) ChronoUnit.DAYS.between(loanList.get(i).getStartDate(), firstDateOfNextMonth(LocalDate.now())));
                 } else

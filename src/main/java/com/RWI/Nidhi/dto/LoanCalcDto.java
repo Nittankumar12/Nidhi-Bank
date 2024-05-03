@@ -4,17 +4,22 @@ import com.RWI.Nidhi.enums.LoanType;
 import lombok.*;
 
 //@Data
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoanCalcDto {
     private LoanType loanType;
-    private double interestRate = loanType.getLoanInterestRate();
+    private double interestRate;
     private int rePaymentTerm;
     private double principalLoanAmount;
     private double payableLoanAmount;
     private double monthlyEMI;
+
+    public void setInterestRate(LoanType loanType) {
+        this.interestRate = loanType.getLoanInterestRate();
+    }
 
     public LoanCalcDto(SchLoanCalcDto schLoanCalcDto) {
         this.loanType = schLoanCalcDto.getLoanType();
