@@ -5,10 +5,12 @@ import com.RWI.Nidhi.entity.FixedDeposit;
 import java.util.List;
 import java.util.Optional;
 
+import java.util.List;
+
 
 public interface UserFdServiceInterface {
     FixedDeposit createFd(FdDto fdDto);
     Double closeFd(int fdId);
     List<FixedDeposit> getAllFds();
-    Optional<FixedDeposit> getFdById(int fdId);
+    FixedDeposit getFdById(int fdId);
 }

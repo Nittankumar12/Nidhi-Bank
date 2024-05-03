@@ -10,6 +10,7 @@ import com.RWI.Nidhi.enums.LoanStatus;
 
 @Repository
 public interface LoanRepo extends JpaRepository<Loan, Integer> {
+
 	LoanStatus findStatusByLoanId(int loanId);
 
 	double findEMIByLoanId(int loanId);

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/fd")
@@ -32,7 +31,7 @@ public class FdController {
     }
 
     @GetMapping("/find/{id}")
-    public Optional<FixedDeposit> findFdById(@PathVariable("id") int fdId) {
+    public FixedDeposit findFdById(@PathVariable("id") int fdId) {
         return service.getFdById(fdId);
     }
 }
