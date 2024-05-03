@@ -1,5 +1,6 @@
 package com.RWI.Nidhi.admin.controller;
 
+import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
 import com.RWI.Nidhi.admin.adminServiceImplementation.AdminServiceImplementation;
 import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.entity.*;
@@ -43,8 +44,8 @@ public class AdminController {
         return adminService.getAllAgents();
     }
     @GetMapping("/findAgentById")
-    public Agent findAgentById(@RequestParam("id") int id) throws Exception{
-        return adminService.findAgentById(id);
+    public AdminViewsAgentDto findAgentById(@RequestParam("id") int id) throws Exception{
+        return adminService.getAgentById(id);
     }
 
 }
