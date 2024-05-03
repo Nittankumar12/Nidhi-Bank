@@ -30,7 +30,7 @@ public class EmailServiceImplementation implements EmailServiceInterface {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             try {
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-                helper.setFrom("piyush307hit@gmail.com");
+                helper.setFrom("railworldindiagurugram@gmail.com");
                 helper.setTo(to);
                 helper.setText(message);
                 helper.setSubject(subject);
@@ -53,7 +53,7 @@ public class EmailServiceImplementation implements EmailServiceInterface {
 
                 // Send the email
                 mailSender.send(mimeMessage);
-                log.info("Email sent successfully");
+                logger.info("Email sent successfully");
             } catch (MessagingException | IOException e) {
                 throw new RuntimeException(e);
             }

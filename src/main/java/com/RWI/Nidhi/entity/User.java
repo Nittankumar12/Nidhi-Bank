@@ -14,7 +14,7 @@ import lombok.Setter;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int userId;
+    private Integer userId;
     private String userName;
     private String phoneNumber;
     private String email;
