@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.admin.controller;
 
 import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
+import com.RWI.Nidhi.admin.ResponseDto.AgentMinimalDto;
 import com.RWI.Nidhi.admin.adminServiceImplementation.AdminServiceImplementation;
 import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.entity.*;
@@ -39,12 +40,12 @@ public class AdminController {
     public boolean deleteAgentById(@RequestParam("id") int id) throws Exception{
         return adminService.deleteAgentById(id);
     }
-    @GetMapping("/getAllAgents")
-    public List<Agent> getAllAgents(){
+    @GetMapping("/getAllAgentsIdentifierDetails")
+    public List<AgentMinimalDto> getAllAgents(){
         return adminService.getAllAgents();
     }
-    @GetMapping("/findAgentById")
-    public AdminViewsAgentDto findAgentById(@RequestParam("id") int id) throws Exception{
+    @GetMapping("/findAgentById/{id}")
+    public AdminViewsAgentDto findAgentById(@PathVariable int id) throws Exception{
         return adminService.getAgentById(id);
     }
 
