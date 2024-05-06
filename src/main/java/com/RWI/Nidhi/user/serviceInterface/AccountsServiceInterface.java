@@ -7,7 +7,7 @@ import com.RWI.Nidhi.enums.Status;
 public interface AccountsServiceInterface {
     Boolean schemeRunning(int accountId);
 
-    Accounts openAccount();
+    Accounts openAccount(String email);
 
     Status getAccountStatus(int accountId);
 
@@ -18,7 +18,6 @@ public interface AccountsServiceInterface {
 	public void updateAccountPIN(String accountNumber, String newPIN);
 	
 	public void fundTransfer(String sourceAccountNumber, String destinationAccountNumber, double amount);
-
 
     public void addBankUserDetails(BankDetailsDTO bankDetails, String emailId);
 

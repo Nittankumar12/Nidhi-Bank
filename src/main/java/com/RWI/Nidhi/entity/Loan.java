@@ -25,17 +25,21 @@ public class Loan {
     private LocalDate startDate;
     private double interestRate;
     private double monthlyEMI;
-    private double fine;
+    private double currentFine;
+    private LocalDate emiDate;
     @Enumerated(EnumType.STRING)
     private LoanType loanType;
     @Enumerated(EnumType.STRING)
     private LoanStatus status;
-    @OneToOne
+    @ManyToOne
     @JoinColumn
     private Accounts account;
     @ManyToOne
     @JoinColumn
     private Agent agent;
+    @ManyToOne
+    @JoinColumn
+    private User user;
     @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL)
     private List<Transactions> transactionsList;
     @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL)
