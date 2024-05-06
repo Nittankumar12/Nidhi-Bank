@@ -32,14 +32,10 @@ public class UserRegistrationController {
 	@Autowired
 	UserServiceImpl userServiceImpl;
 
-	@Autowired
-	UserServiceImpl userServiceImpl;
-
 	@GetMapping("/login")
 	public ResponseEntity<String> login(@RequestBody UserLoginDto user) {
 		String email = user.getEmail();
 		String password = user.getPassword();
-		System.out.println("mai abhi controller me hu");
 		boolean isAuthenticated = userServiceImpl.authenticate(email, password);
 		if (isAuthenticated) {
 			return ResponseEntity.ok("Login successful");
@@ -68,18 +64,5 @@ public class UserRegistrationController {
 	public ResponseEntity<String> verifyPhoneOtp(@RequestParam("phoneNumber") String phoneNumber,
 			@RequestParam("receivedOtp") String enteredOtp) throws Exception {
 		return userService.verifyPhoneOtp(phoneNumber, enteredOtp);
-	}
-
-	@GetMapping("/login")
-	public ResponseEntity<String> login(@RequestBody User user) {
-		String email = user.getEmail();
-		String password = user.getPassword();
-		System.out.println("mai abhi controller me hu");
-		boolean isAuthenticated =userServiceImpl.authenticate(email, password);
-		if (isAuthenticated) {
-			return ResponseEntity.ok("Login successful");
-		} else {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-		}
 	}
 }
