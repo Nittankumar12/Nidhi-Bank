@@ -15,9 +15,12 @@ public class AccountController {
 	private AccountsServiceInterface accountsServiceInterface;
 
 	// End point to open a new account
-	@PostMapping("/open")
-	public Accounts openAccount() {
-		return accountsServiceInterface.openAccount();
+	@GetMapping("/open")
+	public ResponseEntity<Accounts> openAccount(@RequestParam String email) {
+
+		Accounts newAccount = accountsServiceInterface.openAccount(email);
+		return ResponseEntity.ok(newAccount);
+
 	}
 
 	// End point to get account status

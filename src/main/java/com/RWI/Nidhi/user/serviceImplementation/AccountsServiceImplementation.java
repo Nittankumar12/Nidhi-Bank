@@ -24,7 +24,7 @@ import com.RWI.Nidhi.user.serviceInterface.SchemeServiceInterface;
 @Service
 public class AccountsServiceImplementation implements AccountsServiceInterface {
 	// Define the length of the account number
-	private static final int ACCOUNT_NUMBER_LENGTH = 10;
+	// private static final int ACCOUNT_NUMBER_LENGTH = 10;
 	@Autowired
 	private AccountsRepo accountsRepo;
 	@Autowired
@@ -46,35 +46,62 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 		return Boolean.FALSE;
 	}
 
-	// Prince code
-	// Generate a unique account number
-	private String generateRandomAccountNumber() {
-		StringBuilder sb = new StringBuilder();
+//	// Prince code
+//	// Generate a unique account number
+//	private String generateRandomAccountNumber() {
+//		StringBuilder sb = new StringBuilder();
+//
+//		// Append fixed prefix
+//		sb.append("1374");
+//
+//		// Add random digits to the account number
+//		Random random = new Random();
+//		for (int i = 0; i < ACCOUNT_NUMBER_LENGTH; i++) {
+//			sb.append(random.nextInt(10)); // Generate random digits (0-9)
+//		}
+//		return sb.toString();
+//	}
 
-		// Append fixed prefix
-		sb.append("1374");
+	private String generateAccountNumber(String name, String mobileNumber) {
+		// Extract the first two letters of the name and convert them to uppercase
+//	    String initials = name.substring(0, Math.min(name.length(), 1)).toUpperCase();
+		char firstChar = name.charAt(0);
+		char lastChar = name.charAt(name.lastIndexOf(' ') + 1);
 
-		// Add random digits to the account number
-		Random random = new Random();
-		for (int i = 0; i < ACCOUNT_NUMBER_LENGTH; i++) {
-			sb.append(random.nextInt(10)); // Generate random digits (0-9)
-		}
-		return sb.toString();
+		// Extract the last eight digits of the mobile number
+		// String lastDigits = mobileNumber.substring(Math.max(0, mobileNumber.length()
+		// - 8));
+
+		// Concatenate the initials and last digits to form the account number
+		return (firstChar + mobileNumber + lastChar).toUpperCase();
 	}
 
 	@Override
-	public Accounts openAccount() {
+	public Accounts openAccount(String email) {
 		// Generate a random account number
-		String accountNumber = generateRandomAccountNumber();
 
-		// Create a new account object
-		Accounts newAccount = new Accounts();
-		newAccount.setAccountNumber(accountNumber);
-		newAccount.setCurrentBalance(0); // Set the initial balance to 0
-		newAccount.setAccountOpeningDate(LocalDate.now());
-		newAccount.setAccountStatus(Status.ACTIVE);
-		newAccount.setPin(accountPIN); // Set the account PIN
-		return accountsRepo.save(newAccount);
+		// Find the user by email
+		Optional<User> optionalUser = userRepo.findUserByEmail(email);
+		if (optionalUser.isPresent()) {
+			// String accountNumber = generateRandomAccountNumber();
+			String accountNumber = generateAccountNumber(optionalUser.get().getUserName(),
+					optionalUser.get().getPhoneNumber());
+			// Create a new account object
+			Accounts newAccount = new Accounts();
+			newAccount.setAccountNumber(accountNumber);
+			newAccount.setCurrentBalance(0); // Set the initial balance to 0
+			newAccount.setAccountOpeningDate(LocalDate.now());
+			newAccount.setAccountStatus(Status.ACTIVE);
+			newAccount.setPin(generateRandomAccountPIN()); // Set the account PIN
+			// Associate the account with the user
+			User user = optionalUser.get();
+			newAccount.setUser(user);
+			return accountsRepo.save(newAccount);
+
+		} else {
+			// Handle the case where the user is not found
+			throw new RuntimeException("User with email " + email + " not found");
+		}
 	}
 
 	@Override
@@ -214,6 +241,5 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 			// when the user is not found
 			System.out.println("User with email " + emailId + " not found");
 		}
-
 	}
 }

@@ -25,7 +25,7 @@ public class Loan {
     private LocalDate startDate;
     private double interestRate;
     private double monthlyEMI;
-    private double fine;
+    private double currentFine;
     private LocalDate emiDate;
     @Enumerated(EnumType.STRING)
     private LoanType loanType;

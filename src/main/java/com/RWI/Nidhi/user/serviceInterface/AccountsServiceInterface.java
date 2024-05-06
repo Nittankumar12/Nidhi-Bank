@@ -7,7 +7,7 @@ import com.RWI.Nidhi.enums.Status;
 public interface AccountsServiceInterface {
     Boolean schemeRunning(int accountId);
 
-    Accounts openAccount();
+    Accounts openAccount(String email);
 
     Status getAccountStatus(int accountId);
 
