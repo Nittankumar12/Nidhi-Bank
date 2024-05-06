@@ -39,6 +39,7 @@ public class OtpServiceImplementation implements OtpServiceInterface {
 	public ResponseEntity<String> sendEmailOtp(String userEmailId,String subject, String messageToSend, String otp) throws Exception {
 		this.otp = otp;
 		SimpleMailMessage message = new SimpleMailMessage();
+		message.setFrom("railworldindiagurugram@gmail.com");
 		message.setTo(userEmailId);
 		message.setSubject(subject);
 		message.setText(messageToSend + this.otp);

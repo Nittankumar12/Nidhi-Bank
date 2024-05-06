@@ -9,12 +9,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.RWI.Nidhi.entity.User;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.user.serviceImplementation.UserRegistrationServiceImplementation;
+import com.RWI.Nidhi.user.serviceImplementation.UserServiceImpl;
+
 @RestController
 @RequestMapping("/user")
 public class UserRegistrationController {
-
 	@Autowired
 	UserRegistrationServiceImplementation userService;
+	@Autowired
+	UserServiceImpl userServiceImpl;
 
 	@Autowired
 	UserServiceImpl userServiceImpl;
@@ -38,7 +54,8 @@ public class UserRegistrationController {
 	}
 
 	@PostMapping("/verifyEmailOtp")
-	public ResponseEntity<String> verifyEmailOtp(@RequestParam("email") String email, @RequestParam("enteredOTP") String enteredOTP) throws Exception {
+	public ResponseEntity<String> verifyEmailOtp(@RequestParam("email") String email,
+			@RequestParam("enteredOTP") String enteredOTP) throws Exception {
 		return userService.verifyEmailOtp(email, enteredOTP);
 	}
 
@@ -48,7 +65,21 @@ public class UserRegistrationController {
 	}
 
 	@PostMapping("/verifyPhoneOtp")
-	public ResponseEntity<String> verifyPhoneOtp(@RequestParam("phoneNumber") String phoneNumber, @RequestParam("receivedOtp") String enteredOtp) throws Exception {
+	public ResponseEntity<String> verifyPhoneOtp(@RequestParam("phoneNumber") String phoneNumber,
+			@RequestParam("receivedOtp") String enteredOtp) throws Exception {
 		return userService.verifyPhoneOtp(phoneNumber, enteredOtp);
+	}
+
+	@GetMapping("/login")
+	public ResponseEntity<String> login(@RequestBody User user) {
+		String email = user.getEmail();
+		String password = user.getPassword();
+		System.out.println("mai abhi controller me hu");
+		boolean isAuthenticated =userServiceImpl.authenticate(email, password);
+		if (isAuthenticated) {
+			return ResponseEntity.ok("Login successful");
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+		}
 	}
 }

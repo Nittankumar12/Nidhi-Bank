@@ -37,6 +37,9 @@ public class Loan {
     @ManyToOne
     @JoinColumn
     private Agent agent;
+    @ManyToOne
+    @JoinColumn
+    private User user;
     @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL)
     private List<Transactions> transactionsList;
     @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL)

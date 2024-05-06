@@ -1,8 +1,15 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
+
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +21,11 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
+
     @Autowired
+
+	@Autowired
+
 	UserRepo userRepo;
 
 	@Override

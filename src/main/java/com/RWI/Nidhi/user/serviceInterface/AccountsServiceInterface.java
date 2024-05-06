@@ -19,7 +19,6 @@ public interface AccountsServiceInterface {
 	
 	public void fundTransfer(String sourceAccountNumber, String destinationAccountNumber, double amount);
 
-
     public void addBankUserDetails(BankDetailsDTO bankDetails, String emailId);
 
 
