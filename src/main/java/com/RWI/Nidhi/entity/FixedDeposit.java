@@ -18,19 +18,20 @@ public class FixedDeposit {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int fdId;
+    private String nomineeName;
     private int amount;
     private LocalDate depositDate;
+    private double interestRate;
+    private int tenure;
+    private double maturityAmount;
     private LocalDate maturityDate;
     private LocalDate closingDate;
-
     private int penalty;
 //    @Transient
 //    @Enumerated(EnumType.STRING)
 //    private FdCompoundingFrequency fdCompoundingFrequency;
     private int compoundingFrequency;
-    private double interestRate;
-    private int tenure;
-    private double maturityAmount;
+
 
     @Enumerated(EnumType.STRING)
     private Status fdStatus;
@@ -42,8 +43,8 @@ public class FixedDeposit {
     private Agent agent;
     @OneToMany(mappedBy = "fd", cascade = CascadeType.ALL)
     private List<Transactions> transactionsList;
-//    public void setInterestRate(FdCompoundingFrequency fdCompoundingFrequency) {
-//        this.interestRate = fdCompoundingFrequency.getFdInterestRate();
-//        this.compoundingFrequency = fdCompoundingFrequency.getCompoundingFreq();
-//    }
+
+
+
+
 }

@@ -20,9 +20,10 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         MIS newMis = new MIS();
         newMis.setTotalDepositedAmount(misDto.getTotalDepositedAmount());
         newMis.setStartDate(LocalDate.now());
-        newMis.setMaturityDate(LocalDate.now().plusYears(misDto.getMisTenure().getTenure()));
         newMis.setTenure(misDto.getMisTenure().getTenure());
+        newMis.setNomineeName(misDto.getNomineeName());
         newMis.setInterestRate(misDto.getMisTenure().getInterestRate());
+        newMis.setMaturityDate(LocalDate.now().plusYears(misDto.getMisTenure().getTenure()));
         newMis.setMonthlyIncome(calculateMisMonthlyIncome(newMis.getTotalDepositedAmount(), newMis.getInterestRate()));
         newMis.setStatus(Status.ACTIVE);
         misRepo.save(newMis);
