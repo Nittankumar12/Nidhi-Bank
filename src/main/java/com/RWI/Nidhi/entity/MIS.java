@@ -17,14 +17,17 @@ import java.util.List;
 public class MIS {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "six_digit_id_generator")
+//    @org.hibernate.annotations.GenericGenerator(name = "six_digit_id_generator", strategy = "path.to.SixDigitIdGenerator")
     private int misId;
     private double totalDepositedAmount;
     private LocalDate startDate;
+    private int tenure;
+    private double interestRate;
+    private String nomineeName;
     private LocalDate maturityDate;
     private LocalDate closingDate;
     private double monthlyIncome;
-    private int tenure;
-    private double interestRate;
     private double totalInterestEarned;
     @Enumerated(EnumType.STRING)
     private Status status;

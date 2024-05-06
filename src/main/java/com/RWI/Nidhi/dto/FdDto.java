@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 public class FdDto {
     int amount;
+    private String nomineeName;
     @Enumerated(EnumType.STRING)
     FdCompoundingFrequency fdCompoundingFrequency;
     int tenure;

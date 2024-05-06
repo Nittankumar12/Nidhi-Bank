@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class RdDto {
+    private String nomineeName;
     double monthlyDepositAmount;
     int tenure;
     RdCompoundingFrequency rdCompoundingFrequency;
