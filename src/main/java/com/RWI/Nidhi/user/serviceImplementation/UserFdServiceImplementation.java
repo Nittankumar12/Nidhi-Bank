@@ -31,6 +31,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         fd.setAmount(fdDto.getAmount());
         fd.setDepositDate(LocalDate.now());
         fd.setTenure(fdDto.getTenure());
+        fd.setNomineeName(fdDto.getNomineeName());
         fd.setMaturityDate(LocalDate.now().plusYears(fdDto.getTenure()));
         fd.setCompoundingFrequency(fdDto.getFdCompoundingFrequency().getCompoundingFreq());
         fd.setInterestRate(fdDto.getFdCompoundingFrequency().getFdInterestRate());

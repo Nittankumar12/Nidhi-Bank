@@ -20,14 +20,15 @@ public class RecurringDeposit {
 //    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "six_digit_id_generator")
 //    @org.hibernate.annotations.GenericGenerator(name = "six_digit_id_generator", strategy = "path.to.SixDigitIdGenerator")
     private int rdId;
+    private String nomineeName;
     private double monthlyDepositAmount;
     private double interestRate;
-    private double maturityAmount;
-    private int tenure; // Number of months
     private LocalDate startDate;
+    private int tenure; // Number of months
+    private double maturityAmount;
     private LocalDate maturityDate;
-    private LocalDate lastDepositedDate;
-    private LocalDate totalAmountDeposited;
+//    private LocalDate lastDepositedDate;
+    private double totalAmountDeposited;
     private int penalty;
     private int compoundingFrequency;
     @Enumerated(EnumType.STRING)

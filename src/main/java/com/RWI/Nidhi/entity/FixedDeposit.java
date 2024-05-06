@@ -18,8 +18,12 @@ public class FixedDeposit {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int fdId;
+    private String nomineeName;
     private int amount;
     private LocalDate depositDate;
+    private double interestRate;
+    private int tenure;
+    private double maturityAmount;
     private LocalDate maturityDate;
     private LocalDate closingDate;
     private int penalty;
@@ -27,9 +31,7 @@ public class FixedDeposit {
 //    @Enumerated(EnumType.STRING)
 //    private FdCompoundingFrequency fdCompoundingFrequency;
     private int compoundingFrequency;
-    private double interestRate;
-    private int tenure;
-    private double maturityAmount;
+
 
     @Enumerated(EnumType.STRING)
     private Status fdStatus;

@@ -22,11 +22,12 @@ public class MIS {
     private int misId;
     private double totalDepositedAmount;
     private LocalDate startDate;
+    private int tenure;
+    private double interestRate;
+    private String nomineeName;
     private LocalDate maturityDate;
     private LocalDate closingDate;
     private double monthlyIncome;
-    private int tenure;
-    private double interestRate;
     private double totalInterestEarned;
     @Enumerated(EnumType.STRING)
     private Status status;

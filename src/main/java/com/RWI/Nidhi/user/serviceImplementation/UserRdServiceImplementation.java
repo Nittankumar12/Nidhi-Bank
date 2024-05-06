@@ -28,15 +28,19 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         rd.setMonthlyDepositAmount(rdDto.getMonthlyDepositAmount());
         rd.setStartDate(LocalDate.now());
         rd.setTenure(rdDto.getTenure());
-        rd.setMaturityDate(LocalDate.now().plusYears(rdDto.getTenure()));
+        rd.setNomineeName(rdDto.getNomineeName());
         rd.setInterestRate(rdDto.getRdCompoundingFrequency().getRdInterestRate());
+        rd.setCompoundingFrequency(rdDto.getRdCompoundingFrequency().getCompoundingFreq());
+        rd.setTotalAmountDeposited(calculateTotalAmount(rdDto.getMonthlyDepositAmount(),rdDto.getTenure()));
+        rd.setMaturityDate(LocalDate.now().plusYears(rdDto.getTenure()));
         int tenureInDays = getCompleteDaysCount(rd.getStartDate(), rd.getMaturityDate());
         rd.setPenalty(0);
-        rd.setCompoundingFrequency(rdDto.getRdCompoundingFrequency().getCompoundingFreq());
         rd.setMaturityAmount(calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getInterestRate(),rd.getMaturityDate()));
         rd.setRdStatus(Status.ACTIVE);
         return rdRepo.save(rd);
     }
+
+
 
     private int getCompleteDaysCount(LocalDate startDate, LocalDate endDate) {
         double daysDifference = ChronoUnit.DAYS.between(startDate, endDate);
@@ -57,6 +61,11 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
 //            System.out.println(currentAmount);
         }
         return currentAmount;
+    }
+
+    private double calculateTotalAmount(double monthlyDepositAmount,int tenure){
+        double totalAmount = monthlyDepositAmount*tenure;
+        return totalAmount;
     }
 
 

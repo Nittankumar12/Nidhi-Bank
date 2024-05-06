@@ -1,12 +1,17 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
+import com.RWI.Nidhi.dto.FdResponseDto;
+import com.RWI.Nidhi.dto.MisResponseDto;
+import com.RWI.Nidhi.dto.RdResponseDto;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.UserDetailsService;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.attribute.UserPrincipalNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -26,45 +31,71 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private MisRepo misRepo;
 
+
     @Override
-    public Loan getLoanDetailsByUserId(int userId) throws UserPrincipalNotFoundException {
-         User user = userRepo.findById(userId).orElseThrow(()->new UserPrincipalNotFoundException("User not found :" + userId + ""));
-         return user.getAccounts().getLoan();
+    public List<FdResponseDto> getFixedDepositDetailsByUserId(int userId)  {
+        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
+        List<FixedDeposit> fixedDepositList = user.getAccounts().getFdList();
+        List<FdResponseDto> fdResponseDtoList = new ArrayList<FdResponseDto>();
+        for (FixedDeposit fixedDeposit : fixedDepositList){
+            FdResponseDto tempFdResponse = new FdResponseDto();
+            tempFdResponse.setFdId(fixedDeposit.getFdId());
+            tempFdResponse.setAmount(fixedDeposit.getAmount());
+            tempFdResponse.setFdStatus(fixedDeposit.getFdStatus());
+
+            fdResponseDtoList.add(tempFdResponse);
+        }
+//        System.out.println("your size is " + fdResponseDtoList.size());
+        return fdResponseDtoList;
     }
 
     @Override
-    public List<Transactions> getTransactionsDetailsByUserId(int userId) throws UserPrincipalNotFoundException {
-        User user = userRepo.findById(userId).orElseThrow(()->new UserPrincipalNotFoundException("User not found :" + userId + ""));
+    public List<RdResponseDto> getRecurringDepositDetailsByUserId(int userId)  {
+        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
+        List<RecurringDeposit> recurringDepositList = user.getAccounts().getRecurringDepositList();
+        List<RdResponseDto> rdResponseDtoList = new ArrayList<RdResponseDto>();
+        for (RecurringDeposit recurringDeposit : recurringDepositList){
+            RdResponseDto tempRdResponse = new RdResponseDto();
+            tempRdResponse.setRdId(recurringDeposit.getRdId());
+            tempRdResponse.setMonthlyDepositAmount(recurringDeposit.getMonthlyDepositAmount());
+            tempRdResponse.setRdStatus(recurringDeposit.getRdStatus());
+            rdResponseDtoList.add(tempRdResponse);
+        }
+        return rdResponseDtoList;
+    }
+
+    @Override
+    public List<MisResponseDto> getMisDetailsByUserId(int userId) {
+        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
+        List<MIS> misList = user.getAccounts().getMisList();
+        List<MisResponseDto> misResponseDtoList = new ArrayList<MisResponseDto>();
+        for (MIS mis : misList) {
+            MisResponseDto tempMisResponse = new MisResponseDto();
+            tempMisResponse.setMisId(mis.getMisId());
+            tempMisResponse.setTotalDepositedAmount(mis.getTotalDepositedAmount());
+            tempMisResponse.setStatus(mis.getStatus());
+            misResponseDtoList.add(tempMisResponse);
+        }
+        return misResponseDtoList;
+    }
+
+    @Override
+    public Scheme getSchemeByDetailsUserId(int userId) {
+        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
+
+        return user.getAccounts().getScheme();
+    }
+
+    @Override
+    public List<Transactions> getTransactionsDetailsByUserId(int userId)  {
+        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
         return user.getAccounts().getTransactionsList();
     }
 
     @Override
-    public List<FixedDeposit> getFixedDepositDetailsByUserId(int userId) throws UserPrincipalNotFoundException {
-        User user = userRepo.findById(userId).orElseThrow(()->new UserPrincipalNotFoundException("User not found :" + userId + ""));
-        return user.getAccounts().getFdList();
+    public List<Loan> getLoanDetailsByUserId(int userId)  {
+        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
+        return user.getAccounts().getLoanList();
     }
-
-    @Override
-    public List<RecurringDeposit> getRecurringDepositDetailsByUserId(int userId) throws UserPrincipalNotFoundException {
-        User user = userRepo.findById(userId).orElseThrow(()->new UserPrincipalNotFoundException("User not found :" + userId + ""));
-
-        return user.getAccounts().getRecurringDepositList();
-    }
-
-    @Override
-    public List<MIS> getMisByDetailsUserId(int userId) throws UserPrincipalNotFoundException {
-        User user = userRepo.findById(userId).orElseThrow(()->new UserPrincipalNotFoundException("User not found :" + userId + ""));
-
-        return user.getAccounts().getMisList();
-    }
-
-    @Override
-    public List<Scheme> getSchemeByDetailsUserId(int userId) throws UserPrincipalNotFoundException {
-        User user = userRepo.findById(userId).orElseThrow(()->new UserPrincipalNotFoundException("User not found :" + userId + ""));
-
-        return user.getAccounts().getSchemeList();
-    }
-//    @Autowired
-//    private TransactionsRepo transactionsRepo;
 
 }
