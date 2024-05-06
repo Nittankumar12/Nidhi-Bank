@@ -25,13 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserLoanServiceImplementation implements UserLoanServiceInterface {
@@ -429,5 +429,55 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         return nextMonth.withDayOfMonth(1);
     }
     // to here
+
+
+
+    //prince
+    @Override
+	public List<LoanHIstoryDTO> getLoansByLoanType(String loanType) {
+		Loan loan1 = new Loan();
+		List<Loan> loans = loanRepository.findAll().stream().filter((loan) -> loan1.getLoanType().equals(loanType))
+				.collect(Collectors.toList());
+		List<LoanHIstoryDTO> loanDTOList = new ArrayList<>();
+		for (Loan loan : loans) {
+//			User user = new User();
+			LoanHIstoryDTO loanhistortDTO = new LoanHIstoryDTO();
+
+			loanhistortDTO.setLoanId(loan.getLoanId());
+			// loanhistortDTO.setLoanType(loanType);
+
+			loanhistortDTO.setRequestedLoanAmount(loan.getPrincipalLoanAmount());
+			loanhistortDTO.setInterestRate(loan.getInterestRate());
+			loanhistortDTO.setMonthlyEmi(loan.getMonthlyEMI());
+			loanhistortDTO.setUserName(loan.getAccount().getUser().getUserName());
+			loanDTOList.add(loanhistortDTO);
+
+		}
+		return loanDTOList;
+
+	}
+
+	@Override
+	public List<LoanHIstoryDTO> getLoansByLoanStatus(String loanStatus) {
+		Loan loan1 = new Loan();
+		List<Loan> loans = loanRepository.findAll().stream().filter((loan) -> loan1.getStatus().equals(loanStatus))
+				.collect(Collectors.toList());
+		List<LoanHIstoryDTO> loanDTOList = new ArrayList<>();
+		for (Loan loan : loans) {
+//			User user = new User();
+			LoanHIstoryDTO loanhistortDTO = new LoanHIstoryDTO();
+
+			loanhistortDTO.setLoanId(loan.getLoanId());
+			// loanhistortDTO.setLoanType(loanType);
+
+			loanhistortDTO.setRequestedLoanAmount(loan.getPrincipalLoanAmount());
+			loanhistortDTO.setInterestRate(loan.getInterestRate());
+			loanhistortDTO.setMonthlyEmi(loan.getMonthlyEMI());
+			loanhistortDTO.setUserName(loan.getAccount().getUser().getUserName());
+			loanDTOList.add(loanhistortDTO);
+
+		}
+		return loanDTOList;
+	}
 
 }

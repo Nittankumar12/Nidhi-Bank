@@ -1,5 +1,15 @@
 package com.RWI.Nidhi.user.controller;
 
+import com.RWI.Nidhi.dto.UserLoginDto;
+import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
+import com.RWI.Nidhi.user.serviceImplementation.UserRegistrationServiceImplementation;
+import com.RWI.Nidhi.user.serviceImplementation.UserServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import com.RWI.Nidhi.entity.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +31,22 @@ public class UserRegistrationController {
 	UserRegistrationServiceImplementation userService;
 	@Autowired
 	UserServiceImpl userServiceImpl;
+
+	@Autowired
+	UserServiceImpl userServiceImpl;
+
+	@GetMapping("/login")
+	public ResponseEntity<String> login(@RequestBody UserLoginDto user) {
+		String email = user.getEmail();
+		String password = user.getPassword();
+		System.out.println("mai abhi controller me hu");
+		boolean isAuthenticated = userServiceImpl.authenticate(email, password);
+		if (isAuthenticated) {
+			return ResponseEntity.ok("Login successful");
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+		}
+	}
 
 	@PostMapping("/sendEmailOtp")
 	public ResponseEntity<String> sendEmailOtp(@RequestParam("email") String email) throws Exception {

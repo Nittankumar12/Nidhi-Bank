@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import org.springframework.web.bind.annotation.RestController;
+
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +29,7 @@ import com.RWI.Nidhi.dto.LoanDto;
 import com.RWI.Nidhi.dto.LoanHIstoryDTO;
 import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
+
 
 @RestController
 @RequestMapping("/loan")
@@ -118,16 +122,19 @@ public class LoanController {
     ResponseEntity<MonthlyEmiDto> payEMI(String email){
         return new ResponseEntity<>(userLoanService.payEMI(email),HttpStatus.ACCEPTED);
     }
-    @GetMapping("/getloanClosureDetails/{email}")
+    @GetMapping("/getLoanClosureDetails/{email}")
     ResponseEntity<LoanClosureDto> getLoanClosureDetails(String email){
         return new ResponseEntity<>(userLoanService.getLoanClosureDetails(email),HttpStatus.FOUND);
     }
-    @PutMapping("/applyloanClosureDetails/{email}")
+    @PutMapping("/applyLoanClosureDetails/{email}")
     ResponseEntity<String> applyloanClosureDetails(String email){
         return new ResponseEntity<>(HttpStatus.valueOf(userLoanService.applyForLoanClosure(email)));
     }
-
     // Loan calc acc to scheme - > during the duration of scheme - > get for info , post for apply
 
 }//loan closure
+
+
+}//loan closure
+
 

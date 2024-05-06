@@ -37,8 +37,11 @@ public interface UserLoanServiceInterface {
 
 import com.RWI.Nidhi.dto.*;
 
-import java.time.LocalDate;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import com.RWI.Nidhi.dto.*;
 public interface UserLoanServiceInterface {
     double maxApplicableLoan(String email);
     Boolean checkForExistingLoan(String email);
@@ -53,4 +56,10 @@ public interface UserLoanServiceInterface {
     String applyForLoanClosure(String email);
     LocalDate calcFirstEMIDate(LocalDate startDate);
 
+
+
+    //Prince
+    List<LoanHIstoryDTO> getLoansByLoanType(String loanType);
+
+	List <LoanHIstoryDTO>getLoansByLoanStatus(String status);
 }
