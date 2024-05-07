@@ -4,6 +4,9 @@ import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
 import com.RWI.Nidhi.admin.ResponseDto.AgentMinimalDto;
 import com.RWI.Nidhi.admin.adminServiceImplementation.AdminServiceImplementation;
 import com.RWI.Nidhi.dto.AddAgentDto;
+import com.RWI.Nidhi.dto.TransactionsHistoryDto;
+import com.RWI.Nidhi.entity.*;
+import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.dto.LoginReq;
 import com.RWI.Nidhi.entity.Admin;
 import com.RWI.Nidhi.entity.Agent;
@@ -64,7 +67,22 @@ public class AdminController {
     public AdminViewsAgentDto findAgentById(@PathVariable int id) throws Exception {
         return adminService.getAgentById(id);
     }
-
+    @GetMapping("/getLoanByStatus")
+    public List<Loan> findByStatus(@RequestParam("status") LoanStatus status){
+        return adminService.findByStatus(status);
+    }
+    @GetMapping("/transactionOfCurrentMonth")
+    public List<TransactionsHistoryDto> getTransactionForCurrentMonth(TransactionsHistoryDto transactionsHistoryDto) {
+        return adminService.getTransactionForCurrentMonth(transactionsHistoryDto);
+    }
+    @GetMapping("/transactionOfToday")
+    public List<TransactionsHistoryDto> getTransactionForToday(TransactionsHistoryDto transactionsHistoryDto) {
+        return adminService.getTransactionForToday(transactionsHistoryDto);
+    }
+    @GetMapping("/transactionOfWeek")
+    public List<TransactionsHistoryDto> getTransactionForCurrentWeek(TransactionsHistoryDto transactionsHistoryDto) {
+        return adminService.getTransactionForCurrentWeek(transactionsHistoryDto);
+    }
     @PostMapping("/login-admin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginReq loginReq) {
         Admin admin = adminRepo.findByAdminName(loginReq.getUsername());
@@ -82,5 +100,4 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login Exception");
         }
     }
-
 }

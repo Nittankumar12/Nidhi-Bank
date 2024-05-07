@@ -44,13 +44,13 @@ public class EmailServiceImplementation implements EmailServiceInterface {
                         helper.addBcc(bcc);
                     }
                 }
-
+            if(files!=null&&files.isEmpty()) {
                 for (MultipartFile file : files) {
                     // Attach each file to the email
                     ByteArrayResource resource = new ByteArrayResource(file.getBytes());
                     helper.addAttachment(Objects.requireNonNull(file.getOriginalFilename()), resource);
                 }
-
+            }
                 // Send the email
                 mailSender.send(mimeMessage);
                 logger.info("Email sent successfully");
