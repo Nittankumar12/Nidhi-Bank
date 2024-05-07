@@ -9,10 +9,12 @@ import com.RWI.Nidhi.user.serviceInterface.UserPenaltyServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
 public class UserPenaltyServiceImplementation implements UserPenaltyServiceInterface {
 
@@ -40,11 +42,11 @@ public class UserPenaltyServiceImplementation implements UserPenaltyServiceInter
             currLoan.setCurrentFine(penaltyAmount);
             loanRepo.save(currLoan);
             return penalty;
-        }
-        else {
+        } else {
             return null;
         }
     }
+
     public double calculatePenaltyAmount(int loanId) {
         double penaltyAmount = 0;
         if (noOfMonthsEmiMissed(loanId) == 0)
@@ -52,27 +54,29 @@ public class UserPenaltyServiceImplementation implements UserPenaltyServiceInter
         else {
             double penaltyEMI = noOfMonthsEmiMissed(loanId) * loanRepo.findById(loanId).orElseThrow().getMonthlyEMI();
             double penaltyRate = 0.02;
-            penaltyAmount = penaltyRate*penaltyEMI*noOfMonthsEmiMissed(loanId);
+            penaltyAmount = penaltyRate * penaltyEMI * noOfMonthsEmiMissed(loanId);
             return penaltyAmount;
         }
     }
 
-    public int noOfMonthsEmiMissed(int loanId){//no of months on which penalty will apply on
+    public int noOfMonthsEmiMissed(int loanId) {//no of months on which penalty will apply on
         return (noOfMonthsEMIPaidAfterPenalty(loanId) - noOfMonthsEMIPaidBeforePenalty(loanId));
     }
-    public int noOfMonthsEMIPaidBeforePenalty(int loanId){
+
+    public int noOfMonthsEMIPaidBeforePenalty(int loanId) {
         //no of months before penalty has been paid
         Loan loan = loanRepo.findById(loanId).orElseThrow();
         double monthlyEMI = loan.getMonthlyEMI();
         double amountOfEMIPaid = loan.getPayableLoanAmount();//penalty has not been paid
-        int noOfMonthsEMIPaidBeforePenalty = (int) (amountOfEMIPaid/monthlyEMI);
+        int noOfMonthsEMIPaidBeforePenalty = (int) (amountOfEMIPaid / monthlyEMI);
         return noOfMonthsEMIPaidBeforePenalty;
     }
-    public int noOfMonthsEMIPaidAfterPenalty(int loanId){
+
+    public int noOfMonthsEMIPaidAfterPenalty(int loanId) {
         // no of months after penalty has been paid i.e., no of months EMI should have been paid for
         Loan loan = loanRepo.findById(loanId).orElseThrow();
         LocalDate currentMonthDate = firstDateOfCurrentMonth(LocalDate.now());
-        int noOfEMIPaidAfterPenalty = (int) ChronoUnit.MONTHS.between(currentMonthDate,loan.getStartDate());
+        int noOfEMIPaidAfterPenalty = (int) ChronoUnit.MONTHS.between(currentMonthDate, loan.getStartDate());
         return noOfEMIPaidAfterPenalty;
     }
 
@@ -85,10 +89,12 @@ public class UserPenaltyServiceImplementation implements UserPenaltyServiceInter
     public List<Penalty> getAllPenalties() {
         return penaltyRepo.findAll();
     }
+
     public LocalDate firstDateOfNextMonth(LocalDate date) {
         LocalDate nextMonth = date.plusMonths(1);
         return nextMonth.withDayOfMonth(1);
     }
+
     public LocalDate firstDateOfCurrentMonth(LocalDate date) {
         return date.withDayOfMonth(1);
     }

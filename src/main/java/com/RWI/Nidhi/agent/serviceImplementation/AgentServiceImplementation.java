@@ -19,7 +19,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -37,16 +36,16 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     @Autowired
     UserLoanServiceImplementation userLoanService;
     @Autowired
-    LoanRepo  loanRepo;
+    LoanRepo loanRepo;
 
     @Autowired
     private JavaMailSender javaMailSender;
 
     @Override
-    public User addUser(AddUserDto addUserDto) throws Exception{
+    public User addUser(AddUserDto addUserDto) throws Exception {
 
         //check if user already exists
-        if(userRepo.existsByEmail(addUserDto.getEmail())){
+        if (userRepo.existsByEmail(addUserDto.getEmail())) {
             throw new Exception("user already exists");
         }
         //
@@ -62,39 +61,40 @@ public class AgentServiceImplementation implements AgentServiceInterface {
             String subject = "Your temporary password";
             String messageToSend = "Your temporary system generated password is: ";
 
-            otpServiceImplementation.sendEmailOtp(newUser.getEmail(), subject, messageToSend,tempPassword);
+            otpServiceImplementation.sendEmailOtp(newUser.getEmail(), subject, messageToSend, tempPassword);
             newUser.setPassword(getEncryptedPassword(tempPassword));
             userRepo.save(newUser);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
         return newUser;
     }
 
     @Override
-    public User updateUserName(int id, String userName) throws Exception{
-        User currUser = userRepo.findById(id).orElseThrow(() -> {return new Exception("User not found");});
+    public User updateUserName(int id, String userName) throws Exception {
+        User currUser = userRepo.findById(id).orElseThrow(() -> {
+            return new Exception("User not found");
+        });
 
         currUser.setUserName(userName);
         try {
             userRepo.save(currUser);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
         return currUser;
     }
 
     @Override
-    public User updateUserEmail(int id, String userEmail) throws Exception{
-        User currUser = userRepo.findById(id).orElseThrow(() -> {return new Exception("User not found");});
+    public User updateUserEmail(int id, String userEmail) throws Exception {
+        User currUser = userRepo.findById(id).orElseThrow(() -> {
+            return new Exception("User not found");
+        });
 
         currUser.setEmail(userEmail);
         try {
             userRepo.save(currUser);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
         return currUser;
@@ -102,13 +102,14 @@ public class AgentServiceImplementation implements AgentServiceInterface {
 
     @Override
     public User updateUserPhoneNum(int id, String phoneNum) throws Exception {
-        User currUser = userRepo.findById(id).orElseThrow(() -> {return new Exception("User not found");});
+        User currUser = userRepo.findById(id).orElseThrow(() -> {
+            return new Exception("User not found");
+        });
 
         currUser.setPhoneNumber(phoneNum);
         try {
             userRepo.save(currUser);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
         return currUser;
@@ -121,8 +122,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         currUser.setPassword(getEncryptedPassword(password));
         try {
             userRepo.save(currUser);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
         return currUser;
@@ -130,10 +130,9 @@ public class AgentServiceImplementation implements AgentServiceInterface {
 
     @Override
     public boolean deleteUserById(int id) throws Exception {
-        try{
+        try {
             userRepo.deleteById(id);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
         return true;
@@ -145,14 +144,16 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     }
 
     @Override
-    public User findUserById(int id) throws Exception{
-        return userRepo.findById(id).orElseThrow(() -> {return new Exception("User not found");});
+    public User findUserById(int id) throws Exception {
+        return userRepo.findById(id).orElseThrow(() -> {
+            return new Exception("User not found");
+        });
     }
 
     @Override
     public ResponseEntity<String> forgetPasswordSendVerificationCode(String email) throws Exception {
         //check if user already exists
-        if(!userRepo.existsByEmail(email)){
+        if (!userRepo.existsByEmail(email)) {
             throw new Exception("This email is not registered with us");
         }
         //
@@ -161,58 +162,55 @@ public class AgentServiceImplementation implements AgentServiceInterface {
             String subject = "Forgot password attempted";
             String messageToSend = "Your verification OTP is: ";
             otpServiceImplementation.sendEmailOtp(email, subject, messageToSend, otp);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
 
-        return new ResponseEntity("OTP send", HttpStatus.OK );
+        return new ResponseEntity("OTP send", HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<String> forgetPasswordVerifyVerificationCode(String email, String enteredOtp) throws Exception {
-         try{
-             otpServiceImplementation.verifyEmailOtp(email, enteredOtp);
-         }
-         catch (Exception e){
-             throw new Exception(e.getMessage());
-         }
-        return new ResponseEntity("Email Verify Successfully", HttpStatus.OK );
+        try {
+            otpServiceImplementation.verifyEmailOtp(email, enteredOtp);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+        return new ResponseEntity("Email Verify Successfully", HttpStatus.OK);
     }
 
-    private byte[] getSHA(String input){
-        try{
+    private byte[] getSHA(String input) {
+        try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
             return messageDigest.digest(input.getBytes(StandardCharsets.UTF_8));
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    private String getEncryptedPassword(String password){
+    private String getEncryptedPassword(String password) {
         String encryptedPassword = "";
-        try{
+        try {
             BigInteger number = new BigInteger(1, getSHA(password));
-            StringBuilder hexString = new StringBuilder(number.toString(16));
-            return hexString.toString();
-        }catch (Exception e){
+            return number.toString(16);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
+
     @Override
     public LoanInfoDto LoanApproved(String email) {//must check for loan existence in controller
         User user = userService.getByEmail(email);
         Accounts accounts = user.getAccounts();
         List<Loan> loanList = accounts.getLoanList();
-        for (Loan loan : loanList){
-            if(loan.getStatus() == LoanStatus.APPLIED){
+        for (Loan loan : loanList) {
+            if (loan.getStatus() == LoanStatus.APPLIED) {
                 loan.setStatus(LoanStatus.APPROVED);
                 loanRepo.save(loan);
                 sendApprovalEmail(loan);
-            }
-            else
+            } else
                 return null;
         }
         return userLoanService.getLoanInfo(email);
@@ -233,13 +231,12 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         User user = userService.getByEmail(email);
         Accounts accounts = user.getAccounts();
         List<Loan> loanList = accounts.getLoanList();
-        for (Loan loan : loanList){
-            if(loan.getStatus() == LoanStatus.APPROVED){
+        for (Loan loan : loanList) {
+            if (loan.getStatus() == LoanStatus.APPROVED) {
                 loan.setStatus(LoanStatus.SANCTIONED);
                 loanRepo.save(loan);
 
-            }
-            else
+            } else
                 return null;
         }
         return userLoanService.getLoanInfo(email);
@@ -250,12 +247,11 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         User user = userService.getByEmail(email);
         Accounts accounts = user.getAccounts();
         List<Loan> loanList = accounts.getLoanList();
-        for (Loan loan : loanList){
-            if(loan.getStatus() == LoanStatus.APPLIED){
+        for (Loan loan : loanList) {
+            if (loan.getStatus() == LoanStatus.APPLIED) {
                 loan.setStatus(LoanStatus.PENDING);
                 loanRepo.save(loan);
-            }
-            else
+            } else
                 return null;
         }
         return userLoanService.getLoanInfo(email);
@@ -266,12 +262,11 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         User user = userService.getByEmail(email);
         Accounts accounts = user.getAccounts();
         List<Loan> loanList = accounts.getLoanList();
-        for (Loan loan : loanList){
-            if(loan.getStatus() == LoanStatus.APPLIED){
+        for (Loan loan : loanList) {
+            if (loan.getStatus() == LoanStatus.APPLIED) {
                 loan.setStatus(LoanStatus.REJECTED);
                 loanRepo.save(loan);
-            }
-            else
+            } else
                 return null;
         }
         return userLoanService.getLoanInfo(email);
@@ -282,12 +277,11 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         User user = userService.getByEmail(email);
         Accounts accounts = user.getAccounts();
         List<Loan> loanList = accounts.getLoanList();
-        for (Loan loan : loanList){
-            if(loan.getStatus() == LoanStatus.REQUESTEDFORFORECLOSURE){
+        for (Loan loan : loanList) {
+            if (loan.getStatus() == LoanStatus.REQUESTEDFORFORECLOSURE) {
                 loan.setStatus(LoanStatus.FORECLOSED);
                 loanRepo.save(loan);
-            }
-            else
+            } else
                 return null;
         }
         return userLoanService.getLoanInfo(email);
@@ -298,12 +292,11 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         User user = userService.getByEmail(email);
         Accounts accounts = user.getAccounts();
         List<Loan> loanList = accounts.getLoanList();
-        for (Loan loan : loanList){
-            if(loan.getStatus() == LoanStatus.SANCTIONED){
+        for (Loan loan : loanList) {
+            if (loan.getStatus() == LoanStatus.SANCTIONED) {
                 loan.setStatus(LoanStatus.CLOSED);
                 loanRepo.save(loan);
-            }
-            else
+            } else
                 return null;
         }
         return userLoanService.getLoanInfo(email);

@@ -31,12 +31,12 @@ public class UserStatementServiceImpl implements UserStatementService {
 
 
     @Override
-    public List<FdResponseDto> getFixedDepositDetailsByEmail(String email)  {
+    public List<FdResponseDto> getFixedDepositDetailsByEmail(String email) {
 //        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
         User user = userRepo.findByEmail(email);
         List<FixedDeposit> fixedDepositList = user.getAccounts().getFdList();
         List<FdResponseDto> fdResponseDtoList = new ArrayList<FdResponseDto>();
-        for (FixedDeposit fixedDeposit : fixedDepositList){
+        for (FixedDeposit fixedDeposit : fixedDepositList) {
             FdResponseDto tempFdResponse = new FdResponseDto();
             tempFdResponse.setFdId(fixedDeposit.getFdId());
             tempFdResponse.setAmount(fixedDeposit.getAmount());
@@ -49,11 +49,11 @@ public class UserStatementServiceImpl implements UserStatementService {
     }
 
     @Override
-    public List<RdResponseDto> getRecurringDepositDetailsByEmail(String email)  {
+    public List<RdResponseDto> getRecurringDepositDetailsByEmail(String email) {
         User user = userRepo.findByEmail(email);
         List<RecurringDeposit> recurringDepositList = user.getAccounts().getRecurringDepositList();
         List<RdResponseDto> rdResponseDtoList = new ArrayList<RdResponseDto>();
-        for (RecurringDeposit recurringDeposit : recurringDepositList){
+        for (RecurringDeposit recurringDeposit : recurringDepositList) {
             RdResponseDto tempRdResponse = new RdResponseDto();
             tempRdResponse.setRdId(recurringDeposit.getRdId());
             tempRdResponse.setMonthlyDepositAmount(recurringDeposit.getMonthlyDepositAmount());
@@ -85,13 +85,13 @@ public class UserStatementServiceImpl implements UserStatementService {
     }
 
     @Override
-    public List<Transactions> getTransactionsDetailsByEmail(String email)  {
+    public List<Transactions> getTransactionsDetailsByEmail(String email) {
         User user = userRepo.findByEmail(email);
         return user.getAccounts().getTransactionsList();
     }
 
     @Override
-    public List<Loan> getLoanDetailsByEmail(String email)  {
+    public List<Loan> getLoanDetailsByEmail(String email) {
         User user = userRepo.findByEmail(email);
         return user.getAccounts().getLoanList();
     }
