@@ -5,12 +5,8 @@ import com.RWI.Nidhi.admin.ResponseDto.AgentMinimalDto;
 import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.dto.TransactionsHistoryDto;
 import com.RWI.Nidhi.entity.Agent;
-<<<<<<< HEAD
 import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.enums.LoanStatus;
-
-=======
->>>>>>> ca3fbfa0cf31b6c0a657b04ed4603f421733082a
 
 import java.util.List;
 
@@ -31,13 +27,9 @@ public interface AdminServiceInterface {
     List<AgentMinimalDto> getAllAgents();
 
     AdminViewsAgentDto getAgentById(int id) throws Exception;
-<<<<<<< HEAD
+
     List<TransactionsHistoryDto> getTransactionForCurrentMonth(TransactionsHistoryDto transactionsHistoryDto);
     List<TransactionsHistoryDto> getTransactionForCurrentWeek(TransactionsHistoryDto transactionsHistoryDto);
     List<TransactionsHistoryDto> getTransactionForToday(TransactionsHistoryDto transactionsHistoryDto);
     List<Loan> findByStatus(LoanStatus status);
-=======
-
->>>>>>> ca3fbfa0cf31b6c0a657b04ed4603f421733082a
-
 }
