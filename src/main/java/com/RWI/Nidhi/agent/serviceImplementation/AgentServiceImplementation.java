@@ -8,12 +8,15 @@ import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
+import com.RWI.Nidhi.repository.LoanRepo;
 import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 
@@ -33,6 +36,11 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     UserService userService;
     @Autowired
     UserLoanServiceImplementation userLoanService;
+    @Autowired
+    LoanRepo  loanRepo;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     @Override
     public User addUser(AddUserDto addUserDto) throws Exception{
@@ -201,12 +209,24 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         for (Loan loan : loanList){
             if(loan.getStatus() == LoanStatus.APPLIED){
                 loan.setStatus(LoanStatus.APPROVED);
+                loanRepo.save(loan);
+                sendApprovalEmail(loan);
             }
             else
                 return null;
         }
         return userLoanService.getLoanInfo(email);
     }
+
+    private void sendApprovalEmail(Loan loan) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(loan.getUser().getEmail());
+        mailMessage.setSubject("Loan Approval - " + loan.getAccount().getAccountNumber());
+        mailMessage.setText("Dear " + loan.getUser().getUserName() + ",\n\nYour loan has been approved. Please find the details below:\n\nLoan Number: " + loan.getLoanId() + "\nLoan Amount: " + loan.getPrincipalLoanAmount() + "\n\nBest regards,\n[Your Bank Name]");
+
+        javaMailSender.send(mailMessage);
+    }
+
 
     @Override
     public LoanInfoDto LoanOnSanction(String email) {
@@ -216,6 +236,8 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         for (Loan loan : loanList){
             if(loan.getStatus() == LoanStatus.APPROVED){
                 loan.setStatus(LoanStatus.SANCTIONED);
+                loanRepo.save(loan);
+
             }
             else
                 return null;
@@ -231,6 +253,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         for (Loan loan : loanList){
             if(loan.getStatus() == LoanStatus.APPLIED){
                 loan.setStatus(LoanStatus.PENDING);
+                loanRepo.save(loan);
             }
             else
                 return null;
@@ -246,6 +269,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         for (Loan loan : loanList){
             if(loan.getStatus() == LoanStatus.APPLIED){
                 loan.setStatus(LoanStatus.REJECTED);
+                loanRepo.save(loan);
             }
             else
                 return null;
@@ -261,6 +285,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         for (Loan loan : loanList){
             if(loan.getStatus() == LoanStatus.REQUESTEDFORFORECLOSURE){
                 loan.setStatus(LoanStatus.FORECLOSED);
+                loanRepo.save(loan);
             }
             else
                 return null;
@@ -276,6 +301,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         for (Loan loan : loanList){
             if(loan.getStatus() == LoanStatus.SANCTIONED){
                 loan.setStatus(LoanStatus.CLOSED);
+                loanRepo.save(loan);
             }
             else
                 return null;
