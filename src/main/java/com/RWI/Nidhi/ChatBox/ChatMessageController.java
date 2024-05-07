@@ -16,8 +16,6 @@ import java.util.List;
 @RestController
 public class ChatMessageController {
 
-
-
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
 
