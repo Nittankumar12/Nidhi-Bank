@@ -1,6 +1,5 @@
 package com.RWI.Nidhi.dto;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
