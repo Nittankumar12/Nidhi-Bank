@@ -226,8 +226,13 @@ public class AgentServiceImplementation implements AgentServiceInterface {
 
         javaMailSender.send(mailMessage);
     }
+    void sendSanctionEmail(Loan loan){
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(loan.getUser().getEmail());
+        mailMessage.setSubject("Change in Loan Status");
+        mailMessage.setText("Hello User,"+loan.getUser().get);
 
-
+    }
     @Override
     public LoanInfoDto LoanOnSanction(String email) {
         User user = userService.getByEmail(email);
