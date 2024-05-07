@@ -65,7 +65,6 @@ public class AgentController {
     public User updatePassword(@RequestParam("email") String email, @RequestParam("password") String password ) throws Exception {
        return agentService.updateUserPassword(email, password);
     }
-
     @PutMapping("/deactivateAccount")
     public Accounts deactivateAccount(@RequestParam("accountNumber") String accountNumber) throws Exception{
         return agentService.deactivateAccount(accountNumber);
@@ -74,7 +73,6 @@ public class AgentController {
     public Accounts closeAccount(@RequestParam("accountNumber") String accountNumber) throws Exception{
         return agentService.closeAccount(accountNumber);
     }
-
     @PutMapping("/LoanApproved/{email}")
     public ResponseEntity<LoanInfoDto> LoanApproved(@RequestParam("email")String email){
         return new ResponseEntity<>(agentService.LoanApproved(email), HttpStatus.OK);
