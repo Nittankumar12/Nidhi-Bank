@@ -14,17 +14,10 @@ import java.sql.Timestamp;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 public class ChatMessage {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String content;
+
+    private String text;
     private String sender;
     private String receiver;
-    private MessageType type;
 
-    public enum MessageType {
-        CHAT, JOIN, LEAVE
-    }
 }
