@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -31,17 +32,22 @@ public class Loan {
     private LoanType loanType;
     @Enumerated(EnumType.STRING)
     private LoanStatus status;
+
     @ManyToOne
     @JoinColumn
     private Accounts account;
+
     @ManyToOne
     @JoinColumn
     private Agent agent;
+
     @ManyToOne
     @JoinColumn
     private User user;
+
     @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL)
     private List<Transactions> transactionsList;
+
     @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL)
     private List<Penalty> penalty;
 }

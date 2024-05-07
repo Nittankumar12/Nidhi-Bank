@@ -2,7 +2,11 @@ package com.RWI.Nidhi.entity;
 
 import com.RWI.Nidhi.enums.*;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.Date;
 
 @NoArgsConstructor
@@ -45,11 +49,14 @@ public class KYC {
     private OccupationType occupationType;
     @Enumerated(EnumType.STRING)
     private ReligionType religionType;
+
     @OneToOne
     @JoinColumn
     private User user;
+
     @OneToOne(mappedBy = "kyc", cascade = CascadeType.ALL)
     private PermanentAddress permanentAddress;
+
     @OneToOne(mappedBy = "kyc", cascade = CascadeType.ALL)
     private ResidentialAddress residentialAddress;
 }

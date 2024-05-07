@@ -25,6 +25,7 @@ public class ResidentialAddress {
     private String state;
     private int pinCode;
     private String landmark;
+
     @OneToOne
     @JoinColumn
     private KYC kyc;
