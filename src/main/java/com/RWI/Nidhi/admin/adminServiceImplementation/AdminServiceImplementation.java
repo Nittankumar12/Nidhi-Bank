@@ -188,7 +188,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
             temp.setDate(t.getTransactionDate());
             temp.setTransactionStatus(t.getTransactionStatus());
             temp.setAccountNumber(t.getAccount().getAccountNumber());
-
             transactionsHistoryList.add(temp);
         }
         return transactionsHistoryList;

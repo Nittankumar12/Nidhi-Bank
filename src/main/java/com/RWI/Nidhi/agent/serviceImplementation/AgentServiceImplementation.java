@@ -2,13 +2,11 @@ package com.RWI.Nidhi.agent.serviceImplementation;
 
 import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
 import com.RWI.Nidhi.dto.AddUserDto;
-<<<<<<< HEAD
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.AccountsRepo;
-=======
 import com.RWI.Nidhi.dto.LoanInfoDto;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Loan;
@@ -16,7 +14,6 @@ import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.LoanRepo;
->>>>>>> ca3fbfa0cf31b6c0a657b04ed4603f421733082a
 import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
@@ -40,9 +37,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     @Autowired
     OtpServiceImplementation otpServiceImplementation;
     @Autowired
-<<<<<<< HEAD
     AccountsRepo accountsRepo;
-=======
     UserService userService;
     @Autowired
     UserLoanServiceImplementation userLoanService;
@@ -51,7 +46,6 @@ public class AgentServiceImplementation implements AgentServiceInterface {
 
     @Autowired
     private JavaMailSender javaMailSender;
->>>>>>> ca3fbfa0cf31b6c0a657b04ed4603f421733082a
 
     @Override
     public User addUser(AddUserDto addUserDto) throws Exception {
@@ -191,7 +185,6 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         return new ResponseEntity("Email Verify Successfully", HttpStatus.OK);
     }
 
-<<<<<<< HEAD
     @Override
     public Accounts deactivateAccount(String accountNumber) throws Exception {
         Accounts currentAcc = accountsRepo.findByAccountNumber(accountNumber).orElseThrow(()->{
@@ -212,10 +205,6 @@ public class AgentServiceImplementation implements AgentServiceInterface {
 
     private byte[] getSHA(String input){
         try{
-=======
-    private byte[] getSHA(String input) {
-        try {
->>>>>>> ca3fbfa0cf31b6c0a657b04ed4603f421733082a
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
             return messageDigest.digest(input.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {

@@ -2,11 +2,8 @@ package com.RWI.Nidhi.agent.controller;
 
 import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceImplementation;
 import com.RWI.Nidhi.dto.AddUserDto;
-<<<<<<< HEAD
 import com.RWI.Nidhi.entity.Accounts;
-=======
 import com.RWI.Nidhi.dto.LoanInfoDto;
->>>>>>> ca3fbfa0cf31b6c0a657b04ed4603f421733082a
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.user.serviceImplementation.AccountsServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +42,10 @@ public class AgentController {
         return agentService.deleteUserById(id);
     }
     @GetMapping("getAllUsers")
-    public List<User> getAllUsers(){
-        return agentService.getAllUsers();
+    public ResponseEntity<List<User>> getAllUsers(){
+        List<User> users= agentService.getAllUsers();
+        return new ResponseEntity<>(users,HttpStatus.OK);
+
     }
     @GetMapping("findUserById")
     public User findUserById(@RequestParam("id") int id) throws Exception{
@@ -66,7 +65,7 @@ public class AgentController {
     public User updatePassword(@RequestParam("email") String email, @RequestParam("password") String password ) throws Exception {
        return agentService.updateUserPassword(email, password);
     }
-<<<<<<< HEAD
+
     @PutMapping("/deactivateAccount")
     public Accounts deactivateAccount(@RequestParam("accountNumber") String accountNumber) throws Exception{
         return agentService.deactivateAccount(accountNumber);
@@ -75,11 +74,9 @@ public class AgentController {
     public Accounts closeAccount(@RequestParam("accountNumber") String accountNumber) throws Exception{
         return agentService.closeAccount(accountNumber);
     }
-=======
+
     @PutMapping("/LoanApproved/{email}")
     public ResponseEntity<LoanInfoDto> LoanApproved(@RequestParam("email")String email){
         return new ResponseEntity<>(agentService.LoanApproved(email), HttpStatus.OK);
     }
-
->>>>>>> ca3fbfa0cf31b6c0a657b04ed4603f421733082a
 }
