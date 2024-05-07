@@ -142,7 +142,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         return responseDto;
 
     }
-
     @Override
     public List<TransactionsHistoryDto> getTransactionForCurrentMonth(TransactionsHistoryDto transactionsHistoryDto) {
         List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().withDayOfMonth(1),LocalDate.now());
@@ -199,5 +198,4 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     public List<Loan> findByStatus(LoanStatus status) {
         return loanRepo.findByStatus(status);
     }
-
 }

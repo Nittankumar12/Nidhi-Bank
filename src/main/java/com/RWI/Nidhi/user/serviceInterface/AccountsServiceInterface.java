@@ -12,15 +12,14 @@ public interface AccountsServiceInterface {
     Status getAccountStatus(int accountId);
 
     double checkAccountBalanceByNumber(String accountNumber);
-    
-    public String generateRandomAccountPIN();
 
-	public void updateAccountPIN(String accountNumber, String newPIN);
-	
-	public void fundTransfer(String sourceAccountNumber, String destinationAccountNumber, double amount);
+    String generateRandomAccountPIN();
 
-    public void addBankUserDetails(BankDetailsDTO bankDetails, String emailId);
+    void updateAccountPIN(String accountNumber, String newPIN);
 
+    void fundTransfer(String sourceAccountNumber, String destinationAccountNumber, double amount);
+
+    void addBankUserDetails(BankDetailsDTO bankDetails, String emailId);
 
 
 }

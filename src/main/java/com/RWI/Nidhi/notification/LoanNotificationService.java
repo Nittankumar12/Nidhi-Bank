@@ -24,7 +24,7 @@ public class LoanNotificationService {
     public void sendLoanReminders() {
         LocalDate currentDate = LocalDate.now();
         LocalDate emiDateThreshold = currentDate.plusDays(5);
-        List<Loan> loansDueSoon = loanRepository.findByemiDateBetween(currentDate, emiDateThreshold);
+        List<Loan> loansDueSoon = loanRepository.findByEmiDateBetween(currentDate, emiDateThreshold);
 
         for (Loan loan : loansDueSoon) {
             String borrowerEmail = loan.getUser().getEmail();

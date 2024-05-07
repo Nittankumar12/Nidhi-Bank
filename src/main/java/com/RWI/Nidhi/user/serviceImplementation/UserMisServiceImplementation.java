@@ -29,7 +29,8 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         misRepo.save(newMis);
         return newMis;
     }
-    private Double calculateMisMonthlyIncome(double totalAmount, double interestRatePerAnnum){
+
+    private Double calculateMisMonthlyIncome(double totalAmount, double interestRatePerAnnum) {
         double interestPerMonth = (totalAmount * (interestRatePerAnnum / 12)) / 100;
         return interestPerMonth;
     }
