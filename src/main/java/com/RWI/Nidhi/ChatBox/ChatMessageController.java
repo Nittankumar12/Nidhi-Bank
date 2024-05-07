@@ -17,22 +17,19 @@ import java.util.List;
 public class ChatMessageController {
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    SimpMessagingTemplate simpMessagingTemplate;
 
-    @Autowired
-    private ChatRepository chatRepository;
+    @MessageMapping("/application")
+    @SendTo("/all/messages")
+    public ChatMessage send(final ChatMessage message) throws Exception {
+        return message;
+    }
 
-    @MessageMapping("/chat.sendMessage")
-    @SendTo("/topic/privateMessages")
-    public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
-        // Save the chat message to the database
-        chatRepository.save(chatMessage);
+    @MessageMapping("/private")
 
-        // Send the chat message to the specific user
-        simpMessagingTemplate.convertAndSendToUser(
-                chatMessage.getReceiver(), "/queue/privateMessages", chatMessage);
+    public void sendToSpecificUser(@Payload ChatMessage message) {
+        simpMessagingTemplate.convertAndSendToUser(message.getReceiver(), "/specific", message);
 
-        return chatMessage;
     }
 
     @MessageMapping("/chat.addUser")
