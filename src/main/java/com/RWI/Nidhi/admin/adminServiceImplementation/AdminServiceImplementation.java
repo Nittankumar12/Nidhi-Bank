@@ -115,6 +115,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         return true;
     }
 
+
     @Override
     public List<AgentMinimalDto> getAllAgents() {
         List<Agent> allAgents = agentRepo.findAll();
