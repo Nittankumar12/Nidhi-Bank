@@ -20,13 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServiceInterface{
+public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServiceInterface {
     @Autowired
     LoanRepo loanRepo;
     @Autowired
     UserService userService;
     @Autowired
     UserLoanServiceInterface userLoanService;
+
     @Override
     public double schemeLoan(String email) {
         User user = userService.getByEmail(email);
@@ -43,8 +44,8 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
         Scheme scheme = acc.getScheme();
 
         SchLoanCalcDto schLoanCalcDto = new SchLoanCalcDto();
-        schLoanCalcDto.setRePaymentTerm((int) ChronoUnit.DAYS.between(scheme.getStartDate(),LocalDate.now()));
-        schLoanCalcDto.setPrincipalLoanAmount(schemeLoan(email)-scheme.getTotalDepositAmount());
+        schLoanCalcDto.setRePaymentTerm((int) ChronoUnit.DAYS.between(scheme.getStartDate(), LocalDate.now()));
+        schLoanCalcDto.setPrincipalLoanAmount(schemeLoan(email) - scheme.getTotalDepositAmount());
         schLoanCalcDto.setInterestRate(LoanType.Scheme.getLoanInterestRate());
 
         Loan loan = new Loan();
@@ -65,10 +66,12 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
         acc.setLoanList(loanList);// save loan in acc
         loanRepo.save(loan);
     }
-    public double calculateFirstPayableSchLoanAmount(SchLoanCalcDto schLoanCalcDto){
+
+    public double calculateFirstPayableSchLoanAmount(SchLoanCalcDto schLoanCalcDto) {
         return userLoanService.calculateFirstPayableAmount(new LoanCalcDto(schLoanCalcDto));
     }
-    public double calculateSchLoanEMI(SchLoanCalcDto schLoanCalcDto){
+
+    public double calculateSchLoanEMI(SchLoanCalcDto schLoanCalcDto) {
         return userLoanService.calculateEMI(new LoanCalcDto(schLoanCalcDto));
     }
 
@@ -86,15 +89,18 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     public LoanClosureDto getLoanClosureDetails(String email) {
         return userLoanService.getLoanClosureDetails(email);
     }
+
     @Override
     public Boolean checkForExistingLoan(String email) {
         return userLoanService.checkForExistingLoan(email);
     }
+
     @Override
     public LocalDate firstDateOfNextMonth(LocalDate date) {
         LocalDate nextMonth = date.plusMonths(1);
         return nextMonth.withDayOfMonth(1);
     }
+
     @Override
     public String applyForLoanClosure(String email) {
         User user = userService.getByEmail(email);
@@ -110,12 +116,12 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
                     loanList.get(i).setRePaymentTerm((int) ChronoUnit.DAYS.between(loanList.get(i).getStartDate(), firstDateOfNextMonth(LocalDate.now())));
                 } else
                     return "Error";
-            }
-            else
+            } else
                 return "Error";
         }
         return "Applied For Closure";
     }
+
     @Override
     public LocalDate calcFirstEMIDate(LocalDate startDate) {
         return firstDateOfNextMonth(startDate);

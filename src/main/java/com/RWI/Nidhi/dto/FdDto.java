@@ -3,9 +3,10 @@ package com.RWI.Nidhi.dto;
 import com.RWI.Nidhi.enums.FdCompoundingFrequency;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+
+@Data
 public class FdDto {
     int amount;
     private String nomineeName;

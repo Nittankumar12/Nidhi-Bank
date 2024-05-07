@@ -2,9 +2,10 @@ package com.RWI.Nidhi.dto;
 
 
 import com.RWI.Nidhi.enums.RdCompoundingFrequency;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+
+@Data
 public class RdDto {
     private String nomineeName;
     double monthlyDepositAmount;

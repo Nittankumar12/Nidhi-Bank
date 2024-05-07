@@ -2,7 +2,6 @@ package com.RWI.Nidhi.dto;
 
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.LoanType;
-import jakarta.persistence.OneToOne;
 import lombok.Data;
 
 import java.time.LocalDate;

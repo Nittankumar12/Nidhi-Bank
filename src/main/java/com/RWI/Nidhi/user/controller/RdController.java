@@ -4,10 +4,12 @@ import com.RWI.Nidhi.dto.RdDto;
 import com.RWI.Nidhi.entity.RecurringDeposit;
 import com.RWI.Nidhi.user.serviceImplementation.UserRdServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/rd")
@@ -16,11 +18,12 @@ public class RdController {
     private UserRdServiceImplementation service;
 
     @PostMapping("/createRd")
-    public RecurringDeposit createRd(@RequestBody RdDto rdDto) {
-        return service.createRd(rdDto);
+    public ResponseEntity<RecurringDeposit> createRd(@RequestParam String agentEmail, @RequestParam String userEmail, @RequestBody RdDto rdDto) {
+        RecurringDeposit rd = service.createRd(agentEmail, userEmail, rdDto);
+        return new ResponseEntity<>(rd, HttpStatus.OK);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/delete/{id}")
     public void closeRd(@PathVariable("id") int rdId) {
         System.out.println(rdId);
         service.closeRd(rdId);
@@ -32,7 +35,8 @@ public class RdController {
     }
 
     @GetMapping("/find/{id}")
-    public Optional<RecurringDeposit> findRdById(@PathVariable("id") int rdId) {
-        return service.getRdById(rdId);
+    public ResponseEntity<RdDto> findRdById(@RequestParam int rdId) {
+        RdDto rdDto = service.getRdById(rdId);
+        return new ResponseEntity<>(rdDto, HttpStatus.OK);
     }
 }

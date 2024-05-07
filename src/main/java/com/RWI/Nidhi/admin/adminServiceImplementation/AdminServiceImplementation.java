@@ -4,32 +4,28 @@ import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
 import com.RWI.Nidhi.admin.ResponseDto.AgentMinimalDto;
 import com.RWI.Nidhi.admin.adminServiceInterface.AdminServiceInterface;
 import com.RWI.Nidhi.dto.AddAgentDto;
+import com.RWI.Nidhi.dto.TransactionsHistoryDto;
 import com.RWI.Nidhi.entity.*;
+import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.repository.AgentRepo;
+import com.RWI.Nidhi.repository.LoanRepo;
+import com.RWI.Nidhi.repository.TransactionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class AdminServiceImplementation implements AdminServiceInterface {
-//    public List<Loan> getAllLoans() {
-//        return new ArrayList<>();
-//    }
-//    public List<Agent> getAllAgents() {
-//        return new ArrayList<>();
-//    }
-//
-//    public List<Transactions> getAllTransactions() {
-//        return new ArrayList<>();
-//    }
-//
-//    public List<User> getAllUser() {
-//        return new ArrayList<>();
-//    }
-
     @Autowired
     AgentRepo agentRepo;
+    @Autowired
+    LoanRepo loanRepo;
+    @Autowired
+    TransactionRepo transactionRepo;
     @Override
     public Agent addAgent(AddAgentDto addAgentDto) throws Exception{
         Agent newAgent = new Agent();
@@ -89,7 +85,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
         return currAgent;
     }
-
     @Override
     public Agent updateAgentPhoneNum(int id, String phoneNum) throws Exception {
         Agent currAgent = agentRepo.findById(id).orElseThrow(() -> {return new Exception("agent not found");});
@@ -103,7 +98,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
         return currAgent;
     }
-
     @Override
     public boolean deleteAgentById(int id) throws Exception {
         try{
@@ -114,8 +108,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
         return true;
     }
-
-
     @Override
     public List<AgentMinimalDto> getAllAgents() {
         List<Agent> allAgents = agentRepo.findAll();
@@ -150,7 +142,60 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         return responseDto;
 
     }
+    @Override
+    public List<TransactionsHistoryDto> getTransactionForCurrentMonth(TransactionsHistoryDto transactionsHistoryDto) {
+        List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().withDayOfMonth(1),LocalDate.now());
+        List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
+        for(Transactions t : currTransactions){
+            TransactionsHistoryDto temp = new TransactionsHistoryDto();
+            temp.setTransactionId(t.getTransactionId());
+            temp.setAmount(t.getTransactionAmount());
+            temp.setDate(t.getTransactionDate());
+            temp.setTransactionStatus(t.getTransactionStatus());
+            temp.setAccountNumber(t.getAccount().getAccountNumber());
 
+            transactionsHistoryList.add(temp);
+        }
+        return transactionsHistoryList;
+    }
 
+    @Override
+    public List<TransactionsHistoryDto> getTransactionForCurrentWeek(TransactionsHistoryDto transactionsHistoryDto) {
+        List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().minusDays(7),LocalDate.now());
 
+        List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
+        for(Transactions t : currTransactions){
+            TransactionsHistoryDto temp = new TransactionsHistoryDto();
+            temp.setTransactionId(t.getTransactionId());
+            temp.setAmount(t.getTransactionAmount());
+            temp.setDate(t.getTransactionDate());
+            temp.setTransactionStatus(t.getTransactionStatus());
+            temp.setAccountNumber(t.getAccount().getAccountNumber());
+
+            transactionsHistoryList.add(temp);
+        }
+        return transactionsHistoryList;
+    }
+
+    @Override
+    public List<TransactionsHistoryDto> getTransactionForToday(TransactionsHistoryDto transactionsHistoryDto) {
+        List<Transactions> currTransactions = transactionRepo.getTransactionForDate(LocalDate.now());
+        List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
+        for(Transactions t : currTransactions){
+            TransactionsHistoryDto temp = new TransactionsHistoryDto();
+            temp.setTransactionId(t.getTransactionId());
+            temp.setAmount(t.getTransactionAmount());
+            temp.setDate(t.getTransactionDate());
+            temp.setTransactionStatus(t.getTransactionStatus());
+            temp.setAccountNumber(t.getAccount().getAccountNumber());
+
+            transactionsHistoryList.add(temp);
+        }
+        return transactionsHistoryList;
+    }
+
+    @Override
+    public List<Loan> findByStatus(LoanStatus status) {
+        return loanRepo.findByStatus(status);
+    }
 }
