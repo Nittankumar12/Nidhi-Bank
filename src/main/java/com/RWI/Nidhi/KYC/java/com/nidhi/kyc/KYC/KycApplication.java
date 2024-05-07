@@ -1,5 +1,4 @@
-package com.nidhi.kyc.KYC;
-
+package com.nidhi.
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

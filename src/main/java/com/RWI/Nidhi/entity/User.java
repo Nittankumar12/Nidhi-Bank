@@ -19,13 +19,17 @@ public class User {
     private String phoneNumber;
     private String email;
     private String password;
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Accounts accounts;
+
     @ManyToOne
     @JoinColumn
     private Agent agent;
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private BankDetails bankDetails;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private KYC kyc;
 

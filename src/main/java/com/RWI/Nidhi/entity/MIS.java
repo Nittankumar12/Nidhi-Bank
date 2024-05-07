@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -31,12 +32,15 @@ public class MIS {
     private double totalInterestEarned;
     @Enumerated(EnumType.STRING)
     private Status status;
+
     @ManyToOne
     @JoinColumn
     private Accounts account;
+
     @ManyToOne
     @JoinColumn
     private Agent agent;
+
     @OneToMany(mappedBy = "mis", cascade = CascadeType.ALL)
     private List<Transactions> transactionsList;
 }

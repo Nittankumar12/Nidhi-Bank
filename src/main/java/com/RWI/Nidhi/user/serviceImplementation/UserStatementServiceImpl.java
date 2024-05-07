@@ -5,9 +5,7 @@ import com.RWI.Nidhi.dto.MisResponseDto;
 import com.RWI.Nidhi.dto.RdResponseDto;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.repository.*;
-import com.RWI.Nidhi.user.serviceInterface.UserDetailsService;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.EntityNotFoundException;
+import com.RWI.Nidhi.user.serviceInterface.UserStatementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +14,7 @@ import java.util.List;
 
 
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserStatementServiceImpl implements UserStatementService {
 
     @Autowired
     private LoanRepo loanRepo;
@@ -33,11 +31,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 
     @Override
-    public List<FdResponseDto> getFixedDepositDetailsByUserId(int userId)  {
-        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
+    public List<FdResponseDto> getFixedDepositDetailsByEmail(String email) {
+//        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
+        User user = userRepo.findByEmail(email);
         List<FixedDeposit> fixedDepositList = user.getAccounts().getFdList();
         List<FdResponseDto> fdResponseDtoList = new ArrayList<FdResponseDto>();
-        for (FixedDeposit fixedDeposit : fixedDepositList){
+        for (FixedDeposit fixedDeposit : fixedDepositList) {
             FdResponseDto tempFdResponse = new FdResponseDto();
             tempFdResponse.setFdId(fixedDeposit.getFdId());
             tempFdResponse.setAmount(fixedDeposit.getAmount());
@@ -50,11 +49,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public List<RdResponseDto> getRecurringDepositDetailsByUserId(int userId)  {
-        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
+    public List<RdResponseDto> getRecurringDepositDetailsByEmail(String email) {
+        User user = userRepo.findByEmail(email);
         List<RecurringDeposit> recurringDepositList = user.getAccounts().getRecurringDepositList();
         List<RdResponseDto> rdResponseDtoList = new ArrayList<RdResponseDto>();
-        for (RecurringDeposit recurringDeposit : recurringDepositList){
+        for (RecurringDeposit recurringDeposit : recurringDepositList) {
             RdResponseDto tempRdResponse = new RdResponseDto();
             tempRdResponse.setRdId(recurringDeposit.getRdId());
             tempRdResponse.setMonthlyDepositAmount(recurringDeposit.getMonthlyDepositAmount());
@@ -65,8 +64,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public List<MisResponseDto> getMisDetailsByUserId(int userId) {
-        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
+    public List<MisResponseDto> getMisDetailsByEmail(String email) {
+        User user = userRepo.findByEmail(email);
         List<MIS> misList = user.getAccounts().getMisList();
         List<MisResponseDto> misResponseDtoList = new ArrayList<MisResponseDto>();
         for (MIS mis : misList) {
@@ -80,21 +79,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public Scheme getSchemeByDetailsUserId(int userId) {
-        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
-
+    public Scheme getSchemeDetailsByEmail(String email) {
+        User user = userRepo.findByEmail(email);
         return user.getAccounts().getScheme();
     }
 
     @Override
-    public List<Transactions> getTransactionsDetailsByUserId(int userId)  {
-        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
+    public List<Transactions> getTransactionsDetailsByEmail(String email) {
+        User user = userRepo.findByEmail(email);
         return user.getAccounts().getTransactionsList();
     }
 
     @Override
-    public List<Loan> getLoanDetailsByUserId(int userId)  {
-        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
+    public List<Loan> getLoanDetailsByEmail(String email) {
+        User user = userRepo.findByEmail(email);
         return user.getAccounts().getLoanList();
     }
 

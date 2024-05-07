@@ -2,8 +2,12 @@ package com.RWI.Nidhi.agent.controller;
 
 import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceImplementation;
 import com.RWI.Nidhi.dto.AddUserDto;
+import com.RWI.Nidhi.entity.Accounts;
+import com.RWI.Nidhi.dto.LoanInfoDto;
 import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.user.serviceImplementation.AccountsServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -14,6 +18,8 @@ public class AgentController {
 
     @Autowired
     AgentServiceImplementation agentService;
+    @Autowired
+    AccountsServiceImplementation accountsService;
 
     @PostMapping("/addUser")
     public User addUser(@RequestBody AddUserDto addUserDto) throws Exception{
@@ -56,5 +62,17 @@ public class AgentController {
     @PostMapping("/updatePassword")
     public User updatePassword(@RequestParam("email") String email, @RequestParam("password") String password ) throws Exception {
        return agentService.updateUserPassword(email, password);
+    }
+    @PutMapping("/deactivateAccount")
+    public Accounts deactivateAccount(@RequestParam("accountNumber") String accountNumber) throws Exception{
+        return agentService.deactivateAccount(accountNumber);
+    }
+    @PutMapping("/closeAccount")
+    public Accounts closeAccount(@RequestParam("accountNumber") String accountNumber) throws Exception{
+        return agentService.closeAccount(accountNumber);
+    }
+    @PutMapping("/LoanApproved/{email}")
+    public ResponseEntity<LoanInfoDto> LoanApproved(@RequestParam("email")String email){
+        return new ResponseEntity<>(agentService.LoanApproved(email), HttpStatus.OK);
     }
 }
