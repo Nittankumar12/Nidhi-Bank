@@ -66,8 +66,12 @@ public class LoanController {
         }
     }
     @PutMapping("/payEMI/{email}")
-    ResponseEntity<MonthlyEmiDto> payEMI(String email){
-        return new ResponseEntity<>(userLoanService.payEMI(email),HttpStatus.ACCEPTED);
+    ResponseEntity<?> payEMI(String email) {
+        if (userLoanService.checkForExistingLoan(email) != Boolean.FALSE) {
+            return new ResponseEntity<>("No Loan currently recorded",HttpStatus.BAD_REQUEST);
+        }
+        else
+            return new ResponseEntity<>(userLoanService.payEMI(email), HttpStatus.ACCEPTED);
     }
     @GetMapping("/getLoanClosureDetails/{email}")
     ResponseEntity<LoanClosureDto> getLoanClosureDetails(String email){

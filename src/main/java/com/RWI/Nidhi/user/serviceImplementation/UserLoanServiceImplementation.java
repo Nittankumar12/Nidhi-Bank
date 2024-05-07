@@ -181,30 +181,25 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         Accounts acc = user.getAccounts();
         MonthlyEmiDto monthlyEmiDto = new MonthlyEmiDto();
         List<Loan> loanList = acc.getLoanList();
-        for (int i = 0; i < loanList.size(); i++) {
-            if (checkForExistingLoan(email) == Boolean.FALSE) {
-                if(penaltyService.noOfMonthsEmiMissed(loanList.get(i).getLoanId())==0) {
-                    double payableLoanAmount = loanList.get(i).getPayableLoanAmount();
+        for (Loan loan : loanList) {
+                if (penaltyService.noOfMonthsEmiMissed(loan.getLoanId()) == 0) {
+                    double payableLoanAmount = loan.getPayableLoanAmount();
                     double temp = payableLoanAmount;
-                    payableLoanAmount = temp - loanList.get(i).getMonthlyEMI();
+                    payableLoanAmount = temp - loan.getMonthlyEMI();
+                    loan.setPayableLoanAmount(payableLoanAmount);
+                    loan.setEmiDate(firstDateOfNextMonth(LocalDate.now()));
 
-                    loanList.get(i).setPayableLoanAmount(payableLoanAmount);
-                    loanList.get(i).setEmiDate(firstDateOfNextMonth(LocalDate.now()));
-
-                    LocalDate endDate = ChronoUnit.DAYS.addTo(loanList.get(i).getStartDate(), loanList.get(i).getRePaymentTerm());
+                    LocalDate endDate = ChronoUnit.DAYS.addTo(loan.getStartDate(), loan.getRePaymentTerm());
                     int rePaymentTermLeft = (int) ChronoUnit.DAYS.between(endDate, LocalDate.now());
 
                     monthlyEmiDto.setPayableLoanAmount(payableLoanAmount);
-                    monthlyEmiDto.setMonthlyEMI(loanList.get(i).getMonthlyEMI());
+                    monthlyEmiDto.setMonthlyEMI(loan.getMonthlyEMI());
                     monthlyEmiDto.setRePaymentTermLeft(rePaymentTermLeft);
                     monthlyEmiDto.setPaymentDate(LocalDate.now());
                     monthlyEmiDto.setNextEMIDate(firstDateOfNextMonth(LocalDate.now()));
-                }
-                else {
+                } else {
                     return payEMIWithFine(email);
                 }
-            } else
-                return new MonthlyEmiDto();
         }
         return monthlyEmiDto;
         // In return - EMI paid, EMI month, Months left, amount left, next payment date
