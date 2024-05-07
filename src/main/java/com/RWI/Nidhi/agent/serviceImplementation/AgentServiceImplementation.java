@@ -2,9 +2,15 @@ package com.RWI.Nidhi.agent.serviceImplementation;
 
 import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
 import com.RWI.Nidhi.dto.AddUserDto;
+import com.RWI.Nidhi.dto.LoanInfoDto;
+import com.RWI.Nidhi.entity.Accounts;
+import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.UserRepo;
+import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
+import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +29,10 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     UserRepo userRepo;
     @Autowired
     OtpServiceImplementation otpServiceImplementation;
+    @Autowired
+    UserService userService;
+    @Autowired
+    UserLoanServiceImplementation userLoanService;
 
     @Override
     public User addUser(AddUserDto addUserDto) throws Exception{
@@ -183,4 +193,94 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         }
         return null;
     }
+    @Override
+    public LoanInfoDto LoanApproved(String email) {//must check for loan existence in controller
+        User user = userService.getByEmail(email);
+        Accounts accounts = user.getAccounts();
+        List<Loan> loanList = accounts.getLoanList();
+        for (Loan loan : loanList){
+            if(loan.getStatus() == LoanStatus.APPLIED){
+                loan.setStatus(LoanStatus.APPROVED);
+            }
+            else
+                return null;
+        }
+        return userLoanService.getLoanInfo(email);
+    }
+
+    @Override
+    public LoanInfoDto LoanOnSanction(String email) {
+        User user = userService.getByEmail(email);
+        Accounts accounts = user.getAccounts();
+        List<Loan> loanList = accounts.getLoanList();
+        for (Loan loan : loanList){
+            if(loan.getStatus() == LoanStatus.APPROVED){
+                loan.setStatus(LoanStatus.SANCTIONED);
+            }
+            else
+                return null;
+        }
+        return userLoanService.getLoanInfo(email);
+    }
+
+    @Override
+    public LoanInfoDto LoanOnPending(String email) {
+        User user = userService.getByEmail(email);
+        Accounts accounts = user.getAccounts();
+        List<Loan> loanList = accounts.getLoanList();
+        for (Loan loan : loanList){
+            if(loan.getStatus() == LoanStatus.APPLIED){
+                loan.setStatus(LoanStatus.PENDING);
+            }
+            else
+                return null;
+        }
+        return userLoanService.getLoanInfo(email);
+    }
+
+    @Override
+    public LoanInfoDto LoanRejected(String email) {
+        User user = userService.getByEmail(email);
+        Accounts accounts = user.getAccounts();
+        List<Loan> loanList = accounts.getLoanList();
+        for (Loan loan : loanList){
+            if(loan.getStatus() == LoanStatus.APPLIED){
+                loan.setStatus(LoanStatus.REJECTED);
+            }
+            else
+                return null;
+        }
+        return userLoanService.getLoanInfo(email);
+    }
+
+    @Override
+    public LoanInfoDto LoanForeclosed(String email) {
+        User user = userService.getByEmail(email);
+        Accounts accounts = user.getAccounts();
+        List<Loan> loanList = accounts.getLoanList();
+        for (Loan loan : loanList){
+            if(loan.getStatus() == LoanStatus.REQUESTEDFORFORECLOSURE){
+                loan.setStatus(LoanStatus.FORECLOSED);
+            }
+            else
+                return null;
+        }
+        return userLoanService.getLoanInfo(email);
+    }
+
+    @Override
+    public LoanInfoDto LoanClosed(String email) {
+        User user = userService.getByEmail(email);
+        Accounts accounts = user.getAccounts();
+        List<Loan> loanList = accounts.getLoanList();
+        for (Loan loan : loanList){
+            if(loan.getStatus() == LoanStatus.SANCTIONED){
+                loan.setStatus(LoanStatus.CLOSED);
+            }
+            else
+                return null;
+        }
+        return userLoanService.getLoanInfo(email);
+    }
+
 }
