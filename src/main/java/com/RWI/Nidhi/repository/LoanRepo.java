@@ -3,6 +3,7 @@ package com.RWI.Nidhi.repository;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.RWI.Nidhi.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +24,7 @@ public interface LoanRepo extends JpaRepository<Loan, Integer> {
 	List<Loan> findLoanByStatus(String status);
 
 	List<Loan> findByemiDateBetween(LocalDate startDate, LocalDate endDate);
+	List<Loan> findByStatus(LoanStatus status);
 
 
 }

@@ -2,8 +2,11 @@ package com.RWI.Nidhi.agent.serviceImplementation;
 
 import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
 import com.RWI.Nidhi.dto.AddUserDto;
+import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
+import com.RWI.Nidhi.repository.AccountsRepo;
 import com.RWI.Nidhi.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +26,8 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     UserRepo userRepo;
     @Autowired
     OtpServiceImplementation otpServiceImplementation;
+    @Autowired
+    AccountsRepo accountsRepo;
 
     @Override
     public User addUser(AddUserDto addUserDto) throws Exception{
@@ -160,6 +165,24 @@ public class AgentServiceImplementation implements AgentServiceInterface {
              throw new Exception(e.getMessage());
          }
         return new ResponseEntity("Email Verify Successfully", HttpStatus.OK );
+    }
+
+    @Override
+    public Accounts deactivateAccount(String accountNumber) throws Exception {
+        Accounts currentAcc = accountsRepo.findByAccountNumber(accountNumber).orElseThrow(()->{
+            return new Exception("Account Number Not Found");
+        });
+        currentAcc.setAccountStatus(Status.INACTIVE);
+        return accountsRepo.save(currentAcc);
+    }
+
+    @Override
+    public Accounts closeAccount(String accountNumber) throws Exception {
+        Accounts currentAcc = accountsRepo.findByAccountNumber(accountNumber).orElseThrow(()->{
+            return new Exception("Account Number Not Found");
+        });
+        currentAcc.setAccountStatus(Status.CLOSED);
+        return accountsRepo.save(currentAcc);
     }
 
     private byte[] getSHA(String input){
