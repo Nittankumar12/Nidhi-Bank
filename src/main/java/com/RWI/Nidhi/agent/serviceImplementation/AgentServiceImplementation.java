@@ -232,7 +232,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
             if (loan.getStatus() == LoanStatus.APPLIED) {
                 loan.setStatus(LoanStatus.APPROVED);
                 loanRepo.save(loan);
-                sendApprovalEmail(loan);
+                sendStatusEmail(loan);
             } else
                 return null;
         }
@@ -246,6 +246,12 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         mailMessage.setText("Dear " + loan.getUser().getUserName() + ",\n\nYour loan has been approved. Please find the details below:\n\nLoan Number: " + loan.getLoanId() + "\nLoan Amount: " + loan.getPrincipalLoanAmount() + "\n\nBest regards,\n[Your Bank Name]");
 
         javaMailSender.send(mailMessage);
+    }
+    private void sendStatusEmail(Loan loan) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(loan.getUser().getEmail());
+        mailMessage.setSubject("Change in Loan Status");
+        mailMessage.setText("Hello User," + loan.getUser().getUserName() + ",\n\n Your loan has been"+loan.getStatus()+"Please confirm so with your respective agent.");
     }
 
     @Override
