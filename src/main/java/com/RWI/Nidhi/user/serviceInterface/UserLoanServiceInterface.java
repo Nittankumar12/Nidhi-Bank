@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
 import com.RWI.Nidhi.dto.*;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,18 +18,15 @@ public interface UserLoanServiceInterface {
     double calculateEMI(LoanCalcDto loanCalcDto);
 
     void applyLoan(LoanApplyDto loanApplyDto);
-
-    LoanInfoDto getLoanInfo(String email);
-
     MonthlyEmiDto payEMI(String email);
 
-    LoanClosureDto getLoanClosureDetails(String email);
-
     LocalDate firstDateOfNextMonth(LocalDate date);
-
-    String applyForLoanClosure(String email);
-
     LocalDate calcFirstEMIDate(LocalDate startDate);
+    ResponseEntity<?> getLoanInfo(String email);
+
+    ResponseEntity<?> getLoanClosureDetails(String email);
+
+    ResponseEntity<?> applyForLoanClosure(String email);
 
     //Prince
     List<LoanHIstoryDTO> getLoansByLoanType(String loanType);

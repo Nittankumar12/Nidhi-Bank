@@ -33,11 +33,11 @@ public class UserSchemeLoanController {
     }
 
     @GetMapping("/getLoanInfo/{email}")
-    public ResponseEntity<LoanInfoDto> getLoanInfo(@PathVariable String email) {
+    public ResponseEntity<?> getLoanInfo(@PathVariable String email) {
         if (userSchemeLoanService.checkForExistingLoan(email) == Boolean.FALSE) {
-            return new ResponseEntity<>(userSchemeLoanService.getLoanInfo(email), HttpStatus.FOUND);
+            return userSchemeLoanService.getLoanInfo(email);
         } else {
-            System.out.println("loan does not exist");
+            System.out.println("scheme loan does not exist");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -48,13 +48,13 @@ public class UserSchemeLoanController {
     }
 
     @GetMapping("/getloanClosureDetails/{email}")
-    ResponseEntity<LoanClosureDto> getLoanClosureDetails(String email) {
-        return new ResponseEntity<>(userSchemeLoanService.getLoanClosureDetails(email), HttpStatus.FOUND);
+    ResponseEntity<?> getLoanClosureDetails(String email) {
+        return userSchemeLoanService.getLoanClosureDetails(email);
     }
 
     @PutMapping("/applyloanClosureDetails/{email}")
-    ResponseEntity<String> applyloanClosureDetails(String email) {
-        return new ResponseEntity<>(HttpStatus.valueOf(userSchemeLoanService.applyForLoanClosure(email)));
+    ResponseEntity<?> applyloanClosureDetails(String email) {
+        return userSchemeLoanService.applyForLoanClosure(email);
     }
 
 }
