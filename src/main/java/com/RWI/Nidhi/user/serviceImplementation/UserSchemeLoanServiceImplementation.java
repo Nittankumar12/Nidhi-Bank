@@ -107,24 +107,28 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     }
 
     @Override
-    public String applyForLoanClosure(String email) {
+    public ResponseEntity<?> applyForLoanClosure(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
         List<Loan> loanList = acc.getLoanList();
-        for (int i = 0; i < loanList.size(); i++) {
-            if (checkForExistingLoan(email) == Boolean.FALSE) {
-                if (loanList.get(i).getStatus() == LoanStatus.APPROVED || loanList.get(i).getStatus() == LoanStatus.SANCTIONED) {
-                    double monthlyEMI = loanList.get(i).getMonthlyEMI();
-                    loanList.get(i).setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
-                    loanList.get(i).setCurrentFine(monthlyEMI / 100);
-                    loanList.get(i).setMonthlyEMI(loanList.get(i).getPayableLoanAmount() + monthlyEMI / 100);
-                    loanList.get(i).setRePaymentTerm((int) ChronoUnit.DAYS.between(loanList.get(i).getStartDate(), firstDateOfNextMonth(LocalDate.now())));
+        if (loanList.isEmpty())
+            return new ResponseEntity<>("no Loan record found", HttpStatus.NOT_FOUND);
+        else {
+            for (int i = 0; i < loanList.size(); i++) {
+                if (checkForExistingLoan(email) == Boolean.FALSE) {
+                    if (loanList.get(i).getStatus() == LoanStatus.APPROVED || loanList.get(i).getStatus() == LoanStatus.SANCTIONED) {
+                        double monthlyEMI = loanList.get(i).getMonthlyEMI();
+                        loanList.get(i).setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
+                        loanList.get(i).setCurrentFine(monthlyEMI / 100);
+                        loanList.get(i).setMonthlyEMI(loanList.get(i).getPayableLoanAmount() + monthlyEMI / 100);
+                        loanList.get(i).setRePaymentTerm((int) ChronoUnit.DAYS.between(loanList.get(i).getStartDate(), firstDateOfNextMonth(LocalDate.now())));
+                    } else
+                        return new ResponseEntity<>("No Approved/Sanctioned Loan Found", HttpStatus.NOT_FOUND);
                 } else
-                    return "Error";
-            } else
-                return "Error";
+                    return new ResponseEntity<>("No running loan found", HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<> ("Applied For Closure", HttpStatus.ACCEPTED);
         }
-        return "Applied For Closure";
     }
 
     @Override

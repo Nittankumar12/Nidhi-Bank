@@ -6,11 +6,9 @@ import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.AccountsRepo;
-import com.RWI.Nidhi.dto.LoanInfoDto;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanStatus;
-import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.AgentRepo;
 import com.RWI.Nidhi.repository.LoanRepo;
 import com.RWI.Nidhi.repository.UserRepo;
@@ -43,9 +41,9 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     @Autowired
     LoanRepo loanRepo;
     @Autowired
-    private JavaMailSender javaMailSender;
+    JavaMailSender javaMailSender;
     @Autowired
-    private AgentRepo agentRepo;
+    AgentRepo agentRepo;
 
     @Override
     public User addUser(AddUserDto addUserDto, String agentEmail) throws Exception {
@@ -59,7 +57,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
 
         //Check if agent exists or not
-        if(agent == null){
+        if (agent == null) {
             throw new Exception("Agent does not exists");
         }
         //creation of new user
@@ -211,6 +209,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         currentAcc.setAccountStatus(Status.CLOSED);
         return accountsRepo.save(currentAcc);
     }
+
     private byte[] getSHA(String input) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
@@ -221,125 +220,93 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         return null;
     }
 
-            private String getEncryptedPassword (String password){
-                String encryptedPassword = "";
-                try {
-                    BigInteger number = new BigInteger(1, getSHA(password));
-                    return number.toString(16);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
+    private String getEncryptedPassword(String password) {
+        String encryptedPassword = "";
+        try {
+            BigInteger number = new BigInteger(1, getSHA(password));
+            return number.toString(16);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-            @Override
-            public ResponseEntity<?> LoanApproved (String email){//must check for loan existence in controller
-                User user = userService.getByEmail(email);
-                Accounts accounts = user.getAccounts();
-                List<Loan> loanList = accounts.getLoanList();
-                for (Loan loan : loanList) {
-                    if (loan.getStatus() == LoanStatus.APPLIED) {
-                        loan.setStatus(LoanStatus.APPROVED);
-                        loanRepo.save(loan);
-                        sendStatusEmail(loan);
-                    } else
-                        return null;
-                }
-                return userLoanService.getLoanInfo(email);
-            }
-
-            private void sendApprovalEmail (Loan loan){
-                SimpleMailMessage mailMessage = new SimpleMailMessage();
-                mailMessage.setTo(loan.getUser().getEmail());
-                mailMessage.setSubject("Loan Approval - " + loan.getAccount().getAccountNumber());
-                mailMessage.setText("Dear " + loan.getUser().getUserName() + ",\n\nYour loan has been approved. Please find the details below:\n\nLoan Number: " + loan.getLoanId() + "\nLoan Amount: " + loan.getPrincipalLoanAmount() + "\n\nBest regards,\n[Your Bank Name]");
-
-                javaMailSender.send(mailMessage);
-            }
-            private void sendStatusEmail (Loan loan){
-                SimpleMailMessage mailMessage = new SimpleMailMessage();
-                mailMessage.setTo(loan.getUser().getEmail());
-                mailMessage.setSubject("Change in Loan Status");
-                mailMessage.setText("Hello User," + loan.getUser().getUserName() + ",\n\n Your loan has been" + loan.getStatus() + "Please confirm so with your respective agent.");
-            }
-
-            @Override
-            public ResponseEntity<?> LoanOnSanction (String email){
-                User user = userService.getByEmail(email);
-                Accounts accounts = user.getAccounts();
-                List<Loan> loanList = accounts.getLoanList();
-                for (Loan loan : loanList) {
-                    if (loan.getStatus() == LoanStatus.APPROVED) {
-                        loan.setStatus(LoanStatus.SANCTIONED);
-                        loanRepo.save(loan);
-
-                    } else
-                        return null;
-                }
-                return userLoanService.getLoanInfo(email);
-            }
-
-            @Override
-            public ResponseEntity<?> LoanOnPending (String email){
-                User user = userService.getByEmail(email);
-                Accounts accounts = user.getAccounts();
-                List<Loan> loanList = accounts.getLoanList();
-                for (Loan loan : loanList) {
-                    if (loan.getStatus() == LoanStatus.APPLIED) {
-                        loan.setStatus(LoanStatus.PENDING);
-                        loanRepo.save(loan);
-                    } else
-                        return null;
-                }
-                return userLoanService.getLoanInfo(email);
-            }
-
-            @Override
-            public ResponseEntity<?> LoanRejected (String email){
-                User user = userService.getByEmail(email);
-                Accounts accounts = user.getAccounts();
-                List<Loan> loanList = accounts.getLoanList();
-                for (Loan loan : loanList) {
-                    if (loan.getStatus() == LoanStatus.APPLIED) {
-                        loan.setStatus(LoanStatus.REJECTED);
-                        loanRepo.save(loan);
-                    } else
-                        return null;
-                }
-                return userLoanService.getLoanInfo(email);
-            }
-
-            @Override
-            public ResponseEntity<?> LoanForeclosed (String email){
-                User user = userService.getByEmail(email);
-                Accounts accounts = user.getAccounts();
-                List<Loan> loanList = accounts.getLoanList();
-                for (Loan loan : loanList) {
-                    if (loan.getStatus() == LoanStatus.REQUESTEDFORFORECLOSURE) {
-                        loan.setStatus(LoanStatus.FORECLOSED);
-                        loanRepo.save(loan);
-                    } else
-                        return null;
-                }
-                return userLoanService.getLoanInfo(email);
-            }
     @Override
-    public ResponseEntity<?> LoanClosed(String email) {
+    public ResponseEntity<?> LoanApproved(String email) {//must check for loan existence in controller
         User user = userService.getByEmail(email);
         Accounts accounts = user.getAccounts();
         List<Loan> loanList = accounts.getLoanList();
         for (Loan loan : loanList) {
-            if (loan.getStatus() == LoanStatus.SANCTIONED) {
-                loan.setStatus(LoanStatus.CLOSED);
+            if (loan.getStatus() == LoanStatus.APPLIED) {
+                loan.setStatus(LoanStatus.APPROVED);
                 loanRepo.save(loan);
+                sendStatusEmail(loan);
             } else
                 return null;
         }
         return userLoanService.getLoanInfo(email);
     }
+    private void sendStatusEmail(Loan loan) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(loan.getUser().getEmail());
+        mailMessage.setSubject("Change in Loan Status");
+        mailMessage.setText("Hello User," + loan.getUser().getUserName() + ",\n\n Your loan has been changed to" + loan.getStatus() + "Please confirm so with your respective agent.");
+    }
 
     @Override
     public ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
-        return null;
+        ResponseEntity<?> asd = new ResponseEntity<>("Invalid Agent",HttpStatus.I_AM_A_TEAPOT);
+        if (agentRepo.existsByAgentEmail(agentEmail)) {
+            User user = userService.getByEmail(userEmail);
+            Accounts accounts = user.getAccounts();
+            List<Loan> loanList = accounts.getLoanList();
+            if(loanList.isEmpty()){
+                return new ResponseEntity<>("No Loan exists for the given user",HttpStatus.I_AM_A_TEAPOT);
+            }
+            else {
+                for (Loan loan : loanList) {
+                    if(loan.getStatus()==previousStatus){
+                        if(previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.APPROVED){
+                            loan.setStatus(changedStatus);
+                            loanRepo.save(loan);
+                            sendStatusEmail(loan);
+                        } else if (previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.PENDING){
+                            loan.setStatus(changedStatus);
+                            loanRepo.save(loan);
+                            sendStatusEmail(loan);
+                        } else if (previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.REJECTED){
+                            loan.setStatus(changedStatus);
+                            loanRepo.save(loan);
+                            sendStatusEmail(loan);
+                        } else if (previousStatus == LoanStatus.APPROVED && changedStatus == LoanStatus.SANCTIONED){
+                            loan.setStatus(changedStatus);
+                            loanRepo.save(loan);
+                            sendStatusEmail(loan);
+                        } else if (previousStatus == LoanStatus.APPROVED && changedStatus == LoanStatus.PENDING){
+                            loan.setStatus(changedStatus);
+                            loanRepo.save(loan);
+                            sendStatusEmail(loan);
+                        } else if (previousStatus == LoanStatus.SANCTIONED && changedStatus == LoanStatus.CLOSED){
+                            loan.setStatus(changedStatus);
+                            loanRepo.save(loan);
+                            sendStatusEmail(loan);
+                        } else if (previousStatus == LoanStatus.SANCTIONED && changedStatus == LoanStatus.PENDING){
+                            loan.setStatus(changedStatus);
+                            loanRepo.save(loan);
+                            sendStatusEmail(loan);
+                        } else if (previousStatus == LoanStatus.REQUESTEDFORFORECLOSURE && changedStatus == LoanStatus.FORECLOSED){
+                            loan.setStatus(changedStatus);
+                            loanRepo.save(loan);
+                            sendStatusEmail(loan);
+                        }else {
+                            return new ResponseEntity<>("Invalid Change in status",HttpStatus.I_AM_A_TEAPOT);
+                        }
+                    }else
+                        return new ResponseEntity<>("Applied Change in status doesn't match recorded status",HttpStatus.I_AM_A_TEAPOT);
+                }
+                return new ResponseEntity<>("Invalid Agent",HttpStatus.I_AM_A_TEAPOT);
+            }
+        } else
+            return new ResponseEntity<>("Invalid Agent",HttpStatus.I_AM_A_TEAPOT);
     }
 }

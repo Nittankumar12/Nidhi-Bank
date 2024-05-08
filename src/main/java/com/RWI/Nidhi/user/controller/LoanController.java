@@ -60,7 +60,11 @@ public class LoanController {
         return userLoanService.applyForLoanClosure(email);
     }
 }
-// AGENT LOAN CONTROLLER
+// Loan Service - > Done, Testing remains
+// Info, LoanClosure-> Info, Apply
+// Scheme Info, LoanClosure-> Info, Apply
+
+// AGENT LOAN CONTROLLER - > Done, Testing remains
 // sanction, approve, etc. --> update loan status(user email, agent email(with verification), status to & status from)
 
 // SCHEME LOAN CONTROLLER

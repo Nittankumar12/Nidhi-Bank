@@ -24,11 +24,6 @@ public interface AgentServiceInterface {
     Accounts closeAccount(String accountNumber) throws Exception;
     // Loan Related Methods
     ResponseEntity<?> LoanApproved(String email);
-    ResponseEntity<?> LoanOnSanction(String email);
-    ResponseEntity<?>LoanOnPending(String email);
-    ResponseEntity<?> LoanRejected(String email);
-    ResponseEntity<?> LoanForeclosed(String email);
-    ResponseEntity<?> LoanClosed(String email);
     ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus);
 }
 
