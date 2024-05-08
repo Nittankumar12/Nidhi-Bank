@@ -5,6 +5,7 @@ import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.dto.LoanInfoDto;
 import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.user.serviceImplementation.AccountsServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -73,8 +74,8 @@ public class AgentController {
     public Accounts closeAccount(@RequestParam("accountNumber") String accountNumber) throws Exception{
         return agentService.closeAccount(accountNumber);
     }
-    @PutMapping("/LoanApproved/{email}")
-    public ResponseEntity<?> LoanApproved(@RequestParam("email")String email){
-        return agentService.LoanApproved(email);
-    }
+    @PutMapping("/ChangeLoanStatus/{email}")
+    public ResponseEntity<?> ChangeLoanStatus(@RequestParam("email")String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus){
+        return agentService.ChangeLoanStatus(userEmail,agentEmail,changedStatus,previousStatus);
+    } // DTO?
 }

@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AgentRepo extends JpaRepository<Agent,Integer> {
+    Boolean existsByAgentEmail(String agentEmail);
     Agent findByAgentEmail(String agentEmail);
 }

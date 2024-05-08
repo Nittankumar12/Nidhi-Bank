@@ -53,8 +53,8 @@ public class UserSchemeLoanController {
     }
 
     @PutMapping("/applyloanClosureDetails/{email}")
-    ResponseEntity<String> applyloanClosureDetails(String email) {
-        return new ResponseEntity<>(HttpStatus.valueOf(userSchemeLoanService.applyForLoanClosure(email)));
+    ResponseEntity<?> applyloanClosureDetails(String email) {
+        return userSchemeLoanService.applyForLoanClosure(email);
     }
 
 }

@@ -24,5 +24,5 @@ public interface UserSchemeLoanServiceInterface {
 
     ResponseEntity<?> getLoanInfo(String email);
     ResponseEntity<?> getLoanClosureDetails(String email);
-    String applyForLoanClosure(String email);
+    ResponseEntity<?> applyForLoanClosure(String email);
 }
