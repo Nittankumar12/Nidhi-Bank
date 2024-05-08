@@ -7,20 +7,19 @@ import com.RWI.Nidhi.dto.TransactionsHistoryDto;
 import com.RWI.Nidhi.entity.Agent;
 import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.enums.LoanStatus;
-
 import java.util.List;
 
 public interface AdminServiceInterface {
 
-    Agent addAgent(AddAgentDto addAgentDto) throws Exception;
+    AddAgentDto addAgent(AddAgentDto addAgentDto) throws Exception;
 
-    Agent updateAgentName(int id, String agentName) throws Exception;
+    AddAgentDto updateAgentName(String agentEmail, String agentName) throws Exception;
 
-    Agent updateAgentAddress(int id, String agentAddress) throws Exception;
+    AddAgentDto updateAgentAddress(String agentEmail , String agentAddress) throws Exception;
 
-    Agent updateAgentEmail(int id, String agentEmail) throws Exception;
+    AddAgentDto updateAgentEmail(String agentOldEmail, String agentNewEmail) throws Exception;
 
-    Agent updateAgentPhoneNum(int id, String phoneNum) throws Exception;
+    AddAgentDto updateAgentPhoneNum(String agentEmail, String phoneNum) throws Exception;
 
     boolean deleteAgentById(int id) throws Exception;
 

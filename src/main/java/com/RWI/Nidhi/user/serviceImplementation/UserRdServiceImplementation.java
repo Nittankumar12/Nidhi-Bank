@@ -33,9 +33,9 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
 
     @Override
     public RecurringDeposit createRd(String agentEmail, String email, RdDto rdDto) {
-        Optional<Agent> agent = agentRepo.findByEmail(agentEmail);
+        Agent agent = agentRepo.findByAgentEmail(agentEmail);
         Optional<User> user = userRepo.findUserByEmail(email);
-        if (agent.isPresent() && user.isPresent()) {
+        if (agent != null && user.isPresent()) {
             RecurringDeposit rd = new RecurringDeposit();
             rd.setMonthlyDepositAmount(rdDto.getMonthlyDepositAmount());
             rd.setStartDate(LocalDate.now());

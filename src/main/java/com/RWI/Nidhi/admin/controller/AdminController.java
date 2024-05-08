@@ -29,28 +29,28 @@ public class AdminController {
     AdminRepo adminRepo;
 
     @PostMapping("/addAgent")
-    public Agent addAgent(@RequestBody AddAgentDto addAgentDto) throws Exception {
+    public AddAgentDto addAgent(@RequestBody AddAgentDto addAgentDto) throws Exception {
         return adminService.addAgent(addAgentDto);
     }
 
     @PutMapping("/updateAgentName")
-    public Agent updateAgentName(@RequestParam("id") int id, @RequestParam("agentName") String agentName) throws Exception {
-        return adminService.updateAgentName(id, agentName);
+    public AddAgentDto updateAgentName(@RequestParam("agentEmail") String agentEmail, @RequestParam("agentName") String agentName) throws Exception {
+        return adminService.updateAgentName(agentEmail, agentName);
     }
 
     @PutMapping("/updateAgentAddress")
-    public Agent updateAgentAddress(@RequestParam("id") int id, @RequestParam("agentAddress") String agentAddress) throws Exception {
-        return adminService.updateAgentAddress(id, agentAddress);
+    public AddAgentDto updateAgentAddress(@RequestParam("agentEmail") String agentEmail, @RequestParam("agentAddress") String agentAddress) throws Exception {
+        return adminService.updateAgentAddress(agentEmail, agentAddress);
     }
 
     @PutMapping("/updateAgentEmail")
-    public Agent updateAgentEmail(@RequestParam("id") int id, @RequestParam("agentEmail") String agentEmail) throws Exception {
-        return adminService.updateAgentEmail(id, agentEmail);
+    public AddAgentDto updateAgentEmail(@RequestParam("agentEmail") String id, @RequestParam("agentEmail") String agentEmail) throws Exception {
+        return adminService.updateAgentEmail(agentEmail, agentEmail);
     }
 
     @PutMapping("/updateAgentPhone")
-    public Agent updateAgentPhoneNum(int id, String phoneNum) throws Exception {
-        return adminService.updateAgentPhoneNum(id, phoneNum);
+    public AddAgentDto updateAgentPhoneNum(String agentEmail, String phoneNum) throws Exception {
+        return adminService.updateAgentPhoneNum(agentEmail, phoneNum);
     }
 
     @DeleteMapping("/deleteAgentById")
@@ -94,10 +94,9 @@ public class AdminController {
                 return ResponseEntity.status(HttpStatus.ACCEPTED).body("login successful");
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login Exception");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login Exception");
         }
     }
 }

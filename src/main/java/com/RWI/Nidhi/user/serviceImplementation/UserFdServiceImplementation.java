@@ -32,9 +32,9 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
 
     @Override
     public FixedDeposit createFd(String agentEmail, String email, FdDto fdDto) {
-        Optional<Agent> agent = agentRepo.findByEmail(agentEmail);
+        Agent agent = agentRepo.findByAgentEmail(agentEmail);
         Optional<User> user = userRepo.findUserByEmail(email);
-        if (agent.isPresent() && user.isPresent()) {
+        if (agent != null && user.isPresent()) {
             FixedDeposit fd = new FixedDeposit();
             fd.setAmount(fdDto.getAmount());
             fd.setDepositDate(LocalDate.now());
