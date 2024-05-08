@@ -12,6 +12,8 @@ import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserSchemeLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,6 +29,8 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     UserService userService;
     @Autowired
     UserLoanServiceInterface userLoanService;
+    @Autowired
+    SchemeServiceImplementation schemeService;
 
     @Override
     public double schemeLoan(String email) {
@@ -74,9 +78,8 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     public double calculateSchLoanEMI(SchLoanCalcDto schLoanCalcDto) {
         return userLoanService.calculateEMI(new LoanCalcDto(schLoanCalcDto));
     }
-
     @Override
-    public LoanInfoDto getLoanInfo(String email) {
+    public ResponseEntity<?> getLoanInfo(String email) {
         return userLoanService.getLoanInfo(email);
     }
 
@@ -86,10 +89,12 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     }
 
     @Override
-    public LoanClosureDto getLoanClosureDetails(String email) {
-        return userLoanService.getLoanClosureDetails(email);
+    public ResponseEntity<?> getLoanClosureDetails(String email) {
+        if(schemeService.CheckForSchemeRunning(email))
+            return new ResponseEntity<>("No scheme was found running for this account", HttpStatus.NOT_FOUND);
+        else
+            return userLoanService.getLoanClosureDetails(email);
     }
-
     @Override
     public Boolean checkForExistingLoan(String email) {
         return userLoanService.checkForExistingLoan(email);
@@ -102,24 +107,28 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     }
 
     @Override
-    public String applyForLoanClosure(String email) {
+    public ResponseEntity<?> applyForLoanClosure(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
         List<Loan> loanList = acc.getLoanList();
-        for (int i = 0; i < loanList.size(); i++) {
-            if (checkForExistingLoan(email) == Boolean.FALSE) {
-                if (loanList.get(i).getStatus() == LoanStatus.APPROVED || loanList.get(i).getStatus() == LoanStatus.SANCTIONED) {
-                    double monthlyEMI = loanList.get(i).getMonthlyEMI();
-                    loanList.get(i).setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
-                    loanList.get(i).setCurrentFine(monthlyEMI / 100);
-                    loanList.get(i).setMonthlyEMI(loanList.get(i).getPayableLoanAmount() + monthlyEMI / 100);
-                    loanList.get(i).setRePaymentTerm((int) ChronoUnit.DAYS.between(loanList.get(i).getStartDate(), firstDateOfNextMonth(LocalDate.now())));
+        if (loanList.isEmpty())
+            return new ResponseEntity<>("no Loan record found", HttpStatus.NOT_FOUND);
+        else {
+            for (int i = 0; i < loanList.size(); i++) {
+                if (checkForExistingLoan(email) == Boolean.FALSE) {
+                    if (loanList.get(i).getStatus() == LoanStatus.APPROVED || loanList.get(i).getStatus() == LoanStatus.SANCTIONED) {
+                        double monthlyEMI = loanList.get(i).getMonthlyEMI();
+                        loanList.get(i).setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
+                        loanList.get(i).setCurrentFine(monthlyEMI / 100);
+                        loanList.get(i).setMonthlyEMI(loanList.get(i).getPayableLoanAmount() + monthlyEMI / 100);
+                        loanList.get(i).setRePaymentTerm((int) ChronoUnit.DAYS.between(loanList.get(i).getStartDate(), firstDateOfNextMonth(LocalDate.now())));
+                    } else
+                        return new ResponseEntity<>("No Approved/Sanctioned Loan Found", HttpStatus.NOT_FOUND);
                 } else
-                    return "Error";
-            } else
-                return "Error";
+                    return new ResponseEntity<>("No running loan found", HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<> ("Applied For Closure", HttpStatus.ACCEPTED);
         }
-        return "Applied For Closure";
     }
 
     @Override

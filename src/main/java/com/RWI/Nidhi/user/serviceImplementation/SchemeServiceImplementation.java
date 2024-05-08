@@ -1,7 +1,11 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
+import com.RWI.Nidhi.entity.Accounts;
+import com.RWI.Nidhi.entity.Scheme;
+import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.user.serviceInterface.SchemeServiceInterface;
 import com.RWI.Nidhi.repository.SchemeRepo;
+import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -11,6 +15,8 @@ import java.time.temporal.ChronoUnit;
 public class SchemeServiceImplementation implements SchemeServiceInterface {
     @Autowired
     SchemeRepo schemeRepo;
+    @Autowired
+    UserService userService;
     @Override
     public int findSchemeRemainingDays(int schemeId) {
         LocalDate startDate = schemeRepo.findStartDateBySchemeId(schemeId);
@@ -25,5 +31,13 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
     public double findLoanOnSchemeBasis(int schemeId) {
         double schemeLoan = schemeRepo.findMonthlyDepositAmountBySchemeId(schemeId) / 30 * findSchemeRemainingDays(schemeId);
         return schemeLoan;
+    }
+
+    public boolean CheckForSchemeRunning(String email) {
+        User user = userService.getByEmail(email);
+        Accounts acc = user.getAccounts();
+        Scheme scheme = acc.getScheme();
+        return Boolean.FALSE;
+        // This method is suppossed to return false if there is a scheme running else true
     }
 }

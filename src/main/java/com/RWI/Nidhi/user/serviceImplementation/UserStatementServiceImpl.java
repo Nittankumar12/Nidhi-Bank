@@ -44,7 +44,7 @@ public class UserStatementServiceImpl implements UserStatementService {
 
             fdResponseDtoList.add(tempFdResponse);
         }
-//        System.out.println("your size is " + fdResponseDtoList.size());
+        System.out.println("your size is " + fdResponseDtoList.size());
         return fdResponseDtoList;
     }
 

@@ -14,6 +14,8 @@ import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -139,29 +141,32 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         loanCalcDto.setMonthlyEMI(p * r * (Math.pow((1 + r), n)) / ((Math.pow((1 + r), n)) - 1));
         return loanCalcDto.getMonthlyEMI();
     }
-
     @Override
-    public LoanInfoDto getLoanInfo(String email) {
+    public ResponseEntity<?> getLoanInfo(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
         LoanInfoDto loanInfoDto = new LoanInfoDto();
         List<Loan> loanList = acc.getLoanList();
-        for (int i = 0; i < loanList.size(); i++) {
-            if (checkForExistingLoan(email) == Boolean.FALSE) {
-                loanInfoDto.setLoanType(loanList.get(i).getLoanType());
-                loanInfoDto.setPrincipalLoanAmount(loanList.get(i).getPrincipalLoanAmount());
-                loanInfoDto.setStatus(loanList.get(i).getStatus());
-                loanInfoDto.setInterestRate(loanList.get(i).getInterestRate());
-                loanInfoDto.setPayableLoanAmount(loanList.get(i).getPayableLoanAmount());
-                loanInfoDto.setEmail(email);
-                loanInfoDto.setMonthlyEMI(loanList.get(i).getMonthlyEMI());
-                loanInfoDto.setFine(loanList.get(i).getCurrentFine());
-                loanInfoDto.setStartDate(loanList.get(i).getStartDate());
-                loanInfoDto.setRePaymentTerm(loanList.get(i).getRePaymentTerm());
-            } else
-                return new LoanInfoDto();
+        if (loanList.isEmpty())
+            return new ResponseEntity<>("No loan found", HttpStatus.NOT_FOUND);
+        else {
+            for (int i = 0; i < loanList.size(); i++) {
+                if (checkForExistingLoan(email) == Boolean.FALSE) {
+                    loanInfoDto.setLoanType(loanList.get(i).getLoanType());
+                    loanInfoDto.setPrincipalLoanAmount(loanList.get(i).getPrincipalLoanAmount());
+                    loanInfoDto.setStatus(loanList.get(i).getStatus());
+                    loanInfoDto.setInterestRate(loanList.get(i).getInterestRate());
+                    loanInfoDto.setPayableLoanAmount(loanList.get(i).getPayableLoanAmount());
+                    loanInfoDto.setEmail(email);
+                    loanInfoDto.setMonthlyEMI(loanList.get(i).getMonthlyEMI());
+                    loanInfoDto.setFine(loanList.get(i).getCurrentFine());
+                    loanInfoDto.setStartDate(loanList.get(i).getStartDate());
+                    loanInfoDto.setRePaymentTerm(loanList.get(i).getRePaymentTerm());
+                } else
+                    return new ResponseEntity<>( "No active loan on your account",HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(loanInfoDto,HttpStatus.FOUND);
         }
-        return loanInfoDto;
     }
 
     // From here
@@ -227,49 +232,55 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         return monthlyEmiDto;
         // In return - EMI paid, EMI month, Months left, amount left, next payment date
     }
-
     @Override
-    public LoanClosureDto getLoanClosureDetails(String email) {
+    public ResponseEntity<?> getLoanClosureDetails(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
         LoanClosureDto loanClosureDto = new LoanClosureDto();
         List<Loan> loanList = acc.getLoanList();
-        for (int i = 0; i < loanList.size(); i++) {
-            if (checkForExistingLoan(email) == Boolean.FALSE) {
-                double monthlyEMI = loanList.get(i).getMonthlyEMI();
-                loanClosureDto.setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
-                loanClosureDto.setLoanType(loanList.get(i).getLoanType());
-                loanClosureDto.setFine(monthlyEMI / 100);
-                loanClosureDto.setPrincipalLoanAmount(loanList.get(i).getPrincipalLoanAmount());
-                loanClosureDto.setLastEMIDate(firstDateOfNextMonth(LocalDate.now()));
-                loanClosureDto.setStartDate(loanList.get(i).getStartDate());
-                loanClosureDto.setMonthlyEMI(loanList.get(i).getPayableLoanAmount() + monthlyEMI / 100);
-                loanClosureDto.setRePaymentTerm((int) ChronoUnit.DAYS.between(loanList.get(i).getStartDate(), firstDateOfNextMonth(LocalDate.now())));
-                loanClosureDto.setFinalStatement("The Loan Closure for your loan");
-            } else
-                return new LoanClosureDto();
+        if (loanList.isEmpty())
+            return new ResponseEntity<>("no Loan found", HttpStatus.NOT_FOUND);
+        else {
+            for (int i = 0; i < loanList.size(); i++) {
+                if (checkForExistingLoan(email) == Boolean.FALSE) {
+                    double monthlyEMI = loanList.get(i).getMonthlyEMI();
+                    loanClosureDto.setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
+                    loanClosureDto.setLoanType(loanList.get(i).getLoanType());
+                    loanClosureDto.setFine(monthlyEMI / 100);
+                    loanClosureDto.setPrincipalLoanAmount(loanList.get(i).getPrincipalLoanAmount());
+                    loanClosureDto.setLastEMIDate(firstDateOfNextMonth(LocalDate.now()));
+                    loanClosureDto.setStartDate(loanList.get(i).getStartDate());
+                    loanClosureDto.setMonthlyEMI(loanList.get(i).getPayableLoanAmount() + monthlyEMI / 100);
+                    loanClosureDto.setRePaymentTerm((int) ChronoUnit.DAYS.between(loanList.get(i).getStartDate(), firstDateOfNextMonth(LocalDate.now())));
+                } else
+                    return new ResponseEntity<>("no active loan", HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(loanClosureDto, HttpStatus.FOUND);
         }
-        return loanClosureDto;
     }
 
-    public String applyForLoanClosure(String email) {
+    public ResponseEntity<?> applyForLoanClosure(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
         List<Loan> loanList = acc.getLoanList();
-        for (int i = 0; i < loanList.size(); i++) {
-            if (checkForExistingLoan(email) == Boolean.FALSE) {
-                if (loanList.get(i).getStatus() == LoanStatus.APPROVED || loanList.get(i).getStatus() == LoanStatus.SANCTIONED) {
-                    double monthlyEMI = loanList.get(i).getMonthlyEMI();
-                    loanList.get(i).setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
-                    loanList.get(i).setCurrentFine(monthlyEMI / 100);
-                    loanList.get(i).setMonthlyEMI(loanList.get(i).getPayableLoanAmount() + monthlyEMI / 100);
-                    loanList.get(i).setRePaymentTerm((int) ChronoUnit.DAYS.between(loanList.get(i).getStartDate(), firstDateOfNextMonth(LocalDate.now())));
+        if (loanList.isEmpty())
+            return new ResponseEntity<>("no Loan record found", HttpStatus.NOT_FOUND);
+        else {
+            for (int i = 0; i < loanList.size(); i++) {
+                if (checkForExistingLoan(email) == Boolean.FALSE) {
+                    if (loanList.get(i).getStatus() == LoanStatus.APPROVED || loanList.get(i).getStatus() == LoanStatus.SANCTIONED) {
+                        double monthlyEMI = loanList.get(i).getMonthlyEMI();
+                        loanList.get(i).setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
+                        loanList.get(i).setCurrentFine(monthlyEMI / 100);
+                        loanList.get(i).setMonthlyEMI(loanList.get(i).getPayableLoanAmount() + monthlyEMI / 100);
+                        loanList.get(i).setRePaymentTerm((int) ChronoUnit.DAYS.between(loanList.get(i).getStartDate(), firstDateOfNextMonth(LocalDate.now())));
+                    } else
+                        return new ResponseEntity<>("No Approved/Sanctioned Loan Found", HttpStatus.NOT_FOUND);
                 } else
-                    return "Error";
-            } else
-                return "Error";
+                    return new ResponseEntity<>("No running loan found", HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<> ("Applied For Closure", HttpStatus.ACCEPTED);
         }
-        return "Applied For Closure";
     }
 
     public LocalDate firstDateOfNextMonth(LocalDate date) {
