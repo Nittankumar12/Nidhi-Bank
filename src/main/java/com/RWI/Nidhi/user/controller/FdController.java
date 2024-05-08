@@ -2,6 +2,7 @@ package com.RWI.Nidhi.user.controller;
 
 
 import com.RWI.Nidhi.dto.FdDto;
+import com.RWI.Nidhi.dto.FdRequestDto;
 import com.RWI.Nidhi.entity.FixedDeposit;
 import com.RWI.Nidhi.user.serviceImplementation.UserFdServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class FdController {
 
     @PostMapping("/createFd")
     public ResponseEntity<Object> createFd(@RequestParam String agentEmail, @RequestParam String email, @RequestBody FdDto fdDto) {
-        FixedDeposit fd = service.createFd(agentEmail, email, fdDto);
+        FdRequestDto fd = service.createFd(agentEmail, email, fdDto);
         return new ResponseEntity<>(fd, HttpStatus.OK);
     }
 

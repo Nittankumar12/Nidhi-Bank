@@ -1,10 +1,13 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.RdDto;
+import com.RWI.Nidhi.dto.RdRequestDto;
+import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Agent;
 import com.RWI.Nidhi.entity.RecurringDeposit;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.Status;
+import com.RWI.Nidhi.repository.AccountsRepo;
 import com.RWI.Nidhi.repository.AgentRepo;
 import com.RWI.Nidhi.repository.RecurringDepositRepo;
 import com.RWI.Nidhi.repository.UserRepo;
@@ -31,12 +34,16 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private AccountsRepo accountRepo;
+
     @Override
-    public RecurringDeposit createRd(String agentEmail, String email, RdDto rdDto) {
+    public RdRequestDto createRd(String agentEmail, String email, RdDto rdDto) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
-        Optional<User> user = userRepo.findUserByEmail(email);
-        if (agent != null && user.isPresent()) {
-            RecurringDeposit rd = new RecurringDeposit();
+        User user = userRepo.findUserByEmail(email).get();
+        Accounts accounts = new Accounts();
+        RecurringDeposit rd = new RecurringDeposit();
+        if (agent != null && user != null) {
             rd.setMonthlyDepositAmount(rdDto.getMonthlyDepositAmount());
             rd.setStartDate(LocalDate.now());
             rd.setTenure(rdDto.getTenure());
@@ -49,7 +56,25 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             rd.setPenalty(0);
             rd.setMaturityAmount(calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getInterestRate(), rd.getMaturityDate()));
             rd.setRdStatus(Status.ACTIVE);
-            return rdRepo.save(rd);
+            rd.setAgent(agent);
+            rd.setAccount(user.getAccounts());
+            rdRepo.save(rd);
+
+            RdRequestDto rdRequestDto = new RdRequestDto();
+            rdRequestDto.setUserName(rd.getAccount().getUser().getUserName());
+            rdRequestDto.setNomineeName(rd.getNomineeName());
+            rdRequestDto.setInterestRate(rd.getInterestRate());
+            rdRequestDto.setMonthlyDepositAmount(rd.getMonthlyDepositAmount());
+            rdRequestDto.setTenure(rd.getTenure());
+            rdRequestDto.setStartDate(rd.getStartDate());
+            rdRequestDto.setCompoundingFrequency(rd.getCompoundingFrequency());
+            rdRequestDto.setMaturityAmount(rd.getMaturityAmount());
+            rdRequestDto.setMaturityDate(rd.getMaturityDate());
+            rdRequestDto.setRdStatus(rd.getRdStatus());
+            rdRequestDto.setAgentName(rd.getAgent().getAgentName());
+
+
+            return rdRequestDto;
         }
         return null;
     }

@@ -1,10 +1,13 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.FdDto;
+import com.RWI.Nidhi.dto.FdRequestDto;
+import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Agent;
 import com.RWI.Nidhi.entity.FixedDeposit;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.Status;
+import com.RWI.Nidhi.repository.AccountsRepo;
 import com.RWI.Nidhi.repository.AgentRepo;
 import com.RWI.Nidhi.repository.FixedDepositRepo;
 import com.RWI.Nidhi.repository.UserRepo;
@@ -16,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -29,13 +31,16 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     private AgentRepo agentRepo;
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private AccountsRepo accountRepo;
 
     @Override
-    public FixedDeposit createFd(String agentEmail, String email, FdDto fdDto) {
+    public FdRequestDto createFd(String agentEmail, String email, FdDto fdDto) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
-        Optional<User> user = userRepo.findUserByEmail(email);
-        if (agent != null && user.isPresent()) {
-            FixedDeposit fd = new FixedDeposit();
+        User user = userRepo.findUserByEmail(email).get();
+        Accounts accounts = new Accounts();
+        FixedDeposit fd = new FixedDeposit();
+        if (agent != null && user != null) {
             fd.setAmount(fdDto.getAmount());
             fd.setDepositDate(LocalDate.now());
             fd.setTenure(fdDto.getTenure());
@@ -43,38 +48,34 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
             fd.setMaturityDate(LocalDate.now().plusYears(fdDto.getTenure()));
             fd.setCompoundingFrequency(fdDto.getFdCompoundingFrequency().getCompoundingFreq());
             fd.setInterestRate(fdDto.getFdCompoundingFrequency().getFdInterestRate());
-//        fd.setPenalty(0);
+            fd.setPenalty(0);
             int tenureInDays = getCompleteDaysCount(fd.getDepositDate(), fd.getMaturityDate());
             fd.setMaturityAmount(calculateFdAmount(fd.getAmount(), fd.getInterestRate(), fd.getCompoundingFrequency(), tenureInDays));
             fd.setFdStatus(Status.ACTIVE);
-            return fdRepo.save(fd);
-        }
 
+            fd.setAgent(agent);
+            fd.setAccount(user.getAccounts());
+            fdRepo.save(fd);
+
+            FdRequestDto fdRequestDto = new FdRequestDto();
+            fdRequestDto.setUserName(fd.getAccount().getUser().getUserName());
+            fdRequestDto.setNomineeName(fd.getNomineeName());
+            fdRequestDto.setInterestRate(fd.getInterestRate());
+            fdRequestDto.setAmount(fd.getAmount());
+            fdRequestDto.setTenure(fd.getTenure());
+            fdRequestDto.setDepositDate(fd.getDepositDate());
+            fdRequestDto.setCompoundingFrequency(fd.getCompoundingFrequency());
+            fdRequestDto.setMaturityAmount(fd.getMaturityAmount());
+            fdRequestDto.setMaturityDate(fd.getMaturityDate());
+            fdRequestDto.setFdStatus(fd.getFdStatus());
+            fdRequestDto.setAgentName(fd.getAgent().getAgentName());
+
+
+            return fdRequestDto;
+        }
         return null;
     }
 
-//    @Override
-//    public FixedDeposit createFd(FdDto fdDto) {
-//
-//        System.out.println(fdDto.getAmount());
-//        System.out.println(fdDto.getTenure());
-//        System.out.println(fdDto.getFdCompoundingFrequency().getCompoundingFreq());
-//        System.out.println(fdDto.getFdCompoundingFrequency().getFdInterestRate());
-//
-//        FixedDeposit fd = new FixedDeposit();
-//        fd.setAmount(fdDto.getAmount());
-//        fd.setDepositDate(LocalDate.now());
-//        fd.setTenure(fdDto.getTenure());
-//        fd.setNomineeName(fdDto.getNomineeName());
-//        fd.setMaturityDate(LocalDate.now().plusYears(fdDto.getTenure()));
-//        fd.setCompoundingFrequency(fdDto.getFdCompoundingFrequency().getCompoundingFreq());
-//        fd.setInterestRate(fdDto.getFdCompoundingFrequency().getFdInterestRate());
-////        fd.setPenalty(0);
-//        int tenureInDays = getCompleteDaysCount(fd.getDepositDate(), fd.getMaturityDate());
-//        fd.setMaturityAmount(calculateFdAmount(fd.getAmount(), fd.getInterestRate(), fd.getCompoundingFrequency(), tenureInDays));
-//        fd.setFdStatus(Status.ACTIVE);
-//        return fdRepo.save(fd);
-//    }
 
     private double calculateFdAmount(int amount, double interestRate, int compoundingFreq, int tenureInDays) {
         double finalAmount;
