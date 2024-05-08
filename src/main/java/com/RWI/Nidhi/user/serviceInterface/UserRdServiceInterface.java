@@ -2,6 +2,7 @@ package com.RWI.Nidhi.user.serviceInterface;
 
 
 import com.RWI.Nidhi.dto.RdDto;
+import com.RWI.Nidhi.dto.RdRequestDto;
 import com.RWI.Nidhi.entity.RecurringDeposit;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public interface UserRdServiceInterface {
 
-    RecurringDeposit createRd(String agentEmail, String email, RdDto rdDto);
+    RdRequestDto createRd(String agentEmail, String email, RdDto rdDto);
 
     RecurringDeposit closeRd(int rdId);
 
