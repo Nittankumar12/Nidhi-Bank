@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface AgentServiceInterface {
-    User addUser(AddUserDto addUserDto) throws Exception;
+    User addUser(AddUserDto addUserDto, String agentEmail) throws Exception;
     User updateUserName(int id, String userName) throws Exception;
     User updateUserEmail(int id, String userEmail) throws Exception;
     User updateUserPhoneNum(int id, String phoneNum) throws Exception;

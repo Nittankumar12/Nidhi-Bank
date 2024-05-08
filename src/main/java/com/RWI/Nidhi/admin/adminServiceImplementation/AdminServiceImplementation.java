@@ -27,7 +27,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     @Autowired
     TransactionRepo transactionRepo;
     @Override
-    public Agent addAgent(AddAgentDto addAgentDto) throws Exception{
+    public AddAgentDto addAgent(AddAgentDto addAgentDto) throws Exception{
         Agent newAgent = new Agent();
         newAgent.setAgentName(addAgentDto.getAgentName());
         newAgent.setAgentEmail(addAgentDto.getAgentEmail());
@@ -41,12 +41,12 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         catch (Exception e){
             throw new Exception(e.getMessage());
         }
-        return newAgent;
+        return addAgentDto;
     }
 
     @Override
-    public Agent updateAgentName(int id, String agentName) throws Exception{
-        Agent currAgent = agentRepo.findById(id).orElseThrow(() -> {return new Exception("agent not found");});
+    public AddAgentDto updateAgentName(String agentEmail, String agentName) throws Exception{
+        Agent currAgent = agentRepo.findByAgentEmail(agentEmail);
 
         currAgent.setAgentName(agentName);
         try {
@@ -55,12 +55,17 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         catch (Exception e){
             throw new Exception(e.getMessage());
         }
-        return currAgent;
+        AddAgentDto addAgentDto = new AddAgentDto();
+        addAgentDto.setAgentName(currAgent.getAgentName());
+        addAgentDto.setAgentAddress(currAgent.getAgentAddress());
+        addAgentDto.setAgentEmail(currAgent.getAgentEmail());
+        addAgentDto.setAgentPhoneNum(currAgent.getAgentPhoneNum());
+        return addAgentDto;
     }
 
     @Override
-    public Agent updateAgentAddress(int id, String agentAddress) throws Exception {
-        Agent currAgent = agentRepo.findById(id).orElseThrow(() -> {return new Exception("agent not found");});
+    public AddAgentDto updateAgentAddress(String agentEmail, String agentAddress) throws Exception {
+        Agent currAgent = agentRepo.findByAgentEmail(agentEmail);
 
         currAgent.setAgentAddress(agentAddress);
         try {
@@ -69,25 +74,35 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         catch (Exception e){
             throw new Exception(e.getMessage());
         }
-        return currAgent;
+        AddAgentDto addAgentDto = new AddAgentDto();
+        addAgentDto.setAgentName(currAgent.getAgentName());
+        addAgentDto.setAgentAddress(currAgent.getAgentAddress());
+        addAgentDto.setAgentEmail(currAgent.getAgentEmail());
+        addAgentDto.setAgentPhoneNum(currAgent.getAgentPhoneNum());
+        return addAgentDto;
     }
 
     @Override
-    public Agent updateAgentEmail(int id, String agentEmail) throws Exception{
-        Agent currAgent = agentRepo.findById(id).orElseThrow(() -> {return new Exception("agent not found");});
+    public AddAgentDto updateAgentEmail(String agentOldEmail, String agentNewEmail) throws Exception{
+        Agent currAgent = agentRepo.findByAgentEmail(agentOldEmail);
 
-        currAgent.setAgentEmail(agentEmail);
+        currAgent.setAgentEmail(agentNewEmail);
         try {
             agentRepo.save(currAgent);
         }
         catch (Exception e){
             throw new Exception(e.getMessage());
         }
-        return currAgent;
+        AddAgentDto addAgentDto = new AddAgentDto();
+        addAgentDto.setAgentName(currAgent.getAgentName());
+        addAgentDto.setAgentAddress(currAgent.getAgentAddress());
+        addAgentDto.setAgentEmail(currAgent.getAgentEmail());
+        addAgentDto.setAgentPhoneNum(currAgent.getAgentPhoneNum());
+        return addAgentDto;
     }
     @Override
-    public Agent updateAgentPhoneNum(int id, String phoneNum) throws Exception {
-        Agent currAgent = agentRepo.findById(id).orElseThrow(() -> {return new Exception("agent not found");});
+    public AddAgentDto updateAgentPhoneNum(String agentEmail, String phoneNum) throws Exception {
+        Agent currAgent = agentRepo.findByAgentEmail(agentEmail);
 
         currAgent.setAgentPhoneNum(phoneNum);
         try {
@@ -96,7 +111,12 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         catch (Exception e){
             throw new Exception(e.getMessage());
         }
-        return currAgent;
+        AddAgentDto addAgentDto = new AddAgentDto();
+        addAgentDto.setAgentName(currAgent.getAgentName());
+        addAgentDto.setAgentAddress(currAgent.getAgentAddress());
+        addAgentDto.setAgentEmail(currAgent.getAgentEmail());
+        addAgentDto.setAgentPhoneNum(currAgent.getAgentPhoneNum());
+        return addAgentDto;
     }
     @Override
     public boolean deleteAgentById(int id) throws Exception {

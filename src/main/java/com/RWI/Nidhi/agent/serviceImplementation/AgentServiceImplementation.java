@@ -2,17 +2,16 @@ package com.RWI.Nidhi.agent.serviceImplementation;
 
 import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
 import com.RWI.Nidhi.dto.AddUserDto;
-import com.RWI.Nidhi.entity.Accounts;
-import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.AccountsRepo;
 import com.RWI.Nidhi.dto.LoanInfoDto;
 import com.RWI.Nidhi.entity.Accounts;
-import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
+import com.RWI.Nidhi.repository.AgentRepo;
 import com.RWI.Nidhi.repository.LoanRepo;
 import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
@@ -45,21 +44,32 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     LoanRepo loanRepo;
     @Autowired
     private JavaMailSender javaMailSender;
+    @Autowired
+    private AgentRepo agentRepo;
 
     @Override
-    public User addUser(AddUserDto addUserDto) throws Exception {
+    public User addUser(AddUserDto addUserDto, String agentEmail) throws Exception {
 
         //check if user already exists
         if (userRepo.existsByEmail(addUserDto.getEmail())) {
-            throw new Exception("user already exists");
+            throw new Exception("User already exists");
         }
-        //
 
+        //Getting the agent from repo by email
+        Agent agent = agentRepo.findByAgentEmail(agentEmail);
+
+        //Check if agent exists or not
+        if(agent == null){
+            throw new Exception("Agent does not exists");
+        }
         //creation of new user
         User newUser = new User();
         newUser.setUserName(addUserDto.getUserName());
         newUser.setEmail(addUserDto.getEmail());
         newUser.setPhoneNumber(addUserDto.getPhoneNumber());
+        newUser.setAgent(agent);
+        agent.getUserList().add(newUser);
+        agentRepo.save(agent);
 
         try {
             String tempPassword = otpServiceImplementation.generateOTP();

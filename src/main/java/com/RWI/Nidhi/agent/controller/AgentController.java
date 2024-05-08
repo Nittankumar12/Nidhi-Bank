@@ -22,8 +22,8 @@ public class AgentController {
     AccountsServiceImplementation accountsService;
 
     @PostMapping("/addUser")
-    public User addUser(@RequestBody AddUserDto addUserDto) throws Exception{
-        return agentService.addUser(addUserDto);
+    public User addUser(@RequestBody AddUserDto addUserDto, @RequestParam("agentEmail") String agentEmail) throws Exception{
+        return agentService.addUser(addUserDto, agentEmail);
     }
     @PutMapping("updateName")
     public User updateUserName(@RequestParam("id") int id,@RequestParam("userName") String userName) throws Exception{
@@ -41,7 +41,7 @@ public class AgentController {
     public boolean deleteUserById(@RequestParam("id") int id) throws Exception{
         return agentService.deleteUserById(id);
     }
-    @GetMapping("getAllUsers")
+    @GetMapping("/getAllUsers")
     public ResponseEntity<List<User>> getAllUsers(){
         List<User> users= agentService.getAllUsers();
         return new ResponseEntity<>(users,HttpStatus.OK);
