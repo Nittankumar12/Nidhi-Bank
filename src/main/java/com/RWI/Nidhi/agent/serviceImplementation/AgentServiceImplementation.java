@@ -233,7 +233,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
             }
 
             @Override
-            public LoanInfoDto LoanApproved (String email){//must check for loan existence in controller
+            public ResponseEntity<?> LoanApproved (String email){//must check for loan existence in controller
                 User user = userService.getByEmail(email);
                 Accounts accounts = user.getAccounts();
                 List<Loan> loanList = accounts.getLoanList();
@@ -264,7 +264,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
             }
 
             @Override
-            public LoanInfoDto LoanOnSanction (String email){
+            public ResponseEntity<?> LoanOnSanction (String email){
                 User user = userService.getByEmail(email);
                 Accounts accounts = user.getAccounts();
                 List<Loan> loanList = accounts.getLoanList();
@@ -280,7 +280,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
             }
 
             @Override
-            public LoanInfoDto LoanOnPending (String email){
+            public ResponseEntity<?> LoanOnPending (String email){
                 User user = userService.getByEmail(email);
                 Accounts accounts = user.getAccounts();
                 List<Loan> loanList = accounts.getLoanList();
@@ -295,7 +295,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
             }
 
             @Override
-            public LoanInfoDto LoanRejected (String email){
+            public ResponseEntity<?> LoanRejected (String email){
                 User user = userService.getByEmail(email);
                 Accounts accounts = user.getAccounts();
                 List<Loan> loanList = accounts.getLoanList();
@@ -310,7 +310,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
             }
 
             @Override
-            public LoanInfoDto LoanForeclosed (String email){
+            public ResponseEntity<?> LoanForeclosed (String email){
                 User user = userService.getByEmail(email);
                 Accounts accounts = user.getAccounts();
                 List<Loan> loanList = accounts.getLoanList();
@@ -323,18 +323,23 @@ public class AgentServiceImplementation implements AgentServiceInterface {
                 }
                 return userLoanService.getLoanInfo(email);
             }
-            @Override
-            public LoanInfoDto LoanClosed (String email){
-                User user = userService.getByEmail(email);
-                Accounts accounts = user.getAccounts();
-                List<Loan> loanList = accounts.getLoanList();
-                for (Loan loan : loanList) {
-                    if (loan.getStatus() == LoanStatus.SANCTIONED) {
-                        loan.setStatus(LoanStatus.CLOSED);
-                        loanRepo.save(loan);
-                    } else
-                        return null;
-                }
-                return userLoanService.getLoanInfo(email);
-            }
+    @Override
+    public ResponseEntity<?> LoanClosed(String email) {
+        User user = userService.getByEmail(email);
+        Accounts accounts = user.getAccounts();
+        List<Loan> loanList = accounts.getLoanList();
+        for (Loan loan : loanList) {
+            if (loan.getStatus() == LoanStatus.SANCTIONED) {
+                loan.setStatus(LoanStatus.CLOSED);
+                loanRepo.save(loan);
+            } else
+                return null;
         }
+        return userLoanService.getLoanInfo(email);
+    }
+
+    @Override
+    public ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
+        return null;
+    }
+}
