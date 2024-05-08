@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,8 +18,6 @@ import java.util.List;
 public class RecurringDeposit {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-//    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "six_digit_id_generator")
-//    @org.hibernate.annotations.GenericGenerator(name = "six_digit_id_generator", strategy = "path.to.SixDigitIdGenerator")
     private int rdId;
     private String nomineeName;
     private double monthlyDepositAmount;
@@ -27,7 +26,7 @@ public class RecurringDeposit {
     private int tenure; // Number of months
     private double maturityAmount;
     private LocalDate maturityDate;
-//    private LocalDate lastDepositedDate;
+    //    private LocalDate lastDepositedDate;
     private double totalAmountDeposited;
     private int penalty;
     private int compoundingFrequency;
@@ -37,9 +36,11 @@ public class RecurringDeposit {
     @ManyToOne
     @JoinColumn
     private Accounts account;
+
     @ManyToOne
     @JoinColumn
     private Agent agent;
+
     @OneToMany(mappedBy = "rd", cascade = CascadeType.ALL)
     private List<Transactions> transactionsList;
 }

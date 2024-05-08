@@ -7,6 +7,7 @@ import com.RWI.Nidhi.entity.MIS;
 public interface UserMisServiceInterface {
 
     MIS createMis(MisDto misDto);
+
     Double closeMis(int misId) throws Exception;
 
 }

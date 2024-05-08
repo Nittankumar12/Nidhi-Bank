@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AccountResponseDTO {
 
-	private Integer accpintId;
+	private Integer accountId;
 
 	private String accountNumber;
 

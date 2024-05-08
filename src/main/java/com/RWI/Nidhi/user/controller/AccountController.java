@@ -67,4 +67,17 @@ public class AccountController {
 		}
 	}
 
+	@PostMapping("/addBalance")
+	public ResponseEntity<String> addBalance(@RequestParam String accountNumber, @RequestParam double amount) {
+		try {
+			accountsServiceInterface.addBalance(accountNumber, amount);
+			return ResponseEntity.ok("Balance added successfully");
+		} catch (AccountIdNotFoundException ex) {
+			return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(ex.getMessage());
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+					.body("Error occurred while adding balance to the account");
+		}
+	}
+
 }

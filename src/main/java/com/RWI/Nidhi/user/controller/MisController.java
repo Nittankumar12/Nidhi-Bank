@@ -13,15 +13,16 @@ public class MisController {
     UserMisServiceImplementation misService;
 
     @PostMapping("/createMis")
-    public MIS createMis(@RequestBody MisDto misDto){
+    public MIS createMis(@RequestBody MisDto misDto) {
         System.out.println("hi");
         System.out.println(misDto.getMisTenure().getInterestRate());
         System.out.println(misDto.getMisTenure().getTenure());
         return misService.createMis(misDto);
 
     }
+
     @PutMapping("/closeMis")
-    public Double closeMis(@RequestParam("misId") int misId) throws Exception{
+    public Double closeMis(@RequestParam("misId") int misId) throws Exception {
         return misService.closeMis(misId);
     }
 }

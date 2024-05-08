@@ -12,6 +12,7 @@ public interface AccountsServiceInterface {
 
 	Status checkAccountStatus(String accountNumber);
 
+
 	double checkAccountBalanceByNumber(String accountNumber);
 
 	public String generateRandomAccountPIN();
@@ -23,5 +24,7 @@ public interface AccountsServiceInterface {
 	public void addBankUserDetails(BankRequestDTO bankDetails, String emailId);
 
 	public void addBalance(String accountNumber, double amount);
+
+	Status checkAccountStatus(int accountId);
 
 }

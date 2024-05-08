@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.RWI.Nidhi.dto.AccountResponseDTO;
 import com.RWI.Nidhi.dto.BankRequestDTO;
+
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.BankDetails;
 import com.RWI.Nidhi.entity.User;
@@ -50,7 +51,6 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 
 	@Override
 	public AccountResponseDTO openAccount(String email) {
-
 		// Find the user by email
 		Optional<User> optionalUser = userRepo.findUserByEmail(email);
 		if (optionalUser.isPresent()) {
@@ -61,18 +61,17 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 			// Create a new account object
 			Accounts newAccount = new Accounts();
 			newAccount.setAccountNumber(accountNumber);
-			// newAccount.setCurrentBalance(0); // Set the initial balance to 0
+			newAccount.setCurrentBalance(0); // Set the initial balance to 0
 			newAccount.setAccountOpeningDate(LocalDate.now());
 			newAccount.setAccountStatus(Status.ACTIVE);
-			// newAccount.setAccountStatus(accountDto.getStatus());
 			newAccount.setPin(generateRandomAccountPIN()); // Set the account PIN
 			// Associate the account with the user
 			User user = optionalUser.get();
 			newAccount.setUser(user);
-			Accounts savedAccount = accountsRepo.save(newAccount);
+			accountsRepo.save(newAccount);
 
 			// Create and return AccountResponseDTO
-			return createAccountResponseDTO(savedAccount);
+			return createAccountResponseDTO(newAccount);
 		} else {
 			// Handle the case where the user is not found
 			throw new RuntimeException("User with email " + email + " not found");
@@ -81,7 +80,7 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 
 	private AccountResponseDTO createAccountResponseDTO(Accounts account) {
 		AccountResponseDTO dto = new AccountResponseDTO();
-		dto.setAccpintId(account.getAccountId());
+		dto.setAccountId(account.getAccountId());
 		dto.setAccountNumber(account.getAccountNumber());
 		dto.setStatus(account.getAccountStatus());
 		dto.setUserName(account.getUser().getUserName());
@@ -101,6 +100,25 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 				return account.getAccountStatus(); // Return the account status
 			} else {
 				throw new AccountIdNotFoundException("Account with ID " + accountNumber + " not found");
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw new AccountIdNotFoundException("Error occurred while fetching account status");
+		}
+	}
+
+	@Override
+	public Status checkAccountStatus(int accountId) {
+		try {
+			// Retrieve account from the database
+			Optional<Accounts> optionalAccount = accountsRepo.findById(accountId);
+
+			// Check if the account exists
+			if (optionalAccount.isPresent()) {
+				Accounts account = optionalAccount.get();
+				return account.getAccountStatus(); // Return the account status
+			} else {
+				throw new AccountIdNotFoundException("Account with ID " + accountId + " not found");
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -232,13 +250,14 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 	public void addBalance(String accountNumber, double amount) {
 		// TODO Auto-generated method stub
 		try {
+			// Retrieve account from the database
 			Optional<Accounts> optionalAccount = accountsRepo.findByAccountNumber(accountNumber);
 
-			// check if the accounts exists
+			// Check if the account exists
 			if (optionalAccount.isPresent()) {
 				Accounts account = optionalAccount.get();
 
-				// add ammount to the accouts
+				// Add the amount to the account balance
 				double currentBalance = account.getCurrentBalance();
 				account.setCurrentBalance(currentBalance + amount);
 
@@ -252,5 +271,4 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 			throw new AccountIdNotFoundException("Error occurred while adding balance to the account");
 		}
 	}
-
 }
