@@ -22,4 +22,6 @@ public interface AccountsServiceInterface {
     void addBankUserDetails(BankDetailsDTO bankDetails, String emailId);
 
 
+
+
 }

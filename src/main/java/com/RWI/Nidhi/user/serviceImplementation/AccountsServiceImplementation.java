@@ -35,6 +35,7 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
     @Autowired
     private UserRepo userRepo;
 
+
     @Override
     public Boolean schemeRunning(int accountId) {
         List<Scheme> currentScheme = accountsRepo.findSchemeListByAccountId(accountId);
@@ -213,7 +214,6 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
             BankDetails bankDetails = new BankDetails();
 
             bankDetails.setAccHolderName(bankDto.getName());
-
             bankDetails.setAccNumber(bankDto.getAccNumber());
             bankDetails.setBankBranch(bankDto.getBranchName());
 //			System.out.println("ifsc code: " + bankDto.getIFSCCode());

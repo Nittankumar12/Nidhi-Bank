@@ -1,8 +1,9 @@
 package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.RdDto;
+import com.RWI.Nidhi.dto.RdRequestDto;
 import com.RWI.Nidhi.entity.RecurringDeposit;
-import com.RWI.Nidhi.user.serviceImplementation.UserRdServiceImplementation;
+import com.RWI.Nidhi.user.serviceImplementation.RdServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +16,11 @@ import java.util.List;
 @RequestMapping("/api/rd")
 public class RdController {
     @Autowired
-    private UserRdServiceImplementation service;
+    private RdServiceImplementation service;
 
     @PostMapping("/createRd")
-    public ResponseEntity<RecurringDeposit> createRd(@RequestParam String agentEmail, @RequestParam String userEmail, @RequestBody RdDto rdDto) {
-        RecurringDeposit rd = service.createRd(agentEmail, userEmail, rdDto);
+    public ResponseEntity<RdRequestDto> createRd(@RequestParam String agentEmail, @RequestParam String userEmail, @RequestBody RdDto rdDto) {
+        RdRequestDto rd = service.createRd(agentEmail, userEmail, rdDto);
         return new ResponseEntity<>(rd, HttpStatus.OK);
     }
 

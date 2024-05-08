@@ -13,4 +13,5 @@ public interface AccountsRepo extends JpaRepository<Accounts, Integer> {
     double findCurrentBalanceByAccountId(int accountId);
     List<Scheme> findSchemeListByAccountId(int accountId);
     Optional<Accounts> findByAccountNumber(String accountNumber);
+
 }

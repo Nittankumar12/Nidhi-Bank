@@ -18,9 +18,9 @@ import java.util.List;
 public class FixedDeposit {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int fdId;
+    private Integer fdId;
     private String nomineeName;
-    private int amount;
+    private Integer amount;
     private LocalDate depositDate;
     private double interestRate;
     private int tenure;

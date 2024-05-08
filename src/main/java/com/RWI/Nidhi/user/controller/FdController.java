@@ -2,8 +2,9 @@ package com.RWI.Nidhi.user.controller;
 
 
 import com.RWI.Nidhi.dto.FdDto;
+import com.RWI.Nidhi.dto.FdRequestDto;
 import com.RWI.Nidhi.entity.FixedDeposit;
-import com.RWI.Nidhi.user.serviceImplementation.UserFdServiceImplementation;
+import com.RWI.Nidhi.user.serviceImplementation.FdServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +16,12 @@ import java.util.List;
 @RequestMapping("/api/fd")
 public class FdController {
     @Autowired
-    private UserFdServiceImplementation service;
+    private FdServiceImplementation service;
 
     @PostMapping("/createFd")
     public ResponseEntity<Object> createFd(@RequestParam String agentEmail, @RequestParam String email, @RequestBody FdDto fdDto) {
-        FixedDeposit fd = service.createFd(agentEmail, email, fdDto);
-        return new ResponseEntity<>(fd, HttpStatus.OK);
+        FdRequestDto fdRequestDto = service.createFd(agentEmail, email, fdDto);
+        return new ResponseEntity<>(fdRequestDto, HttpStatus.OK);
     }
 
     @PutMapping("/delete/{id}")

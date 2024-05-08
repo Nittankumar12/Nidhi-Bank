@@ -26,8 +26,9 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     LoanRepo loanRepo;
     @Autowired
     TransactionRepo transactionRepo;
+
     @Override
-    public Agent addAgent(AddAgentDto addAgentDto) throws Exception{
+    public Agent addAgent(AddAgentDto addAgentDto) throws Exception {
         Agent newAgent = new Agent();
         newAgent.setAgentName(addAgentDto.getAgentName());
         newAgent.setAgentEmail(addAgentDto.getAgentEmail());
@@ -37,22 +38,22 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 
         try {
             agentRepo.save(newAgent);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
         return newAgent;
     }
 
     @Override
-    public Agent updateAgentName(int id, String agentName) throws Exception{
-        Agent currAgent = agentRepo.findById(id).orElseThrow(() -> {return new Exception("agent not found");});
+    public Agent updateAgentName(int id, String agentName) throws Exception {
+        Agent currAgent = agentRepo.findById(id).orElseThrow(() -> {
+            return new Exception("agent not found");
+        });
 
         currAgent.setAgentName(agentName);
         try {
             agentRepo.save(currAgent);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
         return currAgent;
@@ -60,66 +61,73 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 
     @Override
     public Agent updateAgentAddress(int id, String agentAddress) throws Exception {
-        Agent currAgent = agentRepo.findById(id).orElseThrow(() -> {return new Exception("agent not found");});
+        Agent currAgent = agentRepo.findById(id).orElseThrow(() -> {
+            return new Exception("agent not found");
+        });
 
         currAgent.setAgentAddress(agentAddress);
         try {
             agentRepo.save(currAgent);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
         return currAgent;
     }
 
     @Override
-    public Agent updateAgentEmail(int id, String agentEmail) throws Exception{
-        Agent currAgent = agentRepo.findById(id).orElseThrow(() -> {return new Exception("agent not found");});
+    public Agent updateAgentEmail(int id, String agentEmail) throws Exception {
+        Agent currAgent = agentRepo.findById(id).orElseThrow(() -> {
+            return new Exception("agent not found");
+        });
 
         currAgent.setAgentEmail(agentEmail);
         try {
             agentRepo.save(currAgent);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
         return currAgent;
     }
+
     @Override
     public Agent updateAgentPhoneNum(int id, String phoneNum) throws Exception {
-        Agent currAgent = agentRepo.findById(id).orElseThrow(() -> {return new Exception("agent not found");});
+        Agent currAgent = agentRepo.findById(id).orElseThrow(() -> {
+            return new Exception("agent not found");
+        });
 
         currAgent.setAgentPhoneNum(phoneNum);
         try {
             agentRepo.save(currAgent);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
         return currAgent;
     }
+
     @Override
     public boolean deleteAgentById(int id) throws Exception {
-        try{
+        try {
             agentRepo.deleteById(id);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
         return true;
     }
+
     @Override
     public List<AgentMinimalDto> getAllAgents() {
         List<Agent> allAgents = agentRepo.findAll();
         List<AgentMinimalDto> idUsernameAgent = allAgents.stream()
-                .map(agent -> new AgentMinimalDto(agent.getAgentId(),agent.getAgentName()))
+                .map(agent -> new AgentMinimalDto(agent.getAgentId(), agent.getAgentName()))
                 .collect(Collectors.toList());
         return idUsernameAgent;
     }
 
     @Override
-    public AdminViewsAgentDto getAgentById(int id) throws Exception{
-        Agent agent = agentRepo.findById(id).orElseThrow(() -> {return new Exception("agent not found");});
+    public AdminViewsAgentDto getAgentById(int id) throws Exception {
+        Agent agent = agentRepo.findById(id).orElseThrow(() -> {
+            return new Exception("agent not found");
+        });
         AdminViewsAgentDto responseDto = new AdminViewsAgentDto();
         responseDto.setAgentId(agent.getAgentId());
         responseDto.setAgentName(agent.getAgentName());
@@ -142,11 +150,12 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         return responseDto;
 
     }
+
     @Override
     public List<TransactionsHistoryDto> getTransactionForCurrentMonth(TransactionsHistoryDto transactionsHistoryDto) {
-        List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().withDayOfMonth(1),LocalDate.now());
+        List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().withDayOfMonth(1), LocalDate.now());
         List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
-        for(Transactions t : currTransactions){
+        for (Transactions t : currTransactions) {
             TransactionsHistoryDto temp = new TransactionsHistoryDto();
             temp.setTransactionId(t.getTransactionId());
             temp.setAmount(t.getTransactionAmount());
@@ -161,10 +170,10 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 
     @Override
     public List<TransactionsHistoryDto> getTransactionForCurrentWeek(TransactionsHistoryDto transactionsHistoryDto) {
-        List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().minusDays(7),LocalDate.now());
+        List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().minusDays(7), LocalDate.now());
 
         List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
-        for(Transactions t : currTransactions){
+        for (Transactions t : currTransactions) {
             TransactionsHistoryDto temp = new TransactionsHistoryDto();
             temp.setTransactionId(t.getTransactionId());
             temp.setAmount(t.getTransactionAmount());
@@ -181,7 +190,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     public List<TransactionsHistoryDto> getTransactionForToday(TransactionsHistoryDto transactionsHistoryDto) {
         List<Transactions> currTransactions = transactionRepo.getTransactionForDate(LocalDate.now());
         List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
-        for(Transactions t : currTransactions){
+        for (Transactions t : currTransactions) {
             TransactionsHistoryDto temp = new TransactionsHistoryDto();
             temp.setTransactionId(t.getTransactionId());
             temp.setAmount(t.getTransactionAmount());
