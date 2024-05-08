@@ -25,18 +25,6 @@ public class AgentController {
     public User addUser(@RequestBody AddUserDto addUserDto, @RequestParam("agentEmail") String agentEmail) throws Exception{
         return agentService.addUser(addUserDto, agentEmail);
     }
-    @PutMapping("updateName")
-    public User updateUserName(@RequestParam("id") int id,@RequestParam("userName") String userName) throws Exception{
-        return agentService.updateUserName(id, userName);
-    }
-    @PutMapping("updateEmail")
-    public User updateUserEmail(@RequestParam("id") int id,@RequestParam("userEmail") String userEmail) throws Exception{
-        return agentService.updateUserEmail(id, userEmail);
-    }
-    @PutMapping("updatePhoneNumber")
-    public User updateUserPhoneNum(@RequestParam("id") int id,@RequestParam("phoneNum") String phoneNum) throws Exception{
-        return agentService.updateUserPhoneNum(id, phoneNum);
-    }
     @DeleteMapping("deleteUserById")
     public boolean deleteUserById(@RequestParam("id") int id) throws Exception{
         return agentService.deleteUserById(id);
@@ -50,20 +38,6 @@ public class AgentController {
     @GetMapping("findUserById")
     public User findUserById(@RequestParam("id") int id) throws Exception{
         return agentService.findUserById(id);
-    }
-    @PostMapping("/verifyEmail")
-    public ResponseEntity<String> verifyEmail(@RequestParam("email") String email) throws Exception {
-        return agentService.forgetPasswordSendVerificationCode(email);
-    }
-
-    @PostMapping("/verifyOtp")
-    public ResponseEntity<String> verifyOtp(@RequestParam("email") String email, @RequestParam("enteredOtp") String enteredOtp ) throws Exception {
-        return agentService.forgetPasswordVerifyVerificationCode(email, enteredOtp);
-    }
-
-    @PostMapping("/updatePassword")
-    public User updatePassword(@RequestParam("email") String email, @RequestParam("password") String password ) throws Exception {
-       return agentService.updateUserPassword(email, password);
     }
     @PutMapping("/deactivateAccount")
     public Accounts deactivateAccount(@RequestParam("accountNumber") String accountNumber) throws Exception{
