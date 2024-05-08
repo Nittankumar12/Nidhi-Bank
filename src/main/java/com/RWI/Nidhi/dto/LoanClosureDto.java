@@ -16,5 +16,4 @@ public class LoanClosureDto {
     private double monthlyEMI;
     private double fine;
     private LocalDate lastEMIDate;
-    private String finalStatement;
 }

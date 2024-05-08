@@ -36,14 +36,10 @@ public class LoanController {
             return new ResponseEntity<>("You have another active loan", HttpStatus.I_AM_A_TEAPOT);
     }
 
+
     @GetMapping("/getLoanInfo/{email}")
-    public ResponseEntity<LoanInfoDto> getLoanInfo(@PathVariable String email) {
-        if (userLoanService.checkForExistingLoan(email) == Boolean.FALSE) {
-            return new ResponseEntity<>(userLoanService.getLoanInfo(email), HttpStatus.FOUND);
-        } else {
-            System.out.println("loan does not exist");
-            return new ResponseEntity<>(HttpStatus.HTTP_VERSION_NOT_SUPPORTED);
-        }
+    public ResponseEntity<?> getLoanInfo(@PathVariable String email) {
+        return userLoanService.getLoanInfo(email);
     }
 
     @PutMapping("/payEMI/{email}")
@@ -55,13 +51,19 @@ public class LoanController {
     }
 
     @GetMapping("/getLoanClosureDetails/{email}")
-    ResponseEntity<LoanClosureDto> getLoanClosureDetails(String email) {
-        return new ResponseEntity<>(userLoanService.getLoanClosureDetails(email), HttpStatus.FOUND);
+    ResponseEntity<?> getLoanClosureDetails(String email) {
+        return userLoanService.getLoanClosureDetails(email);
     }
 
     @PutMapping("/applyLoanClosureDetails/{email}")
-    ResponseEntity<String> applyloanClosureDetails(String email) {
-        return new ResponseEntity<>(HttpStatus.valueOf(userLoanService.applyForLoanClosure(email)));
+    ResponseEntity<?> applyloanClosureDetails(String email) {
+        return userLoanService.applyForLoanClosure(email);
     }
-    // Loan calc acc to scheme - > during the duration of scheme - > get for info , post for apply
 }
+// AGENT LOAN CONTROLLER
+// sanction, approve, etc. --> update loan status(user email, agent email(with verification), status to & status from)
+
+// SCHEME LOAN CONTROLLER
+// Scheme Loan - common prob of working for any loan and check for scheme running
+// apply prob - in conditions
+// help rahul with apply scheme - email, tenure, amount

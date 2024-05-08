@@ -4,6 +4,7 @@ import com.RWI.Nidhi.dto.LoanClosureDto;
 import com.RWI.Nidhi.dto.LoanInfoDto;
 import com.RWI.Nidhi.dto.MonthlyEmiDto;
 import com.RWI.Nidhi.dto.SchLoanCalcDto;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 
@@ -17,16 +18,11 @@ public interface UserSchemeLoanServiceInterface {
     double calculateFirstPayableSchLoanAmount(SchLoanCalcDto schLoanCalcDto);
 
     double calculateSchLoanEMI(SchLoanCalcDto schLoanCalcDto);
-
-    LoanInfoDto getLoanInfo(String email);
-
     MonthlyEmiDto payEMI(String email);
-
-    LoanClosureDto getLoanClosureDetails(String email);
-
     LocalDate firstDateOfNextMonth(LocalDate date);
-
-    String applyForLoanClosure(String email);
-
     LocalDate calcFirstEMIDate(LocalDate startDate);
+
+    ResponseEntity<?> getLoanInfo(String email);
+    ResponseEntity<?> getLoanClosureDetails(String email);
+    String applyForLoanClosure(String email);
 }

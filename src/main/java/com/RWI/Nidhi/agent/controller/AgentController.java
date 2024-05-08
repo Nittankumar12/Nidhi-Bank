@@ -74,7 +74,7 @@ public class AgentController {
         return agentService.closeAccount(accountNumber);
     }
     @PutMapping("/LoanApproved/{email}")
-    public ResponseEntity<LoanInfoDto> LoanApproved(@RequestParam("email")String email){
-        return new ResponseEntity<>(agentService.LoanApproved(email), HttpStatus.OK);
+    public ResponseEntity<?> LoanApproved(@RequestParam("email")String email){
+        return agentService.LoanApproved(email);
     }
 }

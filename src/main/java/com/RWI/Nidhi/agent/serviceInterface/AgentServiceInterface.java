@@ -4,6 +4,7 @@ import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.dto.LoanInfoDto;
 import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.enums.LoanStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -22,11 +23,12 @@ public interface AgentServiceInterface {
     Accounts deactivateAccount(String accountNumber) throws Exception;
     Accounts closeAccount(String accountNumber) throws Exception;
     // Loan Related Methods
-    LoanInfoDto LoanApproved(String email);
-    LoanInfoDto LoanOnSanction(String email);
-    LoanInfoDto LoanOnPending(String email);
-    LoanInfoDto LoanRejected(String email);
-    LoanInfoDto LoanForeclosed(String email);
-    LoanInfoDto LoanClosed(String email);
+    ResponseEntity<?> LoanApproved(String email);
+    ResponseEntity<?> LoanOnSanction(String email);
+    ResponseEntity<?>LoanOnPending(String email);
+    ResponseEntity<?> LoanRejected(String email);
+    ResponseEntity<?> LoanForeclosed(String email);
+    ResponseEntity<?> LoanClosed(String email);
+    ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus);
 }
 
