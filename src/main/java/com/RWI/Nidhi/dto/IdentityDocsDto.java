@@ -1,4 +1,4 @@
-package com.nidhi.kyc.KYC.Dto;
+package com.RWI.Nidhi.dto;
 
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
