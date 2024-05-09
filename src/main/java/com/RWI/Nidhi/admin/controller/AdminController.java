@@ -31,7 +31,7 @@ public class AdminController {
     AdminRepo adminRepo;
 
     @PostMapping("/addAgent")
-    public Agent addAgent(@RequestBody SignupRequest signupRequest) throws Exception {
+    public SignupRequest addAgent(@RequestBody SignupRequest signupRequest) throws Exception {
         return adminService.addAgent(signupRequest);
     }
     @PostMapping("/addAdmin")

@@ -50,7 +50,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     @Autowired
     UserRepo userRepo;
     @Override
-    public Agent addAgent(SignupRequest signUpRequest) throws Exception{
+    public SignupRequest addAgent(SignupRequest signUpRequest) throws Exception{
         if(adminRepo.existsByAdminName(signUpRequest.getUsername())||agentRepo.existsByAgentName(signUpRequest.getEmail())||userRepo.existsByUserName(signUpRequest.getEmail())){
             throw new Exception("Admin already exists");
         }
@@ -88,7 +88,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         newAgent.setRoles(roles);
         agentRepo.save(newAgent);
         credentialsRepo.save(agent);
-        return newAgent;
+        return signUpRequest;
     }
     @Override
     public Admin addAdmin(SignupRequest signUpRequest) throws Exception{

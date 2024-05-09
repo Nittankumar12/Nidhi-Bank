@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface AdminServiceInterface {
 
-    Agent addAgent(SignupRequest signupRequest) throws Exception;
+    SignupRequest addAgent(SignupRequest signupRequest) throws Exception;
 
     Admin addAdmin(SignupRequest signUpRequest) throws Exception;
 
