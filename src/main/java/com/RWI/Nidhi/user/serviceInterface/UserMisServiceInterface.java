@@ -13,6 +13,7 @@ public interface UserMisServiceInterface {
     Double closeMis(int misId) throws Exception;
 
     List<MisDto> getMisByEmail(String email);
+
     MisDto getMisById(int misId);
 
 }

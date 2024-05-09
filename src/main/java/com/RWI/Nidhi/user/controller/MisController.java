@@ -1,6 +1,5 @@
 package com.RWI.Nidhi.user.controller;
 
-import com.RWI.Nidhi.dto.FdDto;
 import com.RWI.Nidhi.dto.MisDto;
 import com.RWI.Nidhi.dto.MisRequestDto;
 import com.RWI.Nidhi.user.serviceImplementation.UserMisServiceImplementation;

@@ -3,7 +3,6 @@ package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.FdDto;
 import com.RWI.Nidhi.dto.FdRequestDto;
-import com.RWI.Nidhi.entity.FixedDeposit;
 import com.RWI.Nidhi.user.serviceImplementation.UserFdServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
