@@ -66,6 +66,6 @@ public class LoanController {
 // sanction, approve, etc. --> update loan status(user email, agent email(with verification), status to & status from)
 
 // SCHEME LOAN CONTROLLER
-// Scheme Loan - common problem of working for any loan and check for scheme running
+// Scheme Loan - common problem of working for any loan and check for scheme running - done
 // apply prob - in conditions
 // help rahul with apply scheme - email, tenure, amount

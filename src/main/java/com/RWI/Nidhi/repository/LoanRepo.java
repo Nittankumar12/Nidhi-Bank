@@ -17,8 +17,6 @@ public interface LoanRepo extends JpaRepository<Loan, Integer> {
     double findFineByLoanId(int loanId);
 	List<Loan> findByemiDateBetween(LocalDate startDate, LocalDate endDate);
 	List<Loan> findByStatus(LoanStatus status);
-    List<Loan> findLoanByLoanType(String loanType);
-    List<Loan> findLoanByStatus(String status);
     List<Loan> findByEmiDateBetween(LocalDate startDate, LocalDate endDate);
     Agent save(Credentials cred);
 }
