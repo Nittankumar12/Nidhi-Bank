@@ -1,8 +1,11 @@
-package com.nidhi.kyc.KYC.Service;
+package com.RWI.Nidhi.user.serviceImplementation;
 
-import com.nidhi.kyc.KYC.Dto.IdentityDocsDto;
-import com.nidhi.kyc.KYC.Entity.IdentityDocs;
-import com.nidhi.kyc.KYC.Repo.IdentityRepo;
+//import com.nidhi.kyc.KYC.Dto.IdentityDocsDto;
+//import com.nidhi.kyc.KYC.Entity.IdentityDocs;
+//import com.nidhi.kyc.KYC.Repo.IdentityRepo;
+import com.RWI.Nidhi.entity.IdentityDocs;
+import com.RWI.Nidhi.repository.IdentityRepo;
+import com.RWI.Nidhi.user.serviceInterface.IdentityDocsService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

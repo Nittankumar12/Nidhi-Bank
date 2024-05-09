@@ -1,4 +1,4 @@
-package com.nidhi.kyc.KYC.Service;
+package com.RWI.Nidhi.user.serviceInterface;
 
 import org.springframework.web.multipart.MultipartFile;
 

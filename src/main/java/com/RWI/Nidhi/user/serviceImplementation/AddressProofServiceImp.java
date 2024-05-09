@@ -1,14 +1,18 @@
-package com.nidhi.kyc.KYC.Service;
+package com.RWI.Nidhi.user.serviceImplementation;
 
-import com.nidhi.kyc.KYC.Entity.AddressProof;
-import com.nidhi.kyc.KYC.Enum.AdressDocumentType;
-import com.nidhi.kyc.KYC.Repo.AddressRepo;
+//import com.nidhi.kyc.KYC.Entity.AddressProof;
+//import com.nidhi.kyc.KYC.Enum.AdressDocumentType;
+//import com.nidhi.kyc.KYC.Repo.AddressRepo;
+import com.RWI.Nidhi.entity.AddressProof;
+import com.RWI.Nidhi.enums.AdressDocumentType;
+import com.RWI.Nidhi.repository.AddressRepo;
+import com.RWI.Nidhi.user.serviceInterface.AddressProofService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-public class AddressProofServiceImp implements AddressProofService{
+public class AddressProofServiceImp implements AddressProofService {
 
     @Autowired
     private StorageService storageService;

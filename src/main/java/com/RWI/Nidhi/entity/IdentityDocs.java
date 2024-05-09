@@ -1,4 +1,4 @@
-package com.nidhi.kyc.KYC.Entity;
+package com.RWI.Nidhi.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

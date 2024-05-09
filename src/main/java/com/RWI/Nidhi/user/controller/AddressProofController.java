@@ -1,7 +1,9 @@
-package com.nidhi.kyc.KYC.Controller;
+package com.RWI.Nidhi.user.controller;
 
-import com.nidhi.kyc.KYC.Enum.AdressDocumentType;
-import com.nidhi.kyc.KYC.Service.AddressProofServiceImp;
+//import com.nidhi.kyc.KYC.Enum.AdressDocumentType;
+import com.RWI.Nidhi.enums.AdressDocumentType;
+//import com.nidhi.kyc.KYC.Service.AddressProofServiceImp;
+import com.RWI.Nidhi.user.serviceImplementation.AddressProofServiceImp;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
