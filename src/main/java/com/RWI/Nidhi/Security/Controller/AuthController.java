@@ -48,65 +48,65 @@ public class AuthController {
     @Autowired
     Jwtgen jwtUtils;
 
-    @PostMapping("/user/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
-        }
+//    @PostMapping("/user/signup")
+//    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+//        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+//            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+//        }
+//
+//        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+//            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+//        }
+//
+//        if (userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
+//            return ResponseEntity.badRequest().body(new MessageResponse("Error: Phone number is already in use!"));
+//        }
+//
+//        // Create new user's account
+//        Credentials credentials = new Credentials(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPhoneNumber(),
+//                encoder.encode(signUpRequest.getPassword()));
+//
+//        // Set default role as USER for user
+//        Set<Role> roles = new HashSet<>();
+//        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+//                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//        roles.add(userRole);
+//        credentials.setRoles(roles);
+//
+//        userRepository.save(credentials);
+//
+//        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+//    }
 
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
-        }
-
-        if (userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Phone number is already in use!"));
-        }
-
-        // Create new user's account
-        Credentials credentials = new Credentials(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPhoneNumber(),
-                encoder.encode(signUpRequest.getPassword()));
-
-        // Set default role as USER for user
-        Set<Role> roles = new HashSet<>();
-        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-        roles.add(userRole);
-        credentials.setRoles(roles);
-
-        userRepository.save(credentials);
-
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-    }
-
-    @PostMapping("/agent/signup")
-    public ResponseEntity<?> registerDriver(@Valid @RequestBody SignupRequest signUpRequest) {
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
-        }
-
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
-        }
-
-        if (userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Phone number is already in use!"));
-        }
-
-        // Create new driver's account
-        Credentials driver = new Credentials(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPhoneNumber(),
-                encoder.encode(signUpRequest.getPassword()));
-
-        // Set default role as agent
-        Set<Role> roles = new HashSet<>();
-        Role driverRole = roleRepository.findByName(ERole.ROLE_AGENT)
-                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-        roles.add(driverRole);
-        driver.setRoles(roles);
-
-        userRepository.save(driver);
-
-        return ResponseEntity.ok(new MessageResponse("Driver registered successfully!"));
-    }
+//    @PostMapping("/agent/signup")
+//    public ResponseEntity<?> registerDriver(@Valid @RequestBody SignupRequest signUpRequest) {
+//        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+//            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+//        }
+//
+//        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+//            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+//        }
+//
+//        if (userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
+//            return ResponseEntity.badRequest().body(new MessageResponse("Error: Phone number is already in use!"));
+//        }
+//
+//        // Create new driver's account
+//        Credentials driver = new Credentials(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPhoneNumber(),
+//                encoder.encode(signUpRequest.getPassword()));
+//
+//        // Set default role as agent
+//        Set<Role> roles = new HashSet<>();
+//        Role driverRole = roleRepository.findByName(ERole.ROLE_AGENT)
+//                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//        roles.add(driverRole);
+//        driver.setRoles(roles);
+//
+//        userRepository.save(driver);
+//
+//        return ResponseEntity.ok(new MessageResponse("Driver registered successfully!"));
+//    }
 
 //    @PostMapping("/hub/signup")
 //    public ResponseEntity<?> registerHub(@Valid @RequestBody SignupRequest signUpRequest) {

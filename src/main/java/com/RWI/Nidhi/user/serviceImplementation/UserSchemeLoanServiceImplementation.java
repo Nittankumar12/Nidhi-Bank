@@ -46,16 +46,12 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     }
 
     @Override
-    public void
-
-
-
-    applySchemeLoan(String email) {
+    public ResponseEntity<?> applySchemeLoan(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
         Scheme scheme = acc.getScheme();
-        if (scheme == null);
-//            return new ResponseEntity<>("No scheme running", HttpStatus.I_AM_A_TEAPOT);
+        if (scheme == null)
+            return new ResponseEntity<>("No scheme running", HttpStatus.I_AM_A_TEAPOT);
         else {
             double schemeLoan = scheme.getMonthlyDepositAmount() * scheme.getTenure();
             SchLoanCalcDto schLoanCalcDto = new SchLoanCalcDto();
@@ -80,7 +76,7 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
             loanList.add(loan);
             acc.setLoanList(loanList);// save loan in acc
             loanRepo.save(loan);
-            // return new ResponseEntity<>("Scheme Loan has been applied for", HttpStatus.I_AM_A_TEAPOT);
+            return new ResponseEntity<>("Scheme Loan has been applied for", HttpStatus.I_AM_A_TEAPOT);
         }
     }
 
