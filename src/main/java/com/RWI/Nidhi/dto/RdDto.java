@@ -7,9 +7,11 @@ import lombok.Data;
 
 @Data
 public class RdDto {
+    private String userName;
     private String nomineeName;
     double monthlyDepositAmount;
     int tenure;
     RdCompoundingFrequency rdCompoundingFrequency;
+    private String agentName;
 
 }
