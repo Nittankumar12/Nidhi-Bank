@@ -8,6 +8,8 @@ public class SignupRequest {
 
     @Size(min = 3, max = 20)
     private String username;
+    private String firstName;
+    private String lastName;
 
     @Size(max = 50)
     @Email
@@ -22,7 +24,7 @@ public class SignupRequest {
     @Size(max = 10) // Assuming phone number is 10 digits
     private String phoneNumber;
 
-    private String designation;
+//    private String designation;
 
     public SignupRequest() {
     }
@@ -67,6 +69,22 @@ public class SignupRequest {
 //        return password;
 //    }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
 //    public void setPassword(String password) {
 //        this.password = password;
 //    }
@@ -79,13 +97,13 @@ public class SignupRequest {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getDesignation() {
-        return designation;
-    }
-
-    public void setDesignation(String designation) {
-        this.designation = designation;
-    }
+//    public String getDesignation() {
+//        return designation;
+//    }
+//
+//    public void setDesignation(String designation) {
+//        this.designation = designation;
+//    }
 
     @Override
     public String toString() {
