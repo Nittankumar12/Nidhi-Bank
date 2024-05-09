@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class MisResponseDto {
+    private String userName;
     private int misId;
     private double totalDepositedAmount;
     @Enumerated(EnumType.STRING)

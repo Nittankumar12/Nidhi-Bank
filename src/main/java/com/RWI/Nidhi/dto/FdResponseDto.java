@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class FdResponseDto {
+    private String userName;
     private int fdId;
     private int amount;
     @Enumerated(EnumType.STRING)

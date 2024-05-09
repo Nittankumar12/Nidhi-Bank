@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 
 public interface UserSchemeLoanServiceInterface {
-    double schemeLoan(String email);//maxLoan for scheme
+    ResponseEntity<?> schemeLoan(String email);//maxLoan for scheme
 
     Boolean checkForExistingLoan(String email);
 

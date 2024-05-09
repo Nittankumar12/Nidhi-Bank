@@ -3,7 +3,6 @@ package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.FdDto;
 import com.RWI.Nidhi.dto.FdRequestDto;
-import com.RWI.Nidhi.entity.FixedDeposit;
 import com.RWI.Nidhi.user.serviceImplementation.UserFdServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/fd")
+@RequestMapping("/fd")
 public class FdController {
     @Autowired
     private UserFdServiceImplementation service;
@@ -30,18 +29,13 @@ public class FdController {
         service.closeFd(fdId);
     }
 
-    @GetMapping("/allFds")
-    public List<FixedDeposit> getAllFds() {
-        return service.getAllFds();
-    }
-
-    @GetMapping("/find/{id}")
+    @GetMapping("/findById/{id}")
     public ResponseEntity<FdDto> findFdById(@RequestParam int fdId) {
         FdDto fdDto = service.getFdById(fdId);
         return new ResponseEntity<>(fdDto, HttpStatus.OK);
     }
 
-    @GetMapping("/findByEmail")
+    @GetMapping("/findAllFdsByEmail")
     public ResponseEntity<List<FdDto>> findFdByEmail(@RequestParam String email) {
         List<FdDto> fdDtoList = service.getFdByEmail(email);
         return new ResponseEntity<>(fdDtoList, HttpStatus.OK);

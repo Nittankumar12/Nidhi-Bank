@@ -38,6 +38,7 @@ public class UserStatementServiceImpl implements UserStatementService {
         List<FdResponseDto> fdResponseDtoList = new ArrayList<FdResponseDto>();
         for (FixedDeposit fixedDeposit : fixedDepositList) {
             FdResponseDto tempFdResponse = new FdResponseDto();
+            tempFdResponse.setUserName(fixedDeposit.getAccount().getUser().getUserName());
             tempFdResponse.setFdId(fixedDeposit.getFdId());
             tempFdResponse.setAmount(fixedDeposit.getAmount());
             tempFdResponse.setFdStatus(fixedDeposit.getFdStatus());
@@ -55,6 +56,7 @@ public class UserStatementServiceImpl implements UserStatementService {
         List<RdResponseDto> rdResponseDtoList = new ArrayList<RdResponseDto>();
         for (RecurringDeposit recurringDeposit : recurringDepositList) {
             RdResponseDto tempRdResponse = new RdResponseDto();
+            tempRdResponse.setUserName(recurringDeposit.getAccount().getUser().getUserName());
             tempRdResponse.setRdId(recurringDeposit.getRdId());
             tempRdResponse.setMonthlyDepositAmount(recurringDeposit.getMonthlyDepositAmount());
             tempRdResponse.setRdStatus(recurringDeposit.getRdStatus());
@@ -70,6 +72,7 @@ public class UserStatementServiceImpl implements UserStatementService {
         List<MisResponseDto> misResponseDtoList = new ArrayList<MisResponseDto>();
         for (MIS mis : misList) {
             MisResponseDto tempMisResponse = new MisResponseDto();
+            tempMisResponse.setUserName(mis.getAccount().getUser().getUserName());
             tempMisResponse.setMisId(mis.getMisId());
             tempMisResponse.setTotalDepositedAmount(mis.getTotalDepositedAmount());
             tempMisResponse.setStatus(mis.getStatus());
