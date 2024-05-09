@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/fd")
+@RequestMapping("/fd")
 public class FdController {
     @Autowired
     private UserFdServiceImplementation service;
@@ -30,18 +30,13 @@ public class FdController {
         service.closeFd(fdId);
     }
 
-    @GetMapping("/allFds")
-    public List<FixedDeposit> getAllFds() {
-        return service.getAllFds();
-    }
-
-    @GetMapping("/find/{id}")
+    @GetMapping("/findById/{id}")
     public ResponseEntity<FdDto> findFdById(@RequestParam int fdId) {
         FdDto fdDto = service.getFdById(fdId);
         return new ResponseEntity<>(fdDto, HttpStatus.OK);
     }
 
-    @GetMapping("/findByEmail")
+    @GetMapping("/findAllFdsByEmail")
     public ResponseEntity<List<FdDto>> findFdByEmail(@RequestParam String email) {
         List<FdDto> fdDtoList = service.getFdByEmail(email);
         return new ResponseEntity<>(fdDtoList, HttpStatus.OK);

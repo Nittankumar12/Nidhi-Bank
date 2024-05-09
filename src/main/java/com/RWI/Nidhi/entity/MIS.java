@@ -18,8 +18,6 @@ import java.util.List;
 public class MIS {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-//    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "six_digit_id_generator")
-//    @org.hibernate.annotations.GenericGenerator(name = "six_digit_id_generator", strategy = "path.to.SixDigitIdGenerator")
     private int misId;
     private double totalDepositedAmount;
     private LocalDate startDate;

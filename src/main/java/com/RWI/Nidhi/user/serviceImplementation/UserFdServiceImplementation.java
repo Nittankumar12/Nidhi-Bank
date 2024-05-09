@@ -2,7 +2,6 @@ package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.FdDto;
 import com.RWI.Nidhi.dto.FdRequestDto;
-import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Agent;
 import com.RWI.Nidhi.entity.FixedDeposit;
 import com.RWI.Nidhi.entity.User;
@@ -107,10 +106,6 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         return fd.getMaturityAmount();
     }
 
-    @Override
-    public List<FixedDeposit> getAllFds() {
-        return fdRepo.findAll();
-    }
 
     @Override
     public FdDto getFdById(int fdId) {
@@ -120,6 +115,9 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         fdDto.setNomineeName(fixedDeposit.getNomineeName());
         fdDto.setAmount(fixedDeposit.getAmount());
         fdDto.setTenure(fixedDeposit.getTenure());
+        fdDto.setUserName(fixedDeposit.getAccount().getUser().getUserName());
+        fdDto.setAgentName(fixedDeposit.getAgent().getAgentName());
+        fdDto.setFdCompoundingFrequency(fdDto.getFdCompoundingFrequency());
         return fdDto;
     }
 
@@ -127,8 +125,8 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     public List<FdDto> getFdByEmail(String email) {
         User user = userRepo.findByEmail(email);
         List<FixedDeposit> fixedDepositList = user.getAccounts().getFdList();
-        List<FdDto> fdDtoList = new ArrayList<FdDto>();;
-        for(FixedDeposit fixedDeposit : fixedDepositList){
+        List<FdDto> fdDtoList = new ArrayList<FdDto>();
+        for (FixedDeposit fixedDeposit : fixedDepositList) {
             FdDto fdDto = new FdDto();
             fdDto.setUserName(user.getUserName());
             fdDto.setAmount(fixedDeposit.getAmount());
@@ -140,5 +138,4 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         }
         return fdDtoList;
     }
-
 }
