@@ -1,8 +1,6 @@
 package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.LoanApplyDto;
-import com.RWI.Nidhi.dto.LoanClosureDto;
-import com.RWI.Nidhi.dto.LoanInfoDto;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,7 +54,7 @@ public class LoanController {
     }
 
     @PutMapping("/applyLoanClosureDetails/{email}")
-    ResponseEntity<?> applyloanClosureDetails(String email) {
+    ResponseEntity<?> applyLoanClosureDetails(String email) {
         return userLoanService.applyForLoanClosure(email);
     }
 }
@@ -68,6 +66,6 @@ public class LoanController {
 // sanction, approve, etc. --> update loan status(user email, agent email(with verification), status to & status from)
 
 // SCHEME LOAN CONTROLLER
-// Scheme Loan - common prob of working for any loan and check for scheme running
+// Scheme Loan - common problem of working for any loan and check for scheme running
 // apply prob - in conditions
 // help rahul with apply scheme - email, tenure, amount
