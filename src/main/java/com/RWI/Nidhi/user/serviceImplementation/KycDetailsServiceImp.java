@@ -37,7 +37,7 @@ public class KycDetailsServiceImp implements KycDetailsService {
         kycEntity.setGender(kycDto.getGender());
         kycEntity.setDateOfBirth(kycDto.getDateOfBirth());
         kycEntity.setReligion(kycDto.getReligion());
-        kycEntity.setNationalityType(kycDto.getNationalityType());
+        kycEntity.setNationality(kycDto.getNationality());
         kycEntity.setCategories(kycDto.getCategories());
         kycEntity.setOccupation(kycDto.getOccupation());
         kycEntity.setAlternatePhnNo(kycDto.getAlternatePhnNo());
