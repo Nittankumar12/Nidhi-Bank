@@ -15,9 +15,4 @@ public interface TransactionRepo extends JpaRepository<Transactions,Integer> {
     @Modifying
     @Query(value = "select * from transactions where transaction_date between :startDate and :endDate",nativeQuery = true)
     List<Transactions> getTransactionBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
-
-    @Transactional
-    @Modifying
-    @Query(value = "select * from transactions where transaction_date = :date",nativeQuery = true)
-    List<Transactions> getTransactionForDate(@Param("date") LocalDate date);
 }

@@ -77,6 +77,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
+
         Credentials agent = new Credentials(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPhoneNumber(),
                 newAgent.getAgentPassword());
 //
@@ -131,6 +132,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 
         credentialsRepo.save(agent);
         return newAdmin;
+
     }
 
 
@@ -249,7 +251,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 
     }
     @Override
-    public List<TransactionsHistoryDto> getTransactionForCurrentMonth(TransactionsHistoryDto transactionsHistoryDto) {
+    public List<TransactionsHistoryDto> getTransactionForCurrentMonth() {
         List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().withDayOfMonth(1),LocalDate.now());
         List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
         for(Transactions t : currTransactions){
@@ -266,7 +268,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     }
 
     @Override
-    public List<TransactionsHistoryDto> getTransactionForCurrentWeek(TransactionsHistoryDto transactionsHistoryDto) {
+    public List<TransactionsHistoryDto> getTransactionForCurrentWeek() {
         List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().minusDays(7),LocalDate.now());
 
         List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
@@ -284,8 +286,24 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     }
 
     @Override
-    public List<TransactionsHistoryDto> getTransactionForToday(TransactionsHistoryDto transactionsHistoryDto) {
-        List<Transactions> currTransactions = transactionRepo.getTransactionForDate(LocalDate.now());
+    public List<TransactionsHistoryDto> getTransactionForToday() {
+        List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now(), LocalDate.now());
+        List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
+        for(Transactions t : currTransactions){
+            TransactionsHistoryDto temp = new TransactionsHistoryDto();
+            temp.setTransactionId(t.getTransactionId());
+            temp.setAmount(t.getTransactionAmount());
+            temp.setDate(t.getTransactionDate());
+            temp.setTransactionStatus(t.getTransactionStatus());
+            temp.setAccountNumber(t.getAccount().getAccountNumber());
+            transactionsHistoryList.add(temp);
+        }
+        return transactionsHistoryList;
+    }
+
+    @Override
+    public List<TransactionsHistoryDto> getTransactionBetweenDates(LocalDate startDate, LocalDate endDate) {
+        List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(startDate, endDate);
         List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
         for(Transactions t : currTransactions){
             TransactionsHistoryDto temp = new TransactionsHistoryDto();

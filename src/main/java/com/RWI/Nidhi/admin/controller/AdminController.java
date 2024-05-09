@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -79,16 +80,20 @@ public class AdminController {
         return adminService.findByStatus(status);
     }
     @GetMapping("/transactionOfCurrentMonth")
-    public List<TransactionsHistoryDto> getTransactionForCurrentMonth(TransactionsHistoryDto transactionsHistoryDto) {
-        return adminService.getTransactionForCurrentMonth(transactionsHistoryDto);
+    public List<TransactionsHistoryDto> getTransactionForCurrentMonth() {
+        return adminService.getTransactionForCurrentMonth();
     }
     @GetMapping("/transactionOfToday")
-    public List<TransactionsHistoryDto> getTransactionForToday(TransactionsHistoryDto transactionsHistoryDto) {
-        return adminService.getTransactionForToday(transactionsHistoryDto);
+    public List<TransactionsHistoryDto> getTransactionForToday() {
+        return adminService.getTransactionForToday();
     }
     @GetMapping("/transactionOfWeek")
-    public List<TransactionsHistoryDto> getTransactionForCurrentWeek(TransactionsHistoryDto transactionsHistoryDto) {
-        return adminService.getTransactionForCurrentWeek(transactionsHistoryDto);
+    public List<TransactionsHistoryDto> getTransactionForCurrentWeek() {
+        return adminService.getTransactionForCurrentWeek();
+    }
+    @GetMapping("/transactionOfDate")
+    public List<TransactionsHistoryDto> getTransactionBetweenDates(@RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate){
+        return adminService.getTransactionBetweenDates(startDate, endDate);
     }
     @PostMapping("/login-admin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginReq loginReq) {
