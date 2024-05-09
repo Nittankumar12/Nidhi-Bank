@@ -7,6 +7,8 @@ import com.RWI.Nidhi.dto.TransactionsHistoryDto;
 import com.RWI.Nidhi.entity.Agent;
 import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.enums.LoanStatus;
+
+import java.time.LocalDate;
 import java.util.List;
 
 public interface AdminServiceInterface {
@@ -27,8 +29,9 @@ public interface AdminServiceInterface {
 
     AdminViewsAgentDto getAgentById(int id) throws Exception;
 
-    List<TransactionsHistoryDto> getTransactionForCurrentMonth(TransactionsHistoryDto transactionsHistoryDto);
-    List<TransactionsHistoryDto> getTransactionForCurrentWeek(TransactionsHistoryDto transactionsHistoryDto);
-    List<TransactionsHistoryDto> getTransactionForToday(TransactionsHistoryDto transactionsHistoryDto);
+    List<TransactionsHistoryDto> getTransactionForCurrentMonth();
+    List<TransactionsHistoryDto> getTransactionForCurrentWeek();
+    List<TransactionsHistoryDto> getTransactionForToday();
+    List<TransactionsHistoryDto> getTransactionBetweenDates(LocalDate startDate, LocalDate endDate);
     List<Loan> findByStatus(LoanStatus status);
 }

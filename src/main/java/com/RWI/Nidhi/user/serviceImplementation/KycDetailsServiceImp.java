@@ -1,11 +1,12 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.KycDetailsDto;
+import com.RWI.Nidhi.dto.ResponseKycDto;
 import com.RWI.Nidhi.entity.KycDetails;
 import com.RWI.Nidhi.repository.KycDetailsRepo;
 import com.RWI.Nidhi.user.serviceInterface.KycDetailsService;
 //import com.nidhi.kyc.KYC.Dto.KycDetailsDto;
-import com.nidhi.kyc.KYC.Dto.ResponseKycDto;
+//import com.nidhi.kyc.KYC.Dto.ResponseKycDto;
 //import com.nidhi.kyc.KYC.Entity.KycDetails;
 //import com.nidhi.kyc.KYC.Repo.KycDetailsRepo;
 import jakarta.transaction.Transactional;
@@ -27,6 +28,11 @@ public class KycDetailsServiceImp implements KycDetailsService {
         KycDetails kycDetails = convertToEntity(kycDetailsDTO);
         kycDetailsRepo.save(kycDetails);
         return kycDetailsDTO;
+    }
+
+    @Override
+    public ResponseKycDto getSomeDetails(Long kycId) {
+        return null;
     }
 
     private KycDetails convertToEntity(KycDetailsDto kycDto) {
