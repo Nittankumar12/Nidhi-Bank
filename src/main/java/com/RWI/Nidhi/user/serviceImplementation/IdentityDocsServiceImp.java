@@ -50,11 +50,18 @@ public class IdentityDocsServiceImp implements IdentityDocsService {
 
             identityDocs = new IdentityDocs();
             identityDocs.setAadharNumber(aadharNumber);
+            identityDocs.setAadharImageFront(aadharImageFrontUrl);
+            identityDocs.setAadharImageBack(aadharImageBackUrl);
             identityDocs.setPanNumber(panNumber);
+            identityDocs.setPanImage(panImageUrl);
             identityDocs.setAccountNumber(accountNumber);
             identityDocs.setIFSC_Code(IFSC_Code);
             identityDocs.setBankName(bankName);
+            identityDocs.setPassbookImage(passbookImageUrl);
             identityDocs.setVoterIdNo(voterIdNo);
+            identityDocs.setVoterIdImageFront(voterIdImageFrontUrl);
+            identityDocs.setVoterIdImageBack(voterIdImageBackUrl);
+            identityDocs.setProfilePhoto(profilePhotoUrl);
             identityRepo.save(identityDocs);
 
             return "Documents uploaded successfully";

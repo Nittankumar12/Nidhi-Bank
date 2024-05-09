@@ -5,6 +5,10 @@ import com.RWI.Nidhi.dto.ResponseKycDto;
 import com.RWI.Nidhi.entity.KycDetails;
 import com.RWI.Nidhi.repository.KycDetailsRepo;
 import com.RWI.Nidhi.user.serviceInterface.KycDetailsService;
+
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

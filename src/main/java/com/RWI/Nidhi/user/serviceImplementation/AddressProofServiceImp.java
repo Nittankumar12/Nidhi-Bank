@@ -41,6 +41,8 @@ public class AddressProofServiceImp implements AddressProofService {
             addressProof.setCity(city);
             addressProof.setPostalCode(postalCode);
             addressProof.setSelectDocument(selectDocument);
+            addressProof.setDocPhoto(docPhotoUrl);
+            addressRepo.save(addressProof);
 
         return null;
         }catch (IOException e) {
