@@ -16,9 +16,9 @@ public class UserSchemeLoanController {
     UserSchemeLoanServiceInterface userSchemeLoanService;
 
     @GetMapping("/schemeLoan/{email}")
-    public ResponseEntity<Double> maxLoan(@PathVariable String email) {
+    public ResponseEntity<?> maxLoan(@PathVariable String email) {
         if (userSchemeLoanService.checkForExistingLoan(email) == Boolean.TRUE)
-            return new ResponseEntity<>(userSchemeLoanService.schemeLoan(email), HttpStatus.FOUND);
+            return userSchemeLoanService.schemeLoan(email);
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
