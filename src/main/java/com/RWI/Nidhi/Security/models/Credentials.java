@@ -19,7 +19,7 @@ import java.util.Set;
 public class Credentials {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private int id;
 
   
   private String username;
@@ -38,7 +38,7 @@ public class Credentials {
 //  @Size(max = 120)
   private String password;
   
-  private String designation;
+//  private String designation;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(  name = "user_roles", 
@@ -58,22 +58,22 @@ public class Credentials {
   
 
 
-public Credentials(Long id, @Size(max = 20) String username, @Size(max = 50) @Email String email,
-                   @Size(max = 15) String phoneNumber, @Size(max = 120) String password, String designation) {
+public Credentials(int id, @Size(max = 20) String username, @Size(max = 50) @Email String email,
+                   @Size(max = 15) String phoneNumber, @Size(max = 120) String password,Set<Role> roles) {
 	super();
 	this.id = id;
 	this.username = username;
 	this.email = email;
 	this.phoneNumber = phoneNumber;
 	this.password = password;
-	this.designation = designation;
+//	this.designation = designation;
 }
 
-public Long getId() {
+public int getId() {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(int id) {
     this.id = id;
   }
 
@@ -118,11 +118,11 @@ public Long getId() {
   }
 
 
-public void setDesignation(String designation) {
-	this.designation = designation;
-}
-public String getDesignation() {
-	return designation;
-}
+//public void setDesignation(String designation) {
+//	this.designation = designation;
+//}
+//public String getDesignation() {
+//	return designation;
+//}
 
 }
