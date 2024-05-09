@@ -1,6 +1,6 @@
 package com.nidhi.kyc.KYC.Enum;
 
-public enum NationalityType {
+public enum Nationality {
     INDIAN,
     AMERICAN,
     NATIONAL
