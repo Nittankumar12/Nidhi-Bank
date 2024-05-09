@@ -24,10 +24,9 @@ public class UserSchemeLoanController {
     }
 
     @PostMapping("/applySchLoan/{email}")
-    public ResponseEntity<String> applyLoan(@PathVariable String email) {
+    public ResponseEntity<?> applyLoan(@PathVariable String email) {
         if (userSchemeLoanService.checkForExistingLoan(email) == Boolean.TRUE) {
-            userSchemeLoanService.applySchemeLoan(email);
-            return new ResponseEntity<>("Loan Has been successfully requested", HttpStatus.ACCEPTED);
+            return userSchemeLoanService.applySchemeLoan(email);
         } else
             return new ResponseEntity<>("You have another active loan", HttpStatus.BAD_REQUEST);
     }
