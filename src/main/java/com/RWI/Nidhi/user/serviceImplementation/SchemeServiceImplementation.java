@@ -37,7 +37,10 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
         Scheme scheme = acc.getScheme();
-        return Boolean.FALSE;
+//        if (scheme.getSchemeId() ) {
+//            return Boolean.FALSE;
+//        } else
+            return Boolean.TRUE;
         // This method is suppossed to return false if there is a scheme running else true
     }
 }

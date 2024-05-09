@@ -41,7 +41,7 @@ public class LoanController {
     }
 
     @PutMapping("/payEMI/{email}")
-    ResponseEntity<?> payEMI(String email) {
+    ResponseEntity<?> payEMI(@PathVariable String email) {
         if (userLoanService.checkForExistingLoan(email) != Boolean.FALSE) {
             return new ResponseEntity<>("No Loan currently recorded", HttpStatus.BAD_REQUEST);
         } else
@@ -49,12 +49,12 @@ public class LoanController {
     }
 
     @GetMapping("/getLoanClosureDetails/{email}")
-    ResponseEntity<?> getLoanClosureDetails(String email) {
+    ResponseEntity<?> getLoanClosureDetails(@PathVariable String email) {
         return userLoanService.getLoanClosureDetails(email);
     }
 
     @PutMapping("/applyLoanClosureDetails/{email}")
-    ResponseEntity<?> applyLoanClosureDetails(String email) {
+    ResponseEntity<?> applyLoanClosureDetails(@PathVariable String email) {
         return userLoanService.applyForLoanClosure(email);
     }
 }

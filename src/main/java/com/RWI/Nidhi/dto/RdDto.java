@@ -2,10 +2,12 @@ package com.RWI.Nidhi.dto;
 
 
 import com.RWI.Nidhi.enums.RdCompoundingFrequency;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 
-@Data
+@Getter
+@Setter
 public class RdDto {
     private String userName;
     private String nomineeName;
