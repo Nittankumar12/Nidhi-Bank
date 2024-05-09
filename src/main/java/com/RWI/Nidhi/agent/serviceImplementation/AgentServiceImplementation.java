@@ -219,7 +219,6 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         }
         return null;
     }
-
     private String getEncryptedPassword(String password) {
         String encryptedPassword = "";
         try {
@@ -231,26 +230,12 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         return null;
     }
 
-    @Override
-    public ResponseEntity<?> LoanApproved(String email) {//must check for loan existence in controller
-        User user = userService.getByEmail(email);
-        Accounts accounts = user.getAccounts();
-        List<Loan> loanList = accounts.getLoanList();
-        for (Loan loan : loanList) {
-            if (loan.getStatus() == LoanStatus.APPLIED) {
-                loan.setStatus(LoanStatus.APPROVED);
-                loanRepo.save(loan);
-                sendStatusEmail(loan);
-            } else
-                return null;
-        }
-        return userLoanService.getLoanInfo(email);
-    }
     private void sendStatusEmail(Loan loan) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(loan.getUser().getEmail());
         mailMessage.setSubject("Change in Loan Status");
         mailMessage.setText("Hello User," + loan.getUser().getUserName() + ",\n\n Your loan has been changed to" + loan.getStatus() + "Please confirm so with your respective agent.");
+        javaMailSender.send(mailMessage);
     }
 
     @Override

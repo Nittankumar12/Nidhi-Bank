@@ -2,7 +2,6 @@ package com.RWI.Nidhi.agent.serviceInterface;
 
 import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.entity.Accounts;
-import com.RWI.Nidhi.dto.LoanInfoDto;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +21,6 @@ public interface AgentServiceInterface {
     ResponseEntity<String> forgetPasswordVerifyVerificationCode(String email, String otp) throws Exception;
     Accounts deactivateAccount(String accountNumber) throws Exception;
     Accounts closeAccount(String accountNumber) throws Exception;
-    // Loan Related Methods
-    ResponseEntity<?> LoanApproved(String email);
     ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus);
 }
 
