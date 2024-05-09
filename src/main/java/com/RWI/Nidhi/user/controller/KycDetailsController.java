@@ -2,9 +2,10 @@ package com.RWI.Nidhi.user.controller;
 
 //import com.nidhi.kyc.KYC.Dto.KycDetailsDto;
 import com.RWI.Nidhi.dto.KycDetailsDto;
+import com.RWI.Nidhi.dto.ResponseKycDto;
 import com.RWI.Nidhi.entity.KycDetails;
 import com.RWI.Nidhi.user.serviceInterface.KycDetailsService;
-import com.nidhi.kyc.KYC.Dto.ResponseKycDto;
+//import com.nidhi.kyc.KYC.Dto.ResponseKycDto;
 //import com.nidhi.kyc.KYC.Entity.KycDetails;
 //import com.nidhi.kyc.KYC.Service.KycDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
