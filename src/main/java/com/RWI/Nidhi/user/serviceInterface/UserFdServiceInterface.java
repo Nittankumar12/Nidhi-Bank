@@ -15,5 +15,5 @@ public interface UserFdServiceInterface {
     List<FixedDeposit> getAllFds();
 
     FdDto getFdById(int fdId);
-
+    List<FdDto> getFdByEmail(String email);
 }

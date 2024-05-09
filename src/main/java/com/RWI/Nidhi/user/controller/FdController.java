@@ -40,4 +40,10 @@ public class FdController {
         FdDto fdDto = service.getFdById(fdId);
         return new ResponseEntity<>(fdDto, HttpStatus.OK);
     }
+
+    @GetMapping("/findByEmail")
+    public ResponseEntity<List<FdDto>> findFdByEmail(@RequestParam String email) {
+        List<FdDto> fdDtoList = service.getFdByEmail(email);
+        return new ResponseEntity<>(fdDtoList, HttpStatus.OK);
+    }
 }

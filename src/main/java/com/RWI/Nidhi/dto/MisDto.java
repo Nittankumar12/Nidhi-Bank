@@ -5,8 +5,10 @@ import lombok.Getter;
 
 @Getter
 public class MisDto {
+    private String userName;
     private double totalDepositedAmount;
     private String nomineeName;
 //    @Enumerated(EnumType.STRING)
     private MisTenure misTenure;
+    private String agentName;
 }

@@ -25,10 +25,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean authenticate(String email, String password) {
 
-        Optional<User> user = userRepo.findUserByEmail(email);
-        if (user != null && user.get().getAccounts().getAccountStatus().equals("ACTIVE")) {
-            return (user.get().getPassword().equals(getEncryptedPassword(password)))
-                    && email.equals(user.get().getEmail());
+        User user = userRepo.findByEmail(email);
+        if (user != null && user.getAccounts().getAccountStatus().equals("ACTIVE")) {
+            return (user.getPassword().equals(getEncryptedPassword(password)))
+                    && email.equals(user.getEmail());
         } else {
             return false;
         }

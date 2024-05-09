@@ -1,5 +1,6 @@
 package com.RWI.Nidhi.user.controller;
 
+import com.RWI.Nidhi.dto.FdDto;
 import com.RWI.Nidhi.dto.RdDto;
 import com.RWI.Nidhi.dto.RdRequestDto;
 import com.RWI.Nidhi.entity.RecurringDeposit;
@@ -39,5 +40,11 @@ public class RdController {
     public ResponseEntity<RdDto> findRdById(@RequestParam int rdId) {
         RdDto rdDto = service.getRdById(rdId);
         return new ResponseEntity<>(rdDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/findByEmail")
+    public ResponseEntity<List<RdDto>> findRdByEmail(@RequestParam String email) {
+        List<RdDto> rdDtoList = service.getRdByEmail(email);
+        return new ResponseEntity<>(rdDtoList, HttpStatus.OK);
     }
 }

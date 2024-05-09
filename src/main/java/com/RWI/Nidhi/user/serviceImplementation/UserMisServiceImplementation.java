@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class UserMisServiceImplementation implements UserMisServiceInterface {
@@ -25,7 +26,7 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
     @Override
     public MisRequestDto createMis(String agentEmail, String email,MisDto misDto) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
-        User user = userRepo.findUserByEmail(email).get();
+        User user = userRepo.findByEmail(email);
         Accounts accounts = new Accounts();
         MIS newMis = new MIS();
         if (agent != null && user != null) {
@@ -74,5 +75,10 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         currMis.setStatus(Status.CLOSED);
         misRepo.save(currMis);
         return currMis.getTotalInterestEarned();
+    }
+
+    @Override
+    public List<MisDto> getMisByEmail(String email) {
+        return null;
     }
 }
