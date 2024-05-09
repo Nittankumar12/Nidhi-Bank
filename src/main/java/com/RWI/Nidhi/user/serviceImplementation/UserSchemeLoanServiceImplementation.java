@@ -42,7 +42,7 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     }
 
     @Override
-    public void applySchemeLoan(String email) {
+    public void                                                                                                                                                                                                                                                     applySchemeLoan(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
         Scheme scheme = acc.getScheme();
