@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -37,8 +38,8 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     @Override
     public FdRequestDto createFd(String agentEmail, String email, FdDto fdDto) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
-        User user = userRepo.findUserByEmail(email).get();
-        Accounts accounts = new Accounts();
+        User user = userRepo.findByEmail(email);
+//        Accounts accounts = new Accounts();
         FixedDeposit fd = new FixedDeposit();
         if (agent != null && user != null) {
             fd.setAmount(fdDto.getAmount());
@@ -120,6 +121,24 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         fdDto.setAmount(fixedDeposit.getAmount());
         fdDto.setTenure(fixedDeposit.getTenure());
         return fdDto;
+    }
+
+    @Override
+    public List<FdDto> getFdByEmail(String email) {
+        User user = userRepo.findByEmail(email);
+        List<FixedDeposit> fixedDepositList = user.getAccounts().getFdList();
+        List<FdDto> fdDtoList = new ArrayList<FdDto>();;
+        for(FixedDeposit fixedDeposit : fixedDepositList){
+            FdDto fdDto = new FdDto();
+            fdDto.setUserName(user.getUserName());
+            fdDto.setAmount(fixedDeposit.getAmount());
+            fdDto.setTenure(fixedDeposit.getTenure());
+            fdDto.setNomineeName(fixedDeposit.getNomineeName());
+            fdDto.setFdCompoundingFrequency(fdDto.getFdCompoundingFrequency());
+            fdDto.setAgentName(user.getAgent().getAgentName());
+            fdDtoList.add(fdDto);
+        }
+        return fdDtoList;
     }
 
 }

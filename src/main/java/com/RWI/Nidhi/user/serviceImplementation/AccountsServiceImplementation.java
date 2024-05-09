@@ -52,11 +52,11 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 	@Override
 	public AccountResponseDTO openAccount(String email) {
 		// Find the user by email
-		Optional<User> optionalUser = userRepo.findUserByEmail(email);
-		if (optionalUser.isPresent()) {
+		User optionalUser = userRepo.findByEmail(email);
+		if (optionalUser != null) {
 			// String accountNumber = generateRandomAccountNumber();
-			String accountNumber = generateAccountNumber(optionalUser.get().getUserName(),
-					optionalUser.get().getPhoneNumber());
+			String accountNumber = generateAccountNumber(optionalUser.getUserName(),
+					optionalUser.getPhoneNumber());
 
 			// Create a new account object
 			Accounts newAccount = new Accounts();
@@ -66,7 +66,7 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 			newAccount.setAccountStatus(Status.ACTIVE);
 			newAccount.setPin(generateRandomAccountPIN()); // Set the account PIN
 			// Associate the account with the user
-			User user = optionalUser.get();
+			User user = optionalUser;
 			newAccount.setUser(user);
 			accountsRepo.save(newAccount);
 
@@ -220,9 +220,9 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 	}
 
 	public void addBankUserDetails(BankRequestDTO bankDto, String emailId) {
-		Optional<User> userOptional = userRepo.findUserByEmail(emailId);
-		if (userOptional.isPresent()) {
-			User user = userOptional.get();
+		User userOptional = userRepo.findByEmail(emailId);
+		if (userOptional != null) {
+			User user = userOptional;
 
 			BankDetails bankDetails = new BankDetails();
 
