@@ -1,7 +1,8 @@
-package com.nidhi.kyc.KYC.Controller;
+package com.RWI.Nidhi.user.controller;
 
-import com.nidhi.kyc.KYC.Dto.IdentityDocsDto;
-import com.nidhi.kyc.KYC.Service.IdentityDocsService;
+//import com.nidhi.kyc.KYC.Dto.IdentityDocsDto;
+//import com.nidhi.kyc.KYC.Service.IdentityDocsService;
+import com.RWI.Nidhi.user.serviceInterface.IdentityDocsService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

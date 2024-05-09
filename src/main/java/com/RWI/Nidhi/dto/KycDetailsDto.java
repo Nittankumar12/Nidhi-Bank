@@ -1,6 +1,7 @@
-package com.nidhi.kyc.KYC.Dto;
+package com.RWI.Nidhi.dto;
 
-import com.nidhi.kyc.KYC.Enum.*;
+//import com.nidhi.kyc.KYC.Enum.*;
+import com.RWI.Nidhi.enums.*;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;

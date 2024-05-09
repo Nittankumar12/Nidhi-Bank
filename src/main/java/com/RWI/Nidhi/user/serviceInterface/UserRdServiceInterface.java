@@ -1,12 +1,10 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
-
 import com.RWI.Nidhi.dto.RdDto;
 import com.RWI.Nidhi.dto.RdRequestDto;
 import com.RWI.Nidhi.entity.RecurringDeposit;
 
 import java.util.List;
-
 
 public interface UserRdServiceInterface {
 
@@ -14,9 +12,9 @@ public interface UserRdServiceInterface {
 
     RecurringDeposit closeRd(int rdId);
 
-    List<RecurringDeposit> getAllRds();
-
     RdDto getRdById(int rdId);
 
-    Double onMaturity(Double amount, Integer tenure, Double interestRate);
+    List<RdDto> getRdByEmail(String email);
+
+//    Double onMaturity(Double amount, Integer tenure, Double interestRate);
 }

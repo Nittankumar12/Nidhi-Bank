@@ -1,6 +1,7 @@
-package com.nidhi.kyc.KYC.Entity;
+package com.RWI.Nidhi.entity;
 
-import com.nidhi.kyc.KYC.Enum.*;
+//import com.nidhi.kyc.KYC.Enum.*;
+import com.RWI.Nidhi.enums.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jdk.jfr.Category;

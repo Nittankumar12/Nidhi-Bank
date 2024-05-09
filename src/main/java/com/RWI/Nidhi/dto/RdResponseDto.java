@@ -9,9 +9,9 @@ import lombok.Setter;
 @Setter
 @Getter
 public class RdResponseDto {
+    private String userName;
     private int RdId;
     private double monthlyDepositAmount;
     @Enumerated(EnumType.STRING)
     private Status rdStatus;
-
 }

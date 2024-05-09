@@ -1,4 +1,4 @@
-package com.nidhi.kyc.KYC.Enum;
+package com.RWI.Nidhi.enums;
 
 public class IdDocsType {
 

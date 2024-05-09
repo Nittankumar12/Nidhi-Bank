@@ -1,6 +1,7 @@
-package com.nidhi.kyc.KYC.Service;
+package com.RWI.Nidhi.user.serviceInterface;
 
-import com.nidhi.kyc.KYC.Enum.AdressDocumentType;
+//import com.nidhi.kyc.KYC.Enum.AdressDocumentType;
+import com.RWI.Nidhi.enums.AdressDocumentType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
