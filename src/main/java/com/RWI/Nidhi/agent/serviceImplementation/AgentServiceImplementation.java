@@ -1,17 +1,21 @@
 package com.RWI.Nidhi.agent.serviceImplementation;
 
+import com.RWI.Nidhi.Security.models.Credentials;
+import com.RWI.Nidhi.Security.models.ERole;
+import com.RWI.Nidhi.Security.models.Role;
+import com.RWI.Nidhi.Security.payload.request.SignupRequest;
+import com.RWI.Nidhi.Security.payload.response.MessageResponse;
+import com.RWI.Nidhi.Security.repository.CredentialsRepo;
+import com.RWI.Nidhi.Security.repository.RoleRepository;
 import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
 import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
-import com.RWI.Nidhi.repository.AccountsRepo;
+import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanStatus;
-import com.RWI.Nidhi.repository.AgentRepo;
-import com.RWI.Nidhi.repository.LoanRepo;
-import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +23,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class AgentServiceImplementation implements AgentServiceInterface {
@@ -45,14 +52,35 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     JavaMailSender javaMailSender;
     @Autowired
     AgentRepo agentRepo;
+    @Autowired
+    PasswordEncoder encoder;
+    @Autowired
+    RoleRepository roleRepository;
+    @Autowired
+    CredentialsRepo credentialsRepo;
+    @Autowired
+    AdminRepo adminRepo;
 
     @Override
-    public User addUser(AddUserDto addUserDto, String agentEmail) throws Exception {
+    public User addUser(SignupRequest signUpRequest, String agentEmail) throws Exception {
 
         //check if user already exists
-        if (userRepo.existsByEmail(addUserDto.getEmail())) {
+//        if (userRepo.existsByEmail(addUserDto.getEmail())) {
+//            throw new Exception("User already exists");
+//        }
+
+        if(adminRepo.existsByAdminName(signUpRequest.getUsername())||agentRepo.existsByAgentName(signUpRequest.getEmail())||userRepo.existsByUserName(signUpRequest.getEmail())){
+            throw new Exception("Admin already exists");
+        }
+
+        if(adminRepo.existsByEmail(signUpRequest.getEmail())||agentRepo.existsByAgentEmail(signUpRequest.getEmail())||userRepo.existsByEmail(signUpRequest.getEmail())){
+            throw new Exception("Admin already exists");
+        }
+
+        if (userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())||adminRepo.existsByPhoneNumber(signUpRequest.getEmail())||agentRepo.existsByAgentPhoneNum(signUpRequest.getEmail())) {
             throw new Exception("User already exists");
         }
+
 
         //Getting the agent from repo by email
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
@@ -63,9 +91,9 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         }
         //creation of new user
         User newUser = new User();
-        newUser.setUserName(addUserDto.getUserName());
-        newUser.setEmail(addUserDto.getEmail());
-        newUser.setPhoneNumber(addUserDto.getPhoneNumber());
+        newUser.setUserName(signUpRequest.getUsername());
+        newUser.setEmail(signUpRequest.getEmail());
+        newUser.setPhoneNumber(signUpRequest.getPhoneNumber());
         newUser.setAgent(agent);
         agent.getUserList().add(newUser);
         agentRepo.save(agent);
@@ -76,11 +104,23 @@ public class AgentServiceImplementation implements AgentServiceInterface {
             String messageToSend = "Your temporary system generated password is: ";
 
             otpServiceImplementation.sendEmailOtp(newUser.getEmail(), subject, messageToSend, tempPassword);
-            newUser.setPassword(getEncryptedPassword(tempPassword));
+            newUser.setPassword(encoder.encode(tempPassword));
             userRepo.save(newUser);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
+        Credentials credentials = new Credentials(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPhoneNumber(),
+                newUser.getPassword());
+
+        // Set default role as USER for user
+        Set<Role> roles = new HashSet<>();
+        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles.add(userRole);
+        credentials.setRoles(roles);
+        newUser.setRoles(roles);
+        userRepo.save(newUser);
+        credentialsRepo.save(newUser);
         return newUser;
     }
 

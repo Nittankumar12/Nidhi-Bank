@@ -1,5 +1,7 @@
 package com.RWI.Nidhi.repository;
 
+import com.RWI.Nidhi.Security.models.Credentials;
+import com.RWI.Nidhi.entity.Agent;
 import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.enums.LoanStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +18,5 @@ public interface LoanRepo extends JpaRepository<Loan, Integer> {
 	List<Loan> findByemiDateBetween(LocalDate startDate, LocalDate endDate);
 	List<Loan> findByStatus(LoanStatus status);
     List<Loan> findByEmiDateBetween(LocalDate startDate, LocalDate endDate);
+    Agent save(Credentials cred);
 }
