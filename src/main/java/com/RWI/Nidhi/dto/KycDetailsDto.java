@@ -45,7 +45,7 @@ public class KycDetailsDto {
         private Religion religion;
 
 
-        private NationalityType nationalityType;
+        private Nationality nationality;
 
 
         private Categories categories;

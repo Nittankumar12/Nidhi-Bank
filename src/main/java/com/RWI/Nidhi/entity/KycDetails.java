@@ -31,7 +31,7 @@ public class KycDetails {
     @Enumerated(EnumType.STRING)
     private Religion religion;
     @Enumerated(EnumType.STRING)
-    private NationalityType nationalityType;
+    private Nationality nationality;
     @Enumerated(value =EnumType.STRING)
     private Categories categories;
     private Long alternatePhnNo;
