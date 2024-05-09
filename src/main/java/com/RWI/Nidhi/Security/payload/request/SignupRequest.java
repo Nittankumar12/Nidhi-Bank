@@ -1,17 +1,15 @@
 package com.RWI.Nidhi.Security.payload.request;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 
 import java.util.Set;
-
-
 public class SignupRequest {
 
-//    @Size(min = 3, max = 20)
+    @Size(min = 3, max = 20)
     private String username;
 
-
-//    @Size(max = 50)
+    @Size(max = 50)
     @Email
     private String email;
 
@@ -19,9 +17,9 @@ public class SignupRequest {
 
 
 //    @Size(min = 6, max = 40)
-    private String password;
+//    private String password;
 
-//    @Size(max = 10) // Assuming phone number is 10 digits
+    @Size(max = 10) // Assuming phone number is 10 digits
     private String phoneNumber;
 
     private String designation;
@@ -29,13 +27,13 @@ public class SignupRequest {
     public SignupRequest() {
     }
 //removed not blank for all arguments
-    public SignupRequest( /*@Size(min = 3, max = 20) */String username, /* @Size(max = 50)*/ @Email String email,
-            Set<String> role,  /*@Size(min = 6, max = 40)*/ String password, /*@Size(max = 10)*/ String phoneNumber) {
+    public SignupRequest( @Size(min = 3, max = 20) String username,  @Size(max = 50) @Email String email,
+            Set<String> role  /*@Size(min = 6, max = 40)*//* String password*/, @Size(max = 10) String phoneNumber) {
         super();
         this.username = username;
         this.email = email;
         this.role = role;
-        this.password = password;
+//        this.password = password;
         this.phoneNumber = phoneNumber;
     }
     
@@ -65,13 +63,13 @@ public class SignupRequest {
         this.role = role;
     }
 
-    public String getPassword() {
-        return password;
-    }
+//    public String getPassword() {
+//        return password;
+//    }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+//    public void setPassword(String password) {
+//        this.password = password;
+//    }
 
     public String getPhoneNumber() {
         return phoneNumber;
@@ -91,8 +89,9 @@ public class SignupRequest {
 
     @Override
     public String toString() {
-        return "SignupRequest [username=" + username + ", email=" + email + ", role=" + role + ", password=" + password
-                + ", phoneNumber=" + phoneNumber + "]";
+        return "SignupRequest [username=" + username + ", email=" + email + ", role=" + role  +
+//                " password=" + password+
+              ", phoneNumber=" + phoneNumber + "]";
     }
 
 }

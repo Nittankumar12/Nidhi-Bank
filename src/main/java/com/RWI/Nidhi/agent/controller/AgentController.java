@@ -1,5 +1,6 @@
 package com.RWI.Nidhi.agent.controller;
 
+import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceImplementation;
 import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.entity.Accounts;
@@ -23,8 +24,8 @@ public class AgentController {
     AccountsServiceImplementation accountsService;
 
     @PostMapping("/addUser")
-    public User addUser(@RequestBody AddUserDto addUserDto, @RequestParam("agentEmail") String agentEmail) throws Exception{
-        return agentService.addUser(addUserDto, agentEmail);
+    public User addUser(@RequestBody SignupRequest signupRequest, @RequestParam("agentEmail") String agentEmail) throws Exception{
+        return agentService.addUser(signupRequest, agentEmail);
     }
     @DeleteMapping("deleteUserById")
     public boolean deleteUserById(@RequestParam("id") int id) throws Exception{

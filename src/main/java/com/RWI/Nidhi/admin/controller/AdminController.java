@@ -1,5 +1,7 @@
 package com.RWI.Nidhi.admin.controller;
 
+import com.RWI.Nidhi.Security.payload.request.SignupRequest;
+import com.RWI.Nidhi.Security.payload.response.MessageResponse;
 import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
 import com.RWI.Nidhi.admin.ResponseDto.AgentMinimalDto;
 import com.RWI.Nidhi.admin.adminServiceImplementation.AdminServiceImplementation;
@@ -29,8 +31,13 @@ public class AdminController {
     AdminRepo adminRepo;
 
     @PostMapping("/addAgent")
-    public AddAgentDto addAgent(@RequestBody AddAgentDto addAgentDto) throws Exception {
-        return adminService.addAgent(addAgentDto);
+    public SignupRequest addAgent(@RequestBody SignupRequest signupRequest) throws Exception {
+        return adminService.addAgent(signupRequest);
+    }
+    @PostMapping("/addAdmin")
+    public ResponseEntity<?> addAdmin(@RequestBody SignupRequest signupRequest) throws Exception {
+        adminService.addAdmin(signupRequest);
+        return ResponseEntity.ok(new MessageResponse("Driver registered successfully!"));
     }
 
     @PutMapping("/updateAgentName")
