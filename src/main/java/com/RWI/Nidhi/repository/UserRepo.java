@@ -9,8 +9,10 @@ import java.util.Optional;
 @Repository
 public interface UserRepo extends JpaRepository<User, Integer> {
 	boolean existsByEmail(String email);
-//	@Query(value = "SELECT e FROM Agent e where e.email =:email")
-	Optional<User> findUserByEmail(String email);
-
 	 User findByEmail(String email);
+	 boolean existsByUserName(String username);
+
+	boolean existsByPhoneNumber(String phoneNumber);
+
+	User findByUserName(String username);
 }

@@ -15,6 +15,4 @@ public class TransactionsHistoryDto {
     private Date date;
     @Enumerated(EnumType.STRING)
     private TransactionStatus transactionStatus;
-
-
 }

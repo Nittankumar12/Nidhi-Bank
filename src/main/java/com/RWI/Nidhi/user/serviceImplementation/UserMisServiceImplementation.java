@@ -2,16 +2,20 @@ package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.MisDto;
 import com.RWI.Nidhi.dto.MisRequestDto;
+import com.RWI.Nidhi.dto.RdDto;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.repository.AgentRepo;
 import com.RWI.Nidhi.repository.MisRepo;
 import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserMisServiceInterface;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserMisServiceImplementation implements UserMisServiceInterface {
@@ -23,9 +27,9 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
     private UserRepo userRepo;
 
     @Override
-    public MisRequestDto createMis(String agentEmail, String email,MisDto misDto) {
+    public MisRequestDto createMis(String agentEmail, String email, MisDto misDto) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
-        User user = userRepo.findUserByEmail(email).get();
+        User user = userRepo.findByEmail(email);
         Accounts accounts = new Accounts();
         MIS newMis = new MIS();
         if (agent != null && user != null) {
@@ -74,5 +78,34 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         currMis.setStatus(Status.CLOSED);
         misRepo.save(currMis);
         return currMis.getTotalInterestEarned();
+    }
+    @Override
+    public MisDto getMisById(int misId) {
+        MIS mis = misRepo.findById(misId)
+                .orElseThrow(() -> new EntityNotFoundException("Id not found"));
+        MisDto misDto = new MisDto();
+        misDto.setUserName(mis.getAccount().getUser().getUserName());
+        misDto.setNomineeName(mis.getNomineeName());
+        misDto.setTotalDepositedAmount(mis.getTotalDepositedAmount());
+        misDto.setMisTenure(misDto.getMisTenure());
+        misDto.setAgentName(mis.getAgent().getAgentName());
+        return misDto;
+    }
+
+    @Override
+    public List<MisDto> getMisByEmail(String email) {
+        User user = userRepo.findByEmail(email);
+        List<MIS> misList = user.getAccounts().getMisList();
+        List<MisDto> misDtoList = new ArrayList<MisDto>();
+        for (MIS mis : misList) {
+            MisDto misDto = new MisDto();
+            misDto.setUserName(user.getUserName());
+            misDto.setTotalDepositedAmount(mis.getTotalDepositedAmount());
+            misDto.setMisTenure(misDto.getMisTenure());
+            misDto.setNomineeName(mis.getNomineeName());
+            misDto.setAgentName(user.getAgent().getAgentName());
+            misDtoList.add(misDto);
+        }
+        return misDtoList;
     }
 }

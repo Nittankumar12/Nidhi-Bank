@@ -1,8 +1,6 @@
 package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.LoanApplyDto;
-import com.RWI.Nidhi.dto.LoanClosureDto;
-import com.RWI.Nidhi.dto.LoanInfoDto;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,7 +41,7 @@ public class LoanController {
     }
 
     @PutMapping("/payEMI/{email}")
-    ResponseEntity<?> payEMI(String email) {
+    ResponseEntity<?> payEMI(@PathVariable String email) {
         if (userLoanService.checkForExistingLoan(email) != Boolean.FALSE) {
             return new ResponseEntity<>("No Loan currently recorded", HttpStatus.BAD_REQUEST);
         } else
@@ -51,12 +49,12 @@ public class LoanController {
     }
 
     @GetMapping("/getLoanClosureDetails/{email}")
-    ResponseEntity<?> getLoanClosureDetails(String email) {
+    ResponseEntity<?> getLoanClosureDetails(@PathVariable String email) {
         return userLoanService.getLoanClosureDetails(email);
     }
 
     @PutMapping("/applyLoanClosureDetails/{email}")
-    ResponseEntity<?> applyloanClosureDetails(String email) {
+    ResponseEntity<?> applyLoanClosureDetails(@PathVariable String email) {
         return userLoanService.applyForLoanClosure(email);
     }
 }
@@ -68,6 +66,6 @@ public class LoanController {
 // sanction, approve, etc. --> update loan status(user email, agent email(with verification), status to & status from)
 
 // SCHEME LOAN CONTROLLER
-// Scheme Loan - common prob of working for any loan and check for scheme running
+// Scheme Loan - common problem of working for any loan and check for scheme running - done
 // apply prob - in conditions
 // help rahul with apply scheme - email, tenure, amount

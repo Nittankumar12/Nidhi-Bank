@@ -5,11 +5,10 @@ import com.RWI.Nidhi.dto.ResponseKycDto;
 import com.RWI.Nidhi.entity.KycDetails;
 import com.RWI.Nidhi.repository.KycDetailsRepo;
 import com.RWI.Nidhi.user.serviceInterface.KycDetailsService;
-//import com.nidhi.kyc.KYC.Dto.KycDetailsDto;
-//import com.nidhi.kyc.KYC.Dto.ResponseKycDto;
-//import com.nidhi.kyc.KYC.Entity.KycDetails;
-//import com.nidhi.kyc.KYC.Repo.KycDetailsRepo;
+
+
 import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,9 +55,10 @@ public class KycDetailsServiceImp implements KycDetailsService {
         return kycEntity;
     }
 
-    public ResponseKycDto getSomeDetails(Long kycId){
+    @Override
+    public ResponseKycDto getSomeDetails(Long kycId) {
         KycDetails kycDetails = kycDetailsRepo.
-                findById(kycId).orElseThrow(()-> new RuntimeException("Id not found"));
+                findById(kycId).orElseThrow(() -> new RuntimeException("Id not found"));
         ResponseKycDto responseKycDto = new ResponseKycDto();
         responseKycDto.setEducation(kycDetails.getEducation());
         responseKycDto.setGender(kycDetails.getGender());
@@ -73,15 +73,11 @@ public class KycDetailsServiceImp implements KycDetailsService {
 
     @Override
     public List<KycDetails> getAll() {
-
         return kycDetailsRepo.findAll();
     }
 
     @Override
     public KycDetails getDetailsById(Long kycId) {
         return kycDetailsRepo.findById(kycId).orElseThrow(() -> new RuntimeException("Id not found:"));
-
     }
-
-
 }

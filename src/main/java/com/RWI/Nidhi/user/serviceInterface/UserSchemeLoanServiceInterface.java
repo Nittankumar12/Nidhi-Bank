@@ -9,11 +9,11 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 
 public interface UserSchemeLoanServiceInterface {
-    double schemeLoan(String email);//maxLoan for scheme
+    ResponseEntity<?> schemeLoan(String email);//maxLoan for scheme
 
     Boolean checkForExistingLoan(String email);
 
-    void applySchemeLoan(String email); // apply for schemeLoan
+    ResponseEntity<?> applySchemeLoan(String email); // apply for schemeLoan
 
     double calculateFirstPayableSchLoanAmount(SchLoanCalcDto schLoanCalcDto);
 

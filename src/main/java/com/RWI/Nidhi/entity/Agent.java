@@ -1,12 +1,15 @@
 package com.RWI.Nidhi.entity;
 
+import com.RWI.Nidhi.Security.models.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -22,6 +25,11 @@ public class Agent {
     private String agentAddress;
     private String agentEmail;
     private String agentPassword;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(  name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
     private List<User> userList;
@@ -37,4 +45,5 @@ public class Agent {
 
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
     private List<Scheme> schemeList;
+
 }

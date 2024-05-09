@@ -1,5 +1,11 @@
 package com.RWI.Nidhi.admin.adminServiceImplementation;
 
+import com.RWI.Nidhi.Security.models.Credentials;
+import com.RWI.Nidhi.Security.models.ERole;
+import com.RWI.Nidhi.Security.models.Role;
+import com.RWI.Nidhi.Security.payload.request.SignupRequest;
+import com.RWI.Nidhi.Security.repository.CredentialsRepo;
+import com.RWI.Nidhi.Security.repository.RoleRepository;
 import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
 import com.RWI.Nidhi.admin.ResponseDto.AgentMinimalDto;
 import com.RWI.Nidhi.admin.adminServiceInterface.AdminServiceInterface;
@@ -8,10 +14,9 @@ import com.RWI.Nidhi.dto.TransactionsHistoryDto;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
-import com.RWI.Nidhi.repository.AgentRepo;
-import com.RWI.Nidhi.repository.LoanRepo;
-import com.RWI.Nidhi.repository.TransactionRepo;
+import com.RWI.Nidhi.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -19,7 +24,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,28 +39,102 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     TransactionRepo transactionRepo;
     @Autowired
     OtpServiceImplementation otpServiceImplementation;
+    @Autowired
+    RoleRepository roleRepository;
+    @Autowired
+    CredentialsRepo credentialsRepo;
+    @Autowired
+    PasswordEncoder encoder;
+    @Autowired
+    AdminRepo adminRepo;
+    @Autowired
+    UserRepo userRepo;
     @Override
-    public AddAgentDto addAgent(AddAgentDto addAgentDto) throws Exception{
-        if(agentRepo.existsByAgentEmail(addAgentDto.getAgentEmail())){
-            throw new Exception("Agent already exists");
+    public SignupRequest addAgent(SignupRequest signUpRequest) throws Exception{
+        if(adminRepo.existsByAdminName(signUpRequest.getUsername())||agentRepo.existsByAgentName(signUpRequest.getEmail())||userRepo.existsByUserName(signUpRequest.getEmail())){
+            throw new Exception("Admin already exists");
+        }
+
+        if(adminRepo.existsByEmail(signUpRequest.getEmail())||agentRepo.existsByAgentEmail(signUpRequest.getEmail())||userRepo.existsByEmail(signUpRequest.getEmail())){
+            throw new Exception("Admin already exists");
+        }
+
+        if (userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())||adminRepo.existsByPhoneNumber(signUpRequest.getEmail())||agentRepo.existsByAgentPhoneNum(signUpRequest.getEmail())) {
+            throw new Exception("User already exists");
         }
         Agent newAgent = new Agent();
-        newAgent.setAgentName(addAgentDto.getAgentName());
-        newAgent.setAgentEmail(addAgentDto.getAgentEmail());
-        newAgent.setAgentPhoneNum(addAgentDto.getAgentPhoneNum());
+        newAgent.setAgentName(signUpRequest.getUsername());
+        newAgent.setAgentEmail(signUpRequest.getEmail());
+        newAgent.setAgentPhoneNum(signUpRequest.getPhoneNumber());
         try {
             String tempPassword = otpServiceImplementation.generateOTP();
             String subject = "Your temporary password";
             String messageToSend = "Your temporary system generated password is: ";
 
             otpServiceImplementation.sendEmailOtp(newAgent.getAgentEmail(), subject, messageToSend, tempPassword);
-            newAgent.setAgentPassword(getEncryptedPassword(tempPassword));
+            newAgent.setAgentPassword(encoder.encode(tempPassword));
             agentRepo.save(newAgent);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
-        return addAgentDto;
+
+        Credentials agent = new Credentials(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPhoneNumber(),
+                newAgent.getAgentPassword());
+//
+        Set<Role> roles = new HashSet<>();
+        Role agentRole = roleRepository.findByName(ERole.ROLE_AGENT)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles.add(agentRole);
+        agent.setRoles(roles);
+        newAgent.setRoles(roles);
+        agentRepo.save(newAgent);
+        credentialsRepo.save(agent);
+        return signUpRequest;
     }
+    @Override
+    public Admin addAdmin(SignupRequest signUpRequest) throws Exception{
+        if(adminRepo.existsByAdminName(signUpRequest.getUsername())||agentRepo.existsByAgentName(signUpRequest.getEmail())||userRepo.existsByUserName(signUpRequest.getEmail())){
+            throw new Exception("Admin already exists");
+        }
+
+        if(adminRepo.existsByEmail(signUpRequest.getEmail())||agentRepo.existsByAgentEmail(signUpRequest.getEmail())||userRepo.existsByEmail(signUpRequest.getEmail())){
+            throw new Exception("Admin already exists");
+        }
+
+        if (userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())||adminRepo.existsByPhoneNumber(signUpRequest.getEmail())||agentRepo.existsByAgentPhoneNum(signUpRequest.getEmail())) {
+            throw new Exception("User already exists");
+        }
+        Admin newAdmin = new Admin();
+        newAdmin.setAdminName(signUpRequest.getUsername());
+        newAdmin.setEmail(signUpRequest.getEmail());
+        newAdmin.setPhoneNumber(signUpRequest.getPhoneNumber());
+        try {
+            String tempPassword = "admin21";
+//            String subject = "Your temporary password";
+//            String messageToSend = "Your temporary system generated password is: ";
+
+//            otpServiceImplementation.sendEmailOtp(newAdmin.getEmail(), subject, messageToSend, tempPassword);
+            newAdmin.setPassword(encoder.encode(tempPassword));
+            adminRepo.save(newAdmin);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+        Credentials agent = new Credentials(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPhoneNumber(),
+                newAdmin.getPassword());
+//
+        Set<Role> roles = new HashSet<>();
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles.add(adminRole);
+        agent.setRoles(roles);
+        newAdmin.setRoles(roles);
+        adminRepo.save(newAdmin);
+
+        credentialsRepo.save(agent);
+        return newAdmin;
+
+    }
+
 
     @Override
     public AddAgentDto updateAgentName(String agentEmail, String agentName) throws Exception{
@@ -170,7 +251,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 
     }
     @Override
-    public List<TransactionsHistoryDto> getTransactionForCurrentMonth(TransactionsHistoryDto transactionsHistoryDto) {
+    public List<TransactionsHistoryDto> getTransactionForCurrentMonth() {
         List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().withDayOfMonth(1),LocalDate.now());
         List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
         for(Transactions t : currTransactions){
@@ -187,7 +268,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     }
 
     @Override
-    public List<TransactionsHistoryDto> getTransactionForCurrentWeek(TransactionsHistoryDto transactionsHistoryDto) {
+    public List<TransactionsHistoryDto> getTransactionForCurrentWeek() {
         List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().minusDays(7),LocalDate.now());
 
         List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
@@ -205,8 +286,24 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     }
 
     @Override
-    public List<TransactionsHistoryDto> getTransactionForToday(TransactionsHistoryDto transactionsHistoryDto) {
-        List<Transactions> currTransactions = transactionRepo.getTransactionForDate(LocalDate.now());
+    public List<TransactionsHistoryDto> getTransactionForToday() {
+        List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now(), LocalDate.now());
+        List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
+        for(Transactions t : currTransactions){
+            TransactionsHistoryDto temp = new TransactionsHistoryDto();
+            temp.setTransactionId(t.getTransactionId());
+            temp.setAmount(t.getTransactionAmount());
+            temp.setDate(t.getTransactionDate());
+            temp.setTransactionStatus(t.getTransactionStatus());
+            temp.setAccountNumber(t.getAccount().getAccountNumber());
+            transactionsHistoryList.add(temp);
+        }
+        return transactionsHistoryList;
+    }
+
+    @Override
+    public List<TransactionsHistoryDto> getTransactionBetweenDates(LocalDate startDate, LocalDate endDate) {
+        List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(startDate, endDate);
         List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
         for(Transactions t : currTransactions){
             TransactionsHistoryDto temp = new TransactionsHistoryDto();

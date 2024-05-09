@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +41,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     @Override
     public RdRequestDto createRd(String agentEmail, String email, RdDto rdDto) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
-        User user = userRepo.findUserByEmail(email).get();
+        User user = userRepo.findByEmail(email);
         Accounts accounts = new Accounts();
         RecurringDeposit rd = new RecurringDeposit();
         if (agent != null && user != null) {
@@ -125,23 +126,34 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     }
 
     @Override
-    public List<RecurringDeposit> getAllRds() {
-        return rdRepo.findAll();
-    }
-
-    @Override
     public RdDto getRdById(int rdId) {
         RecurringDeposit recurringDeposit = rdRepo.findById(rdId)
                 .orElseThrow(() -> new EntityNotFoundException("Id not found"));
         RdDto rdDto = new RdDto();
+        rdDto.setUserName(recurringDeposit.getAccount().getUser().getUserName());
         rdDto.setNomineeName(recurringDeposit.getNomineeName());
         rdDto.setMonthlyDepositAmount(recurringDeposit.getMonthlyDepositAmount());
         rdDto.setTenure(recurringDeposit.getTenure());
+        rdDto.setAgentName(recurringDeposit.getAgent().getAgentName());
         return rdDto;
     }
 
     @Override
-    public Double onMaturity(Double amount, Integer tenure, Double interestRate) {
-        return null;
+    public List<RdDto> getRdByEmail(String email) {
+        User user = userRepo.findByEmail(email);
+        List<RecurringDeposit> recurringDepositList = user.getAccounts().getRecurringDepositList();
+        List<RdDto> rdDtoList = new ArrayList<RdDto>();
+        for (RecurringDeposit recurringDeposit : recurringDepositList) {
+            RdDto rdDto = new RdDto();
+            rdDto.setUserName(user.getUserName());
+            rdDto.setMonthlyDepositAmount(recurringDeposit.getMonthlyDepositAmount());
+            rdDto.setTenure(recurringDeposit.getTenure());
+            rdDto.setNomineeName(recurringDeposit.getNomineeName());
+            rdDto.setRdCompoundingFrequency(rdDto.getRdCompoundingFrequency());
+            rdDto.setAgentName(user.getAgent().getAgentName());
+            rdDtoList.add(rdDto);
+        }
+        return rdDtoList;
     }
+
 }
