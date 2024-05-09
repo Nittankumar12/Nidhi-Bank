@@ -13,7 +13,7 @@ public interface UserSchemeLoanServiceInterface {
 
     Boolean checkForExistingLoan(String email);
 
-    void applySchemeLoan(String email); // apply for schemeLoan
+    ResponseEntity<?> applySchemeLoan(String email); // apply for schemeLoan
 
     double calculateFirstPayableSchLoanAmount(SchLoanCalcDto schLoanCalcDto);
 
