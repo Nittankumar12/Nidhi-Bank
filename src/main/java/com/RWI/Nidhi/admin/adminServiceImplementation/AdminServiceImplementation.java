@@ -7,12 +7,16 @@ import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.dto.TransactionsHistoryDto;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.LoanStatus;
+import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.AgentRepo;
 import com.RWI.Nidhi.repository.LoanRepo;
 import com.RWI.Nidhi.repository.TransactionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,19 +30,26 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     LoanRepo loanRepo;
     @Autowired
     TransactionRepo transactionRepo;
+    @Autowired
+    OtpServiceImplementation otpServiceImplementation;
     @Override
     public AddAgentDto addAgent(AddAgentDto addAgentDto) throws Exception{
+        if(agentRepo.existsByAgentEmail(addAgentDto.getAgentEmail())){
+            throw new Exception("Agent already exists");
+        }
         Agent newAgent = new Agent();
         newAgent.setAgentName(addAgentDto.getAgentName());
         newAgent.setAgentEmail(addAgentDto.getAgentEmail());
         newAgent.setAgentPhoneNum(addAgentDto.getAgentPhoneNum());
-        newAgent.setAgentPassword(addAgentDto.getAgentPassword());
-        newAgent.setAgentAddress(addAgentDto.getAgentAddress());
-
         try {
+            String tempPassword = otpServiceImplementation.generateOTP();
+            String subject = "Your temporary password";
+            String messageToSend = "Your temporary system generated password is: ";
+
+            otpServiceImplementation.sendEmailOtp(newAgent.getAgentEmail(), subject, messageToSend, tempPassword);
+            newAgent.setAgentPassword(getEncryptedPassword(tempPassword));
             agentRepo.save(newAgent);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
         return addAgentDto;
@@ -57,7 +68,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
         AddAgentDto addAgentDto = new AddAgentDto();
         addAgentDto.setAgentName(currAgent.getAgentName());
-        addAgentDto.setAgentAddress(currAgent.getAgentAddress());
         addAgentDto.setAgentEmail(currAgent.getAgentEmail());
         addAgentDto.setAgentPhoneNum(currAgent.getAgentPhoneNum());
         return addAgentDto;
@@ -76,7 +86,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
         AddAgentDto addAgentDto = new AddAgentDto();
         addAgentDto.setAgentName(currAgent.getAgentName());
-        addAgentDto.setAgentAddress(currAgent.getAgentAddress());
         addAgentDto.setAgentEmail(currAgent.getAgentEmail());
         addAgentDto.setAgentPhoneNum(currAgent.getAgentPhoneNum());
         return addAgentDto;
@@ -95,7 +104,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
         AddAgentDto addAgentDto = new AddAgentDto();
         addAgentDto.setAgentName(currAgent.getAgentName());
-        addAgentDto.setAgentAddress(currAgent.getAgentAddress());
         addAgentDto.setAgentEmail(currAgent.getAgentEmail());
         addAgentDto.setAgentPhoneNum(currAgent.getAgentPhoneNum());
         return addAgentDto;
@@ -113,7 +121,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
         AddAgentDto addAgentDto = new AddAgentDto();
         addAgentDto.setAgentName(currAgent.getAgentName());
-        addAgentDto.setAgentAddress(currAgent.getAgentAddress());
         addAgentDto.setAgentEmail(currAgent.getAgentEmail());
         addAgentDto.setAgentPhoneNum(currAgent.getAgentPhoneNum());
         return addAgentDto;
@@ -216,5 +223,25 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     @Override
     public List<Loan> findByStatus(LoanStatus status) {
         return loanRepo.findByStatus(status);
+    }
+    private byte[] getSHA(String input) {
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            return messageDigest.digest(input.getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String getEncryptedPassword (String password){
+        String encryptedPassword = "";
+        try {
+            BigInteger number = new BigInteger(1, getSHA(password));
+            return number.toString(16);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -6,9 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AddAgentDto {
+    int agentId;
     String agentName;
     String agentPhoneNum;
-    String agentAddress;
     String agentEmail;
-    String agentPassword;
 }

@@ -35,6 +35,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     OtpServiceImplementation otpServiceImplementation;
     @Autowired
     AccountsRepo accountsRepo;
+    @Autowired
     UserService userService;
     @Autowired
     UserLoanServiceImplementation userLoanService;
@@ -84,64 +85,6 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     }
 
     @Override
-    public User updateUserName(int id, String userName) throws Exception {
-        User currUser = userRepo.findById(id).orElseThrow(() -> {
-            return new Exception("User not found");
-        });
-
-        currUser.setUserName(userName);
-        try {
-            userRepo.save(currUser);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-        return currUser;
-    }
-
-    @Override
-    public User updateUserEmail(int id, String userEmail) throws Exception {
-        User currUser = userRepo.findById(id).orElseThrow(() -> {
-            return new Exception("User not found");
-        });
-
-        currUser.setEmail(userEmail);
-        try {
-            userRepo.save(currUser);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-        return currUser;
-    }
-
-    @Override
-    public User updateUserPhoneNum(int id, String phoneNum) throws Exception {
-        User currUser = userRepo.findById(id).orElseThrow(() -> {
-            return new Exception("User not found");
-        });
-
-        currUser.setPhoneNumber(phoneNum);
-        try {
-            userRepo.save(currUser);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-        return currUser;
-    }
-
-    @Override
-    public User updateUserPassword(String email, String password) throws Exception {
-        User currUser = userRepo.findByEmail(email);
-
-        currUser.setPassword(getEncryptedPassword(password));
-        try {
-            userRepo.save(currUser);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-        return currUser;
-    }
-
-    @Override
     public boolean deleteUserById(int id) throws Exception {
         try {
             userRepo.deleteById(id);
@@ -163,34 +106,6 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         });
     }
 
-    @Override
-    public ResponseEntity<String> forgetPasswordSendVerificationCode(String email) throws Exception {
-        //check if user already exists
-        if (!userRepo.existsByEmail(email)) {
-            throw new Exception("This email is not registered with us");
-        }
-        //
-        try {
-            String otp = otpServiceImplementation.generateOTP();
-            String subject = "Forgot password attempted";
-            String messageToSend = "Your verification OTP is: ";
-            otpServiceImplementation.sendEmailOtp(email, subject, messageToSend, otp);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-
-        return new ResponseEntity("OTP send", HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<String> forgetPasswordVerifyVerificationCode(String email, String enteredOtp) throws Exception {
-        try {
-            otpServiceImplementation.verifyEmailOtp(email, enteredOtp);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-        return new ResponseEntity("Email Verify Successfully", HttpStatus.OK);
-    }
 
     @Override
     public Accounts deactivateAccount(String accountNumber) throws Exception {
