@@ -12,8 +12,7 @@ public interface UserFdServiceInterface {
 
     Double closeFd(int fdId);
 
-    List<FixedDeposit> getAllFds();
-
     FdDto getFdById(int fdId);
+
     List<FdDto> getFdByEmail(String email);
 }

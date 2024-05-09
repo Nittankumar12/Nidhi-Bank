@@ -1,9 +1,11 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
-import com.RWI.Nidhi.dto.FdDto;
 import com.RWI.Nidhi.dto.RdDto;
 import com.RWI.Nidhi.dto.RdRequestDto;
-import com.RWI.Nidhi.entity.*;
+import com.RWI.Nidhi.entity.Accounts;
+import com.RWI.Nidhi.entity.Agent;
+import com.RWI.Nidhi.entity.RecurringDeposit;
+import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.repository.AccountsRepo;
 import com.RWI.Nidhi.repository.AgentRepo;
@@ -124,18 +126,15 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     }
 
     @Override
-    public List<RecurringDeposit> getAllRds() {
-        return rdRepo.findAll();
-    }
-
-    @Override
     public RdDto getRdById(int rdId) {
         RecurringDeposit recurringDeposit = rdRepo.findById(rdId)
                 .orElseThrow(() -> new EntityNotFoundException("Id not found"));
         RdDto rdDto = new RdDto();
+        rdDto.setUserName(recurringDeposit.getAccount().getUser().getUserName());
         rdDto.setNomineeName(recurringDeposit.getNomineeName());
         rdDto.setMonthlyDepositAmount(recurringDeposit.getMonthlyDepositAmount());
         rdDto.setTenure(recurringDeposit.getTenure());
+        rdDto.setAgentName(recurringDeposit.getAgent().getAgentName());
         return rdDto;
     }
 
@@ -143,8 +142,8 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     public List<RdDto> getRdByEmail(String email) {
         User user = userRepo.findByEmail(email);
         List<RecurringDeposit> recurringDepositList = user.getAccounts().getRecurringDepositList();
-        List<RdDto> rdDtoList = new ArrayList<RdDto>();;
-        for(RecurringDeposit recurringDeposit : recurringDepositList){
+        List<RdDto> rdDtoList = new ArrayList<RdDto>();
+        for (RecurringDeposit recurringDeposit : recurringDepositList) {
             RdDto rdDto = new RdDto();
             rdDto.setUserName(user.getUserName());
             rdDto.setMonthlyDepositAmount(recurringDeposit.getMonthlyDepositAmount());

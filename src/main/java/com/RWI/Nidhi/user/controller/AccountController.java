@@ -27,7 +27,7 @@ public class AccountController {
 	}
 
 	// End point to get account status
-	@GetMapping("/accounts/{accountNumber}/status")
+	@GetMapping("/accountStatus/{accountNumber}")
 	public ResponseEntity<Status> checkAccountStatus(@PathVariable String accountNumber) {
 		try {
 			Status status = accountsServiceInterface.checkAccountStatus(accountNumber);

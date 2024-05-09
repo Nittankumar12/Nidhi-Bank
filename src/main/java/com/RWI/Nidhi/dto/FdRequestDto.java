@@ -1,10 +1,12 @@
 package com.RWI.Nidhi.dto;
 
 import com.RWI.Nidhi.enums.Status;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
-@Data
+@Getter
+@Setter
 public class FdRequestDto {
     private String userName;
     private Integer amount;
