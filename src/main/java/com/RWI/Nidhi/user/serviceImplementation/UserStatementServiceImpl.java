@@ -1,8 +1,8 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
-import com.RWI.Nidhi.dto.FdResponseDto;
-import com.RWI.Nidhi.dto.MisResponseDto;
-import com.RWI.Nidhi.dto.RdResponseDto;
+import com.RWI.Nidhi.dto.FdRequestDto;
+import com.RWI.Nidhi.dto.MisRequestDto;
+import com.RWI.Nidhi.dto.RdRequestDto;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.UserStatementService;
@@ -31,54 +31,54 @@ public class UserStatementServiceImpl implements UserStatementService {
 
 
     @Override
-    public List<FdResponseDto> getFixedDepositDetailsByEmail(String email) {
+    public List<FdRequestDto> getFixedDepositDetailsByEmail(String email) {
 //        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
         User user = userRepo.findByEmail(email);
         List<FixedDeposit> fixedDepositList = user.getAccounts().getFdList();
-        List<FdResponseDto> fdResponseDtoList = new ArrayList<FdResponseDto>();
+        List<FdRequestDto> fdRequestDtoList = new ArrayList<FdRequestDto>();
         for (FixedDeposit fixedDeposit : fixedDepositList) {
-            FdResponseDto tempFdResponse = new FdResponseDto();
+            FdRequestDto tempFdResponse = new FdRequestDto();
             tempFdResponse.setUserName(fixedDeposit.getAccount().getUser().getUserName());
             tempFdResponse.setFdId(fixedDeposit.getFdId());
             tempFdResponse.setAmount(fixedDeposit.getAmount());
             tempFdResponse.setFdStatus(fixedDeposit.getFdStatus());
 
-            fdResponseDtoList.add(tempFdResponse);
+            fdRequestDtoList.add(tempFdResponse);
         }
-        System.out.println("your size is " + fdResponseDtoList.size());
-        return fdResponseDtoList;
+        System.out.println("your size is " + fdRequestDtoList.size());
+        return fdRequestDtoList;
     }
 
     @Override
-    public List<RdResponseDto> getRecurringDepositDetailsByEmail(String email) {
+    public List<RdRequestDto> getRecurringDepositDetailsByEmail(String email) {
         User user = userRepo.findByEmail(email);
         List<RecurringDeposit> recurringDepositList = user.getAccounts().getRecurringDepositList();
-        List<RdResponseDto> rdResponseDtoList = new ArrayList<RdResponseDto>();
+        List<RdRequestDto> rdRequestDtoList = new ArrayList<RdRequestDto>();
         for (RecurringDeposit recurringDeposit : recurringDepositList) {
-            RdResponseDto tempRdResponse = new RdResponseDto();
+            RdRequestDto tempRdResponse = new RdRequestDto();
             tempRdResponse.setUserName(recurringDeposit.getAccount().getUser().getUserName());
             tempRdResponse.setRdId(recurringDeposit.getRdId());
             tempRdResponse.setMonthlyDepositAmount(recurringDeposit.getMonthlyDepositAmount());
             tempRdResponse.setRdStatus(recurringDeposit.getRdStatus());
-            rdResponseDtoList.add(tempRdResponse);
+            rdRequestDtoList.add(tempRdResponse);
         }
-        return rdResponseDtoList;
+        return rdRequestDtoList;
     }
 
     @Override
-    public List<MisResponseDto> getMisDetailsByEmail(String email) {
+    public List<MisRequestDto> getMisDetailsByEmail(String email) {
         User user = userRepo.findByEmail(email);
         List<MIS> misList = user.getAccounts().getMisList();
-        List<MisResponseDto> misResponseDtoList = new ArrayList<MisResponseDto>();
+        List<MisRequestDto> misRequestDtoList = new ArrayList<MisRequestDto>();
         for (MIS mis : misList) {
-            MisResponseDto tempMisResponse = new MisResponseDto();
+            MisRequestDto tempMisResponse = new MisRequestDto();
             tempMisResponse.setUserName(mis.getAccount().getUser().getUserName());
             tempMisResponse.setMisId(mis.getMisId());
             tempMisResponse.setTotalDepositedAmount(mis.getTotalDepositedAmount());
             tempMisResponse.setStatus(mis.getStatus());
-            misResponseDtoList.add(tempMisResponse);
+            misRequestDtoList.add(tempMisResponse);
         }
-        return misResponseDtoList;
+        return misRequestDtoList;
     }
 
     @Override

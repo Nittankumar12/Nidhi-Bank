@@ -2,6 +2,7 @@ package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.RdDto;
 import com.RWI.Nidhi.dto.RdRequestDto;
+import com.RWI.Nidhi.dto.RdResponseDto;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Agent;
 import com.RWI.Nidhi.entity.RecurringDeposit;
@@ -39,7 +40,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     private AccountsRepo accountRepo;
 
     @Override
-    public RdRequestDto createRd(String agentEmail, String email, RdDto rdDto) {
+    public RdResponseDto createRd(String agentEmail, String email, RdDto rdDto) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
         User user = userRepo.findByEmail(email);
         Accounts accounts = new Accounts();
@@ -61,21 +62,21 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             rd.setAccount(user.getAccounts());
             rdRepo.save(rd);
 
-            RdRequestDto rdRequestDto = new RdRequestDto();
-            rdRequestDto.setUserName(rd.getAccount().getUser().getUserName());
-            rdRequestDto.setNomineeName(rd.getNomineeName());
-            rdRequestDto.setInterestRate(rd.getInterestRate());
-            rdRequestDto.setMonthlyDepositAmount(rd.getMonthlyDepositAmount());
-            rdRequestDto.setTenure(rd.getTenure());
-            rdRequestDto.setStartDate(rd.getStartDate());
-            rdRequestDto.setCompoundingFrequency(rd.getCompoundingFrequency());
-            rdRequestDto.setMaturityAmount(rd.getMaturityAmount());
-            rdRequestDto.setMaturityDate(rd.getMaturityDate());
-            rdRequestDto.setRdStatus(rd.getRdStatus());
-            rdRequestDto.setAgentName(rd.getAgent().getAgentName());
+            RdResponseDto rdResponseDto = new RdResponseDto();
+            rdResponseDto.setUserName(rd.getAccount().getUser().getUserName());
+            rdResponseDto.setNomineeName(rd.getNomineeName());
+            rdResponseDto.setInterestRate(rd.getInterestRate());
+            rdResponseDto.setMonthlyDepositAmount(rd.getMonthlyDepositAmount());
+            rdResponseDto.setTenure(rd.getTenure());
+            rdResponseDto.setStartDate(rd.getStartDate());
+            rdResponseDto.setCompoundingFrequency(rd.getCompoundingFrequency());
+            rdResponseDto.setMaturityAmount(rd.getMaturityAmount());
+            rdResponseDto.setMaturityDate(rd.getMaturityDate());
+            rdResponseDto.setRdStatus(rd.getRdStatus());
+            rdResponseDto.setAgentName(rd.getAgent().getAgentName());
 
 
-            return rdRequestDto;
+            return rdResponseDto;
         }
         return null;
     }
@@ -126,34 +127,37 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     }
 
     @Override
-    public RdDto getRdById(int rdId) {
+    public RdRequestDto getRdById(int rdId) {
         RecurringDeposit recurringDeposit = rdRepo.findById(rdId)
                 .orElseThrow(() -> new EntityNotFoundException("Id not found"));
-        RdDto rdDto = new RdDto();
-        rdDto.setUserName(recurringDeposit.getAccount().getUser().getUserName());
-        rdDto.setNomineeName(recurringDeposit.getNomineeName());
-        rdDto.setMonthlyDepositAmount(recurringDeposit.getMonthlyDepositAmount());
-        rdDto.setTenure(recurringDeposit.getTenure());
-        rdDto.setAgentName(recurringDeposit.getAgent().getAgentName());
-        return rdDto;
+        RdRequestDto responseDto = new RdRequestDto();
+        responseDto.setRdId(rdId);
+        responseDto.setUserName(recurringDeposit.getAccount().getUser().getUserName());
+        responseDto.setNomineeName(recurringDeposit.getNomineeName());
+        responseDto.setMonthlyDepositAmount(recurringDeposit.getMonthlyDepositAmount());
+        responseDto.setTenure(recurringDeposit.getTenure());
+        responseDto.setAgentName(recurringDeposit.getAgent().getAgentName());
+        responseDto.setRdStatus(recurringDeposit.getRdStatus());
+        return responseDto;
     }
 
     @Override
-    public List<RdDto> getRdByEmail(String email) {
+    public List<RdRequestDto> getRdByEmail(String email) {
         User user = userRepo.findByEmail(email);
         List<RecurringDeposit> recurringDepositList = user.getAccounts().getRecurringDepositList();
-        List<RdDto> rdDtoList = new ArrayList<RdDto>();
+        List<RdRequestDto> rdRequestDtoList = new ArrayList<RdRequestDto>();
         for (RecurringDeposit recurringDeposit : recurringDepositList) {
-            RdDto rdDto = new RdDto();
-            rdDto.setUserName(user.getUserName());
-            rdDto.setMonthlyDepositAmount(recurringDeposit.getMonthlyDepositAmount());
-            rdDto.setTenure(recurringDeposit.getTenure());
-            rdDto.setNomineeName(recurringDeposit.getNomineeName());
-            rdDto.setRdCompoundingFrequency(rdDto.getRdCompoundingFrequency());
-            rdDto.setAgentName(user.getAgent().getAgentName());
-            rdDtoList.add(rdDto);
-        }
-        return rdDtoList;
-    }
+            RdRequestDto responseDto = new RdRequestDto();
+            responseDto.setUserName(user.getUserName());
+            responseDto.setRdId(recurringDeposit.getRdId());
+            responseDto.setMonthlyDepositAmount(recurringDeposit.getMonthlyDepositAmount());
+            responseDto.setTenure(recurringDeposit.getTenure());
+            responseDto.setNomineeName(recurringDeposit.getNomineeName());
+            responseDto.setAgentName(user.getAgent().getAgentName());
+            responseDto.setRdStatus(recurringDeposit.getRdStatus());
 
+            rdRequestDtoList.add(responseDto);
+        }
+        return rdRequestDtoList;
+    }
 }

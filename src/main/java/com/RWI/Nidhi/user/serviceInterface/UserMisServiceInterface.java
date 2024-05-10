@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
 import com.RWI.Nidhi.dto.MisDto;
+import com.RWI.Nidhi.dto.MisResponseDto;
 import com.RWI.Nidhi.dto.MisRequestDto;
 
 import java.util.List;
@@ -8,12 +9,12 @@ import java.util.List;
 
 public interface UserMisServiceInterface {
 
-    MisRequestDto createMis(String agentEmail, String email, MisDto misDto);
+    MisResponseDto createMis(String agentEmail, String email, MisDto misDto);
 
     Double closeMis(int misId) throws Exception;
 
-    List<MisDto> getMisByEmail(String email);
+    List<MisRequestDto> getMisByEmail(String email);
 
-    MisDto getMisById(int misId);
+    MisRequestDto getMisById(int misId);
 
 }

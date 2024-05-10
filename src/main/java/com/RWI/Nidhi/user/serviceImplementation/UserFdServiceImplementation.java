@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.FdDto;
+import com.RWI.Nidhi.dto.FdResponseDto;
 import com.RWI.Nidhi.dto.FdRequestDto;
 import com.RWI.Nidhi.entity.Agent;
 import com.RWI.Nidhi.entity.FixedDeposit;
@@ -35,7 +36,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     private AccountsRepo accountRepo;
 
     @Override
-    public FdRequestDto createFd(String agentEmail, String email, FdDto fdDto) {
+    public FdResponseDto createFd(String agentEmail, String email, FdDto fdDto) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
         User user = userRepo.findByEmail(email);
 //        Accounts accounts = new Accounts();
@@ -57,21 +58,21 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
             fd.setAccount(user.getAccounts());
             fdRepo.save(fd);
 
-            FdRequestDto fdRequestDto = new FdRequestDto();
-            fdRequestDto.setUserName(fd.getAccount().getUser().getUserName());
-            fdRequestDto.setNomineeName(fd.getNomineeName());
-            fdRequestDto.setInterestRate(fd.getInterestRate());
-            fdRequestDto.setAmount(fd.getAmount());
-            fdRequestDto.setTenure(fd.getTenure());
-            fdRequestDto.setDepositDate(fd.getDepositDate());
-            fdRequestDto.setCompoundingFrequency(fd.getCompoundingFrequency());
-            fdRequestDto.setMaturityAmount(fd.getMaturityAmount());
-            fdRequestDto.setMaturityDate(fd.getMaturityDate());
-            fdRequestDto.setFdStatus(fd.getFdStatus());
-            fdRequestDto.setAgentName(fd.getAgent().getAgentName());
+            FdResponseDto fdResponseDto = new FdResponseDto();
+            fdResponseDto.setUserName(fd.getAccount().getUser().getUserName());
+            fdResponseDto.setNomineeName(fd.getNomineeName());
+            fdResponseDto.setInterestRate(fd.getInterestRate());
+            fdResponseDto.setAmount(fd.getAmount());
+            fdResponseDto.setTenure(fd.getTenure());
+            fdResponseDto.setDepositDate(fd.getDepositDate());
+            fdResponseDto.setCompoundingFrequency(fd.getCompoundingFrequency());
+            fdResponseDto.setMaturityAmount(fd.getMaturityAmount());
+            fdResponseDto.setMaturityDate(fd.getMaturityDate());
+            fdResponseDto.setFdStatus(fd.getFdStatus());
+            fdResponseDto.setAgentName(fd.getAgent().getAgentName());
 
 
-            return fdRequestDto;
+            return fdResponseDto;
         }
         return null;
     }
@@ -108,34 +109,36 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
 
 
     @Override
-    public FdDto getFdById(int fdId) {
+    public FdRequestDto getFdById(int fdId) {
         FixedDeposit fixedDeposit = fdRepo.findById(fdId)
                 .orElseThrow(() -> new EntityNotFoundException("Id not found"));
-        FdDto fdDto = new FdDto();
-        fdDto.setNomineeName(fixedDeposit.getNomineeName());
-        fdDto.setAmount(fixedDeposit.getAmount());
-        fdDto.setTenure(fixedDeposit.getTenure());
-        fdDto.setUserName(fixedDeposit.getAccount().getUser().getUserName());
-        fdDto.setAgentName(fixedDeposit.getAgent().getAgentName());
-        fdDto.setFdCompoundingFrequency(fdDto.getFdCompoundingFrequency());
-        return fdDto;
+        FdRequestDto fdRequestDto = new FdRequestDto();
+        fdRequestDto.setFdId(fdId);
+        fdRequestDto.setNomineeName(fixedDeposit.getNomineeName());
+        fdRequestDto.setAmount(fixedDeposit.getAmount());
+        fdRequestDto.setTenure(fixedDeposit.getTenure());
+        fdRequestDto.setUserName(fixedDeposit.getAccount().getUser().getUserName());
+        fdRequestDto.setAgentName(fixedDeposit.getAgent().getAgentName());
+        fdRequestDto.setFdStatus(fixedDeposit.getFdStatus());
+        return fdRequestDto;
     }
 
     @Override
-    public List<FdDto> getFdByEmail(String email) {
+    public List<FdRequestDto> getFdByEmail(String email) {
         User user = userRepo.findByEmail(email);
         List<FixedDeposit> fixedDepositList = user.getAccounts().getFdList();
-        List<FdDto> fdDtoList = new ArrayList<FdDto>();
+        List<FdRequestDto> fdRequestDtoList = new ArrayList<FdRequestDto>();
         for (FixedDeposit fixedDeposit : fixedDepositList) {
-            FdDto fdDto = new FdDto();
-            fdDto.setUserName(user.getUserName());
-            fdDto.setAmount(fixedDeposit.getAmount());
-            fdDto.setTenure(fixedDeposit.getTenure());
-            fdDto.setNomineeName(fixedDeposit.getNomineeName());
-            fdDto.setFdCompoundingFrequency(fdDto.getFdCompoundingFrequency());
-            fdDto.setAgentName(user.getAgent().getAgentName());
-            fdDtoList.add(fdDto);
+            FdRequestDto fdRequestDto = new FdRequestDto();
+            fdRequestDto.setFdId(fixedDeposit.getFdId());
+            fdRequestDto.setUserName(user.getUserName());
+            fdRequestDto.setAmount(fixedDeposit.getAmount());
+            fdRequestDto.setTenure(fixedDeposit.getTenure());
+            fdRequestDto.setNomineeName(fixedDeposit.getNomineeName());
+            fdRequestDto.setAgentName(user.getAgent().getAgentName());
+            fdRequestDto.setFdStatus(fixedDeposit.getFdStatus());
+            fdRequestDtoList.add(fdRequestDto);
         }
-        return fdDtoList;
+        return fdRequestDtoList;
     }
 }

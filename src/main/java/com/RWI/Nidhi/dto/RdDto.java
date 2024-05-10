@@ -9,11 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RdDto {
-    private String userName;
-    private String nomineeName;
     double monthlyDepositAmount;
     int tenure;
     RdCompoundingFrequency rdCompoundingFrequency;
-    private String agentName;
-
+    private String nomineeName;
 }

@@ -1,8 +1,8 @@
 package com.RWI.Nidhi.user.controller;
 
-import com.RWI.Nidhi.dto.FdResponseDto;
-import com.RWI.Nidhi.dto.MisResponseDto;
-import com.RWI.Nidhi.dto.RdResponseDto;
+import com.RWI.Nidhi.dto.FdRequestDto;
+import com.RWI.Nidhi.dto.MisRequestDto;
+import com.RWI.Nidhi.dto.RdRequestDto;
 import com.RWI.Nidhi.user.serviceImplementation.UserStatementServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,17 +20,17 @@ public class UserStatementController {
 
 
     @GetMapping("/getFdDetails/{email}")
-    public List<FdResponseDto> getFdDetails(@PathVariable("email") String email) {
+    public List<FdRequestDto> getFdDetails(@PathVariable("email") String email) {
         return service.getFixedDepositDetailsByEmail(email);
     }
 
     @GetMapping("/getRdDetails/{email}")
-    public List<RdResponseDto> getRdDetails(@PathVariable("email") String email) {
+    public List<RdRequestDto> getRdDetails(@PathVariable("email") String email) {
         return service.getRecurringDepositDetailsByEmail(email);
     }
 
     @GetMapping("/getMisDetails/{email}")
-    public List<MisResponseDto> getMisDetails(@PathVariable("email") String email) {
+    public List<MisRequestDto> getMisDetails(@PathVariable("email") String email) {
         return service.getMisDetailsByEmail(email);
     }
 
