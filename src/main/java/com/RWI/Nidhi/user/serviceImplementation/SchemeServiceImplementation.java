@@ -1,5 +1,6 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
+import com.RWI.Nidhi.dto.SchemeApplyDTO;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Scheme;
 import com.RWI.Nidhi.entity.User;
@@ -42,5 +43,9 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
 //        } else
             return Boolean.TRUE;
         // This method is suppossed to return false if there is a scheme running else true
+    }
+    @Override
+    public void addScheme(SchemeApplyDTO schemeApplyDTO) {
+        User user = userService.getByEmail(schemeApplyDTO.getEmail());
     }
 }
