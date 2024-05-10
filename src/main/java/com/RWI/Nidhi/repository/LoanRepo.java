@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -17,21 +18,21 @@ import java.util.List;
 public interface LoanRepo extends JpaRepository<Loan, Integer> {
     @Transactional
     @Modifying
-    @Query("SELECT l.status FROM loan l WHERE l.loan_Id = :loanId")
-    LoanStatus findStatusByLoanId(int loanId);
+    @Query(value = "SELECT l.monthlyemi FROM loan l WHERE l.loan_id = :loanId",nativeQuery = true)
+    double findEMIByLoanId(@Param("loanId") int loanId);
     @Transactional
     @Modifying
-    @Query("SELECT l.monthlyemi FROM loan l WHERE l.loan_Id = :loanId")
-    double findEMIByLoanId(int loanId);
+    @Query(value = "SELECT l.status FROM loan l WHERE l.loan_id = :loanId",nativeQuery = true)
+    LoanStatus findStatusByLoanId(@Param("loanId") int loanId);
     @Transactional
     @Modifying
-    @Query("SELECT l.current_fine FROM loan l WHERE l.loan_Id = :loanId")
+    @Query(value = "SELECT l.current_fine FROM loan l WHERE loan_id = :loanId",nativeQuery = true)
     double findCurrentFineByLoanId(int loanId);
     // neeed to make the query
     List<Loan> findByEmiDateBetween(LocalDate startDate, LocalDate endDate);
     @Transactional
     @Modifying
-    @Query("SELECT * FROM loan l WHERE l.status = :status")
-    List<Loan> findByStatus(LoanStatus status);
+    @Query(value = "SELECT * FROM loan l WHERE l.status = :status",nativeQuery = true)
+    List<Loan> findByStatus(@Param("status") LoanStatus status);
     Agent save(Credentials cred);
 }

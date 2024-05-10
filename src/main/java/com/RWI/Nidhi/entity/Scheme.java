@@ -24,6 +24,7 @@ public class Scheme {
     private double totalDepositAmount;// total amount till date
     private double interestRate;
     private SchemeStatus sStatus;//after taking loan related fields here will be fixed until closing    @OneToOne
+    @OneToOne
     @JoinColumn
     private Accounts account;
     @ManyToOne

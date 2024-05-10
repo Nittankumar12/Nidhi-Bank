@@ -15,14 +15,14 @@ import java.util.Date;
 public interface SchemeRepo extends JpaRepository<Scheme, Integer> {
 	@Transactional
 	@Modifying
-	@Query("SELECT s.start_Date FROM Scheme s WHERE s.scheme_Id = :schemeId")
+	@Query(value = "SELECT s.start_Date FROM Scheme s WHERE s.scheme_id = :schemeId", nativeQuery = true)
 	LocalDate findStartDateBySchemeId(@Param("schemeId") int schemeId);
 	@Transactional
 	@Modifying
-	@Query("SELECT s.tenure FROM Scheme s WHERE s.scheme_Id = :schemeId")
+	@Query(value = "SELECT s.tenure FROM Scheme s WHERE s.scheme_id = :schemeId",nativeQuery = true)
 	int findTenureBySchemeId(@Param("schemeId") int schemeId);
 	@Transactional
 	@Modifying
-	@Query("SELECT s.monthly_deposit_amount FROM Scheme s WHERE s.scheme_Id = :schemeId")
+	@Query(value = "SELECT s.monthly_deposit_amount FROM Scheme s WHERE s.scheme_id = :schemeId",nativeQuery = true)
 	int findMonthlyDepositAmountBySchemeId(int schemeId);
 }
