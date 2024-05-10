@@ -4,33 +4,26 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 
 import java.util.Set;
+
 public class SignupRequest {
 
     @Size(min = 3, max = 20)
     private String username;
     private String firstName;
     private String lastName;
-
     @Size(max = 50)
     @Email
     private String email;
-
     private Set<String> role;
-
-
-//    @Size(min = 6, max = 40)
-//    private String password;
-
     @Size(max = 10) // Assuming phone number is 10 digits
     private String phoneNumber;
 
-//    private String designation;
-
     public SignupRequest() {
     }
-//removed not blank for all arguments
-    public SignupRequest( @Size(min = 3, max = 20) String username,  @Size(max = 50) @Email String email,
-            Set<String> role  /*@Size(min = 6, max = 40)*//* String password*/, @Size(max = 10) String phoneNumber) {
+
+    //removed not blank for all arguments
+    public SignupRequest(@Size(min = 3, max = 20) String username, @Size(max = 50) @Email String email,
+                         Set<String> role  /*@Size(min = 6, max = 40)*//* String password*/, @Size(max = 10) String phoneNumber) {
         super();
         this.username = username;
         this.email = email;
@@ -38,10 +31,9 @@ public class SignupRequest {
 //        this.password = password;
         this.phoneNumber = phoneNumber;
     }
-    
 
 
-	public String getUsername() {
+    public String getUsername() {
         return username;
     }
 
@@ -107,9 +99,9 @@ public class SignupRequest {
 
     @Override
     public String toString() {
-        return "SignupRequest [username=" + username + ", email=" + email + ", role=" + role  +
+        return "SignupRequest [username=" + username + ", email=" + email + ", role=" + role +
 //                " password=" + password+
-              ", phoneNumber=" + phoneNumber + "]";
+                ", phoneNumber=" + phoneNumber + "]";
     }
 
 }

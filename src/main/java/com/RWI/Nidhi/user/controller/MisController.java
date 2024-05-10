@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.MisDto;
+import com.RWI.Nidhi.dto.MisResponseDto;
 import com.RWI.Nidhi.dto.MisRequestDto;
 import com.RWI.Nidhi.user.serviceImplementation.UserMisServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class MisController {
     UserMisServiceImplementation misService;
 
     @PostMapping("/createMis")
-    public MisRequestDto createMis(@RequestParam String agentEmail, @RequestParam String email, @RequestBody MisDto misDto) {
+    public MisResponseDto createMis(@RequestParam String agentEmail, @RequestParam String email, @RequestBody MisDto misDto) {
         System.out.println(misDto.getMisTenure().getInterestRate());
         System.out.println(misDto.getMisTenure().getTenure());
         return misService.createMis(agentEmail, email, misDto);
@@ -29,14 +30,14 @@ public class MisController {
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<MisDto> findMisById(@RequestParam int misId) {
-        MisDto misDto = misService.getMisById(misId);
-        return new ResponseEntity<>(misDto, HttpStatus.OK);
+    public ResponseEntity<MisRequestDto> findMisById(@RequestParam int misId) {
+        MisRequestDto misRequestDto = misService.getMisById(misId);
+        return new ResponseEntity<>(misRequestDto, HttpStatus.OK);
     }
 
     @GetMapping("/findAllMisByEmail")
-    public ResponseEntity<List<MisDto>> findMisByEmail(@RequestParam String email) {
-        List<MisDto> misDtoList = misService.getMisByEmail(email);
-        return new ResponseEntity<>(misDtoList, HttpStatus.OK);
+    public ResponseEntity<List<MisRequestDto>> findMisByEmail(@RequestParam String email) {
+        List<MisRequestDto> misRequestDtoList = misService.getMisByEmail(email);
+        return new ResponseEntity<>(misRequestDtoList, HttpStatus.OK);
     }
 }

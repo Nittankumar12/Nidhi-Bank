@@ -2,8 +2,11 @@ package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.MisDto;
 import com.RWI.Nidhi.dto.MisRequestDto;
-import com.RWI.Nidhi.dto.RdDto;
-import com.RWI.Nidhi.entity.*;
+import com.RWI.Nidhi.dto.MisResponseDto;
+import com.RWI.Nidhi.entity.Accounts;
+import com.RWI.Nidhi.entity.Agent;
+import com.RWI.Nidhi.entity.MIS;
+import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.repository.AgentRepo;
 import com.RWI.Nidhi.repository.MisRepo;
@@ -27,7 +30,7 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
     private UserRepo userRepo;
 
     @Override
-    public MisRequestDto createMis(String agentEmail, String email, MisDto misDto) {
+    public MisResponseDto createMis(String agentEmail, String email, MisDto misDto) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
         User user = userRepo.findByEmail(email);
         Accounts accounts = new Accounts();
@@ -47,18 +50,18 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
 
             misRepo.save(newMis);
 
-            MisRequestDto misRequestDto = new MisRequestDto();
-            misRequestDto.setUserName(newMis.getAccount().getUser().getUserName());
-            misRequestDto.setNomineeName(newMis.getNomineeName());
-            misRequestDto.setInterestRate(newMis.getInterestRate());
-            misRequestDto.setTotalDepositedAmount(newMis.getTotalDepositedAmount());
-            misRequestDto.setTenure(newMis.getTenure());
-            misRequestDto.setStartDate(newMis.getStartDate());
-            misRequestDto.setMonthlyIncome(newMis.getMonthlyIncome());
-            misRequestDto.setMaturityDate(newMis.getMaturityDate());
-            misRequestDto.setMisStatus(newMis.getStatus());
-            misRequestDto.setAgentName(newMis.getAgent().getAgentName());
-            return misRequestDto;
+            MisResponseDto misResponseDto = new MisResponseDto();
+            misResponseDto.setUserName(newMis.getAccount().getUser().getUserName());
+            misResponseDto.setNomineeName(newMis.getNomineeName());
+            misResponseDto.setInterestRate(newMis.getInterestRate());
+            misResponseDto.setTotalDepositedAmount(newMis.getTotalDepositedAmount());
+            misResponseDto.setTenure(newMis.getTenure());
+            misResponseDto.setStartDate(newMis.getStartDate());
+            misResponseDto.setMonthlyIncome(newMis.getMonthlyIncome());
+            misResponseDto.setMaturityDate(newMis.getMaturityDate());
+            misResponseDto.setMisStatus(newMis.getStatus());
+            misResponseDto.setAgentName(newMis.getAgent().getAgentName());
+            return misResponseDto;
         }
         return null;
     }
@@ -79,33 +82,39 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         misRepo.save(currMis);
         return currMis.getTotalInterestEarned();
     }
+
     @Override
-    public MisDto getMisById(int misId) {
+    public MisRequestDto getMisById(int misId) {
         MIS mis = misRepo.findById(misId)
                 .orElseThrow(() -> new EntityNotFoundException("Id not found"));
-        MisDto misDto = new MisDto();
-        misDto.setUserName(mis.getAccount().getUser().getUserName());
-        misDto.setNomineeName(mis.getNomineeName());
-        misDto.setTotalDepositedAmount(mis.getTotalDepositedAmount());
-        misDto.setMisTenure(misDto.getMisTenure());
-        misDto.setAgentName(mis.getAgent().getAgentName());
-        return misDto;
+        MisRequestDto misRequestDto = new MisRequestDto();
+        misRequestDto.setUserName(mis.getAccount().getUser().getUserName());
+        misRequestDto.setMisId(misId);
+        misRequestDto.setNomineeName(mis.getNomineeName());
+        misRequestDto.setTotalDepositedAmount(mis.getTotalDepositedAmount());
+        misRequestDto.setMisTenure(misRequestDto.getMisTenure());
+        misRequestDto.setAgentName(mis.getAgent().getAgentName());
+        misRequestDto.setStatus(mis.getStatus());
+        return misRequestDto;
     }
 
     @Override
-    public List<MisDto> getMisByEmail(String email) {
+    public List<MisRequestDto> getMisByEmail(String email) {
         User user = userRepo.findByEmail(email);
         List<MIS> misList = user.getAccounts().getMisList();
-        List<MisDto> misDtoList = new ArrayList<MisDto>();
+        List<MisRequestDto> misRequestDtoList = new ArrayList<MisRequestDto>();
         for (MIS mis : misList) {
-            MisDto misDto = new MisDto();
-            misDto.setUserName(user.getUserName());
-            misDto.setTotalDepositedAmount(mis.getTotalDepositedAmount());
-            misDto.setMisTenure(misDto.getMisTenure());
-            misDto.setNomineeName(mis.getNomineeName());
-            misDto.setAgentName(user.getAgent().getAgentName());
-            misDtoList.add(misDto);
+            MisRequestDto misRequestDto = new MisRequestDto();
+            misRequestDto.setUserName(user.getUserName());
+            misRequestDto.setMisId(mis.getMisId());
+            misRequestDto.setTotalDepositedAmount(mis.getTotalDepositedAmount());
+            misRequestDto.setMisTenure(misRequestDto.getMisTenure());
+            misRequestDto.setNomineeName(mis.getNomineeName());
+            misRequestDto.setAgentName(user.getAgent().getAgentName());
+            misRequestDto.setStatus(mis.getStatus());
+
+            misRequestDtoList.add(misRequestDto);
         }
-        return misDtoList;
+        return misRequestDtoList;
     }
 }

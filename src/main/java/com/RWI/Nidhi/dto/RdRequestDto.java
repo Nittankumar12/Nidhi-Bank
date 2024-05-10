@@ -1,26 +1,20 @@
 package com.RWI.Nidhi.dto;
 
 import com.RWI.Nidhi.enums.Status;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
-
-@Getter
 @Setter
+@Getter
 public class RdRequestDto {
     private String userName;
+    private int RdId;
     private double monthlyDepositAmount;
-    private double interestRate;
-    private LocalDate startDate;
-    private int tenure; // Number of months
-    private double maturityAmount;
+    int tenure;
     private String nomineeName;
-    private LocalDate maturityDate;
-//    private LocalDate lastDepositedDate;
-    private double totalAmountDeposited;
-    private int compoundingFrequency;
+    @Enumerated(EnumType.STRING)
     private Status rdStatus;
     private String agentName;
-
 }
