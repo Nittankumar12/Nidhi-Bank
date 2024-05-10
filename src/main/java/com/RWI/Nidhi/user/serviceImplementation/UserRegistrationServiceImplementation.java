@@ -14,12 +14,13 @@ public class UserRegistrationServiceImplementation implements UserRegistrationIn
 
     @Override
     public ResponseEntity<String> sendEmailOtp(String email) throws Exception {
+
         String otp = otpServiceImplementation.generateOTP();
         String subject = "Email Verification OTP";
         String messageToSend = "Your OTP for email verification is: ";
-
+        System.out.println("Sending email");
         otpServiceImplementation.sendEmailOtp(email, subject, messageToSend, otp);
-
+        System.out.println("Email Sent");
         return new ResponseEntity<>("OTP sent successfully", HttpStatus.OK);
     }
 

@@ -69,18 +69,12 @@ public class AgentServiceImplementation implements AgentServiceInterface {
 //            throw new Exception("User already exists");
 //        }
 
-        if(adminRepo.existsByAdminName(signUpRequest.getUsername())||agentRepo.existsByAgentName(signUpRequest.getEmail())||userRepo.existsByUserName(signUpRequest.getEmail())){
-            throw new Exception("Admin already exists");
+        if(agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())){
+            throw new Exception("Email already exists");
         }
-
-        if(adminRepo.existsByEmail(signUpRequest.getEmail())||agentRepo.existsByAgentEmail(signUpRequest.getEmail())||userRepo.existsByEmail(signUpRequest.getEmail())){
-            throw new Exception("Admin already exists");
+        if(adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getEmail()) || userRepo.existsByUserName(signUpRequest.getUsername())){
+            throw new Exception("Username already taken");
         }
-
-        if (userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())||adminRepo.existsByPhoneNumber(signUpRequest.getEmail())||agentRepo.existsByAgentPhoneNum(signUpRequest.getEmail())) {
-            throw new Exception("User already exists");
-        }
-
 
         //Getting the agent from repo by email
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
@@ -96,13 +90,11 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         newUser.setPhoneNumber(signUpRequest.getPhoneNumber());
         newUser.setAgent(agent);
         agent.getUserList().add(newUser);
-        agentRepo.save(agent);
-
         try {
             String tempPassword = otpServiceImplementation.generateOTP();
             String subject = "Your temporary password";
             String messageToSend = "Your temporary system generated password is: ";
-
+            System.out.println("Sending email");
             otpServiceImplementation.sendEmailOtp(newUser.getEmail(), subject, messageToSend, tempPassword);
             newUser.setPassword(encoder.encode(tempPassword));
             userRepo.save(newUser);
@@ -121,6 +113,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         newUser.setRoles(roles);
         userRepo.save(newUser);
         credentialsRepo.save(newUser);
+        agentRepo.save(agent);
         return newUser;
     }
 
