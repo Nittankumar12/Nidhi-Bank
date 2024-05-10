@@ -72,7 +72,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         if(agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())){
             throw new Exception("Email already exists");
         }
-        if(adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getEmail()) || userRepo.existsByUserName(signUpRequest.getUsername())){
+        if(adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getUsername()) || userRepo.existsByUserName(signUpRequest.getUsername())){
             throw new Exception("Username already taken");
         }
 
@@ -91,7 +91,8 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         newUser.setAgent(agent);
         agent.getUserList().add(newUser);
         try {
-            String tempPassword = otpServiceImplementation.generateOTP();
+            String tempPassword = "user21";
+//                    otpServiceImplementation.generateOTP();
             String subject = "Your temporary password";
             String messageToSend = "Your temporary system generated password is: ";
             System.out.println("Sending email");
@@ -112,7 +113,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         credentials.setRoles(roles);
         newUser.setRoles(roles);
         userRepo.save(newUser);
-        credentialsRepo.save(newUser);
+        credentialsRepo.save(credentials);
         agentRepo.save(agent);
         return newUser;
     }

@@ -64,7 +64,8 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         newAgent.setAgentEmail(signUpRequest.getEmail());
         newAgent.setAgentPhoneNum(signUpRequest.getPhoneNumber());
         try {
-            String tempPassword =otpServiceImplementation.generateOTP();
+            String tempPassword ="agent21";
+//                    otpServiceImplementation.generateOTP();
             String subject = "Your temporary password";
             String messageToSend = "Your temporary system generated password is: ";
 
