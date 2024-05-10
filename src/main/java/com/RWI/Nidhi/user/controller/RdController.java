@@ -1,8 +1,8 @@
 package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.RdDto;
+import com.RWI.Nidhi.dto.RdResponseDto;
 import com.RWI.Nidhi.dto.RdRequestDto;
-import com.RWI.Nidhi.entity.RecurringDeposit;
 import com.RWI.Nidhi.user.serviceImplementation.UserRdServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,8 +19,8 @@ public class RdController {
     private UserRdServiceImplementation service;
 
     @PostMapping("/createRd")
-    public ResponseEntity<RdRequestDto> createRd(@RequestParam String agentEmail, @RequestParam String userEmail, @RequestBody RdDto rdDto) {
-        RdRequestDto rd = service.createRd(agentEmail, userEmail, rdDto);
+    public ResponseEntity<RdResponseDto> createRd(@RequestParam String agentEmail, @RequestParam String userEmail, @RequestBody RdDto rdDto) {
+        RdResponseDto rd = service.createRd(agentEmail, userEmail, rdDto);
         return new ResponseEntity<>(rd, HttpStatus.OK);
     }
 
@@ -33,14 +33,14 @@ public class RdController {
 
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<RdDto> findRdById(@RequestParam int rdId) {
-        RdDto rdDto = service.getRdById(rdId);
-        return new ResponseEntity<>(rdDto, HttpStatus.OK);
+    public ResponseEntity<RdRequestDto> findRdById(@RequestParam int rdId) {
+        RdRequestDto responseDto = service.getRdById(rdId);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @GetMapping("/findAllRdsByEmail")
-    public ResponseEntity<List<RdDto>> findRdByEmail(@RequestParam String email) {
-        List<RdDto> rdDtoList = service.getRdByEmail(email);
-        return new ResponseEntity<>(rdDtoList, HttpStatus.OK);
+    public ResponseEntity<List<RdRequestDto>> findRdByEmail(@RequestParam String email) {
+        List<RdRequestDto> rdRequestDtoList = service.getRdByEmail(email);
+        return new ResponseEntity<>(rdRequestDtoList, HttpStatus.OK);
     }
 }

@@ -1,22 +1,21 @@
 package com.RWI.Nidhi.dto;
 
+
 import com.RWI.Nidhi.enums.Status;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
-@Getter
 @Setter
+@Getter
 public class FdRequestDto {
     private String userName;
-    private Integer amount;
-    private LocalDate depositDate;
-    private double interestRate;
-    private int tenure;
-    private double maturityAmount;
+    private int fdId;
+    private int amount;
+    int tenure;
     private String nomineeName;
-    private LocalDate maturityDate;
-    private int compoundingFrequency;
+    @Enumerated(EnumType.STRING)
     private Status fdStatus;
     private String agentName;
 }

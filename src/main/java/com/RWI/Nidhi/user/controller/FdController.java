@@ -2,6 +2,7 @@ package com.RWI.Nidhi.user.controller;
 
 
 import com.RWI.Nidhi.dto.FdDto;
+import com.RWI.Nidhi.dto.FdResponseDto;
 import com.RWI.Nidhi.dto.FdRequestDto;
 import com.RWI.Nidhi.user.serviceImplementation.UserFdServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class FdController {
 
     @PostMapping("/createFd")
     public ResponseEntity<Object> createFd(@RequestParam String agentEmail, @RequestParam String email, @RequestBody FdDto fdDto) {
-        FdRequestDto fd = service.createFd(agentEmail, email, fdDto);
+        FdResponseDto fd = service.createFd(agentEmail, email, fdDto);
         return new ResponseEntity<>(fd, HttpStatus.OK);
     }
 
@@ -30,14 +31,14 @@ public class FdController {
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<FdDto> findFdById(@RequestParam int fdId) {
-        FdDto fdDto = service.getFdById(fdId);
-        return new ResponseEntity<>(fdDto, HttpStatus.OK);
+    public ResponseEntity<FdRequestDto> findFdById(@RequestParam int fdId) {
+        FdRequestDto fdRequestDto = service.getFdById(fdId);
+        return new ResponseEntity<>(fdRequestDto, HttpStatus.OK);
     }
 
     @GetMapping("/findAllFdsByEmail")
-    public ResponseEntity<List<FdDto>> findFdByEmail(@RequestParam String email) {
-        List<FdDto> fdDtoList = service.getFdByEmail(email);
-        return new ResponseEntity<>(fdDtoList, HttpStatus.OK);
+    public ResponseEntity<List<FdRequestDto>> findFdByEmail(@RequestParam String email) {
+        List<FdRequestDto> fdRequestDtoList = service.getFdByEmail(email);
+        return new ResponseEntity<>(fdRequestDtoList, HttpStatus.OK);
     }
 }

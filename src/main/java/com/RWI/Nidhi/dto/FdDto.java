@@ -9,10 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FdDto {
-    private String userName;
     int amount;
     private String nomineeName;
     FdCompoundingFrequency fdCompoundingFrequency;
     int tenure;
-    private String agentName;
 }
