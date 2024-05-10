@@ -40,7 +40,7 @@ public class AdminController {
     @PostMapping("/addAdmin")
     public ResponseEntity<?> addAdmin(@RequestBody SignupRequest signupRequest) throws Exception {
         adminService.addAdmin(signupRequest);
-        return ResponseEntity.ok(new MessageResponse("Driver registered successfully!"));
+        return ResponseEntity.ok(new MessageResponse("Admin registered successfully!"));
     }
 
     @PutMapping("/updateAgentName")

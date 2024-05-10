@@ -51,17 +51,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     UserRepo userRepo;
     @Override
     public SignupRequest addAgent(SignupRequest signUpRequest) throws Exception{
-//        if(adminRepo.existsByAdminName(signUpRequest.getUsername())||agentRepo.existsByAgentName(signUpRequest.getEmail())||userRepo.existsByUserName(signUpRequest.getEmail())){
-//            throw new Exception("Admin already exists");
-//        }
-//
-//        if(adminRepo.existsByEmail(signUpRequest.getEmail())||agentRepo.existsByAgentEmail(signUpRequest.getEmail())||userRepo.existsByEmail(signUpRequest.getEmail())){
-//            throw new Exception("Admin already exists");
-//        }
-//
-//        if (userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())||adminRepo.existsByPhoneNumber(signUpRequest.getEmail())||agentRepo.existsByAgentPhoneNum(signUpRequest.getEmail())) {
-//            throw new Exception("User already exists");
-//        }
+
          if(agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())){
             throw new Exception("Email already exists");
         }
@@ -74,7 +64,8 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         newAgent.setAgentEmail(signUpRequest.getEmail());
         newAgent.setAgentPhoneNum(signUpRequest.getPhoneNumber());
         try {
-            String tempPassword = otpServiceImplementation.generateOTP();
+            String tempPassword ="agent123";
+                    //otpServiceImplementation.generateOTP();
             String subject = "Your temporary password";
             String messageToSend = "Your temporary system generated password is: ";
 
@@ -87,7 +78,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 
         Credentials agent = new Credentials(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPhoneNumber(),
                 newAgent.getAgentPassword());
-//
+
         Set<Role> roles = new HashSet<>();
         Role agentRole = roleRepository.findByName(ERole.ROLE_AGENT)
                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
@@ -100,16 +91,11 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     }
     @Override
     public Admin addAdmin(SignupRequest signUpRequest) throws Exception{
-        if(adminRepo.existsByAdminName(signUpRequest.getUsername())||agentRepo.existsByAgentName(signUpRequest.getEmail())||userRepo.existsByUserName(signUpRequest.getEmail())){
-            throw new Exception("Admin already exists");
+        if(agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())){
+            throw new Exception("Email already exists");
         }
-
-        if(adminRepo.existsByEmail(signUpRequest.getEmail())||agentRepo.existsByAgentEmail(signUpRequest.getEmail())||userRepo.existsByEmail(signUpRequest.getEmail())){
-            throw new Exception("Admin already exists");
-        }
-
-        if (userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())||adminRepo.existsByPhoneNumber(signUpRequest.getEmail())||agentRepo.existsByAgentPhoneNum(signUpRequest.getEmail())) {
-            throw new Exception("User already exists");
+        if(adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getEmail()) || userRepo.existsByUserName(signUpRequest.getUsername())){
+            throw new Exception("Username already taken");
         }
         Admin newAdmin = new Admin();
         newAdmin.setAdminName(signUpRequest.getUsername());
