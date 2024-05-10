@@ -21,8 +21,9 @@ public class Admin {
     private String phoneNumber;
     private String password;
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(  name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(  name = "admin_roles",
+            joinColumns = @JoinColumn(name = "admin_id")
+            ,inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     private Set<Role> roles = new HashSet<>();
 }

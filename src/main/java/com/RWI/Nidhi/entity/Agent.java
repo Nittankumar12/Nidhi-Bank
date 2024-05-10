@@ -26,9 +26,10 @@ public class Agent {
     private String agentEmail;
     private String agentPassword;
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(  name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(  name = "agent_roles",
+            joinColumns = @JoinColumn(name = "agent_id")
+            , inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
