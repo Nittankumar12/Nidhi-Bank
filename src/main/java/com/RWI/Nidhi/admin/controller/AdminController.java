@@ -16,6 +16,7 @@ import com.RWI.Nidhi.repository.AdminRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -25,7 +26,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
-
+    @Autowired
+    PasswordEncoder encoder;
     @Autowired
     AdminServiceImplementation adminService;
     @Autowired
@@ -102,7 +104,7 @@ public class AdminController {
             if (admin == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Admin with given username does not exist");
             }
-            if (admin.getPassword().equals(loginReq.getPassword())) {
+            if (admin.getPassword().equals(encoder.encode(loginReq.getPassword()))) {
                 return ResponseEntity.status(HttpStatus.ACCEPTED).body("login successful");
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");

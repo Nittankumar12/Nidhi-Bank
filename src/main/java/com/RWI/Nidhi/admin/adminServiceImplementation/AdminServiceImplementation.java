@@ -51,17 +51,24 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     UserRepo userRepo;
     @Override
     public SignupRequest addAgent(SignupRequest signUpRequest) throws Exception{
-        if(adminRepo.existsByAdminName(signUpRequest.getUsername())||agentRepo.existsByAgentName(signUpRequest.getEmail())||userRepo.existsByUserName(signUpRequest.getEmail())){
-            throw new Exception("Admin already exists");
+//        if(adminRepo.existsByAdminName(signUpRequest.getUsername())||agentRepo.existsByAgentName(signUpRequest.getEmail())||userRepo.existsByUserName(signUpRequest.getEmail())){
+//            throw new Exception("Admin already exists");
+//        }
+//
+//        if(adminRepo.existsByEmail(signUpRequest.getEmail())||agentRepo.existsByAgentEmail(signUpRequest.getEmail())||userRepo.existsByEmail(signUpRequest.getEmail())){
+//            throw new Exception("Admin already exists");
+//        }
+//
+//        if (userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())||adminRepo.existsByPhoneNumber(signUpRequest.getEmail())||agentRepo.existsByAgentPhoneNum(signUpRequest.getEmail())) {
+//            throw new Exception("User already exists");
+//        }
+         if(agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())){
+            throw new Exception("Email already exists");
+        }
+        if(adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getEmail()) || userRepo.existsByUserName(signUpRequest.getUsername())){
+            throw new Exception("Username already taken");
         }
 
-        if(adminRepo.existsByEmail(signUpRequest.getEmail())||agentRepo.existsByAgentEmail(signUpRequest.getEmail())||userRepo.existsByEmail(signUpRequest.getEmail())){
-            throw new Exception("Admin already exists");
-        }
-
-        if (userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())||adminRepo.existsByPhoneNumber(signUpRequest.getEmail())||agentRepo.existsByAgentPhoneNum(signUpRequest.getEmail())) {
-            throw new Exception("User already exists");
-        }
         Agent newAgent = new Agent();
         newAgent.setAgentName(signUpRequest.getUsername());
         newAgent.setAgentEmail(signUpRequest.getEmail());

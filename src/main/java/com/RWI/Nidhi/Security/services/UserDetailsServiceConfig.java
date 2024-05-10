@@ -32,8 +32,8 @@ public class UserDetailsServiceConfig implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Admin admin =adminRepo.findByAdminName(username);
-        User user =userRepo.findByUserName(username);
+        Admin admin = adminRepo.findByAdminName(username);
+        User user = userRepo.findByUserName(username);
         Agent agent = agentRepo.findByAgentName(username);
         Credentials credentials = null;
         if(agent!=null){

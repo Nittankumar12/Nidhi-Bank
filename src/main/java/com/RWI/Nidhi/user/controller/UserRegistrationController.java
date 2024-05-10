@@ -31,6 +31,7 @@ public class UserRegistrationController {
 
     @PostMapping("/sendEmailOtp")
     public ResponseEntity<String> sendEmailOtp(@RequestParam("email") String email) throws Exception {
+        System.out.println("in controlleer");
         return userService.sendEmailOtp(email);
     }
 
