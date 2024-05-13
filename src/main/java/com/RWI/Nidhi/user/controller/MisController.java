@@ -1,8 +1,8 @@
 package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.MisDto;
-import com.RWI.Nidhi.dto.MisResponseDto;
 import com.RWI.Nidhi.dto.MisRequestDto;
+import com.RWI.Nidhi.dto.MisResponseDto;
 import com.RWI.Nidhi.user.serviceImplementation.UserMisServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,10 +18,11 @@ public class MisController {
     UserMisServiceImplementation misService;
 
     @PostMapping("/createMis")
-    public MisResponseDto createMis(@RequestParam String agentEmail, @RequestParam String email, @RequestBody MisDto misDto) {
+    public ResponseEntity<MisResponseDto> createMis(@RequestParam String agentEmail, @RequestParam String email, @RequestBody MisDto misDto) {
         System.out.println(misDto.getMisTenure().getInterestRate());
         System.out.println(misDto.getMisTenure().getTenure());
-        return misService.createMis(agentEmail, email, misDto);
+        MisResponseDto misResponseDto = misService.createMis(agentEmail, email, misDto);
+        return new ResponseEntity<>(misResponseDto, HttpStatus.OK);
     }
 
     @PutMapping("/closeMis")
@@ -29,8 +30,8 @@ public class MisController {
         return misService.closeMis(misId);
     }
 
-    @GetMapping("/findById/{id}")
-    public ResponseEntity<MisRequestDto> findMisById(@RequestParam int misId) {
+    @GetMapping("/findById")
+    public ResponseEntity<MisRequestDto> findMisById(@RequestParam int misId)throws Exception {
         MisRequestDto misRequestDto = misService.getMisById(misId);
         return new ResponseEntity<>(misRequestDto, HttpStatus.OK);
     }

@@ -10,6 +10,7 @@ import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -21,10 +22,11 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     @Autowired
     UserRepo userRepo;
-    @Autowired
-    UserService userService;
+
     @Autowired
     OtpServiceImplementation otpServiceImplementation;
+    @Autowired
+    PasswordEncoder encoder;
 
     @Autowired
     AgentRepo agentRepo;
@@ -34,38 +36,38 @@ public class UserServiceImpl implements UserService {
         return userRepo.findByEmail(email);
     }
 
-    @Override
-    public boolean authenticate(String email, String password) {
+//    @Override
+//    public boolean authenticate(String email, String password) {
+//
+//        User user = userRepo.findByEmail(email);
+//        if (user != null && user.getAccounts().getAccountStatus().equals("ACTIVE")) {
+//            return (user.getPassword().equals(getEncryptedPassword(password)))
+//                    && email.equals(user.getEmail());
+//        } else {
+//            return false;
+//        }
+//    }
 
-        User user = userRepo.findByEmail(email);
-        if (user != null && user.getAccounts().getAccountStatus().equals("ACTIVE")) {
-            return (user.getPassword().equals(getEncryptedPassword(password)))
-                    && email.equals(user.getEmail());
-        } else {
-            return false;
-        }
-    }
+//    private String getEncryptedPassword(String password) {
+//        // String encryptedPassword = "";
+//        try {
+//            BigInteger number = new BigInteger(1, getSHA(password));
+//            return number.toString(16);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 
-    private String getEncryptedPassword(String password) {
-        // String encryptedPassword = "";
-        try {
-            BigInteger number = new BigInteger(1, getSHA(password));
-            return number.toString(16);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private byte[] getSHA(String input) {
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-            return messageDigest.digest(input.getBytes(StandardCharsets.UTF_8));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+//    private byte[] getSHA(String input) {
+//        try {
+//            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+//            return messageDigest.digest(input.getBytes(StandardCharsets.UTF_8));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 
     @Override
     public UserResponseDto updateUserName(String email, String userName){
@@ -118,7 +120,7 @@ public class UserServiceImpl implements UserService {
         User currUser = userRepo.findByEmail(email);
         AddUserDto newUser = new AddUserDto();
 
-        currUser.setPassword(getEncryptedPassword(password));
+        currUser.setPassword(encoder.encode(password));
         try {
             userRepo.save(currUser);
             newUser.setUserName(currUser.getUserName());

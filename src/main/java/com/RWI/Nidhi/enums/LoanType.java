@@ -7,10 +7,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public enum LoanType {
     Gold(10),
-    Vehicle(5),
-    Appliance(7),
-    Home(4),
-    Scheme(10);
+    Vehicle(9),
+    Home(8),
+    BusinessLoan(7),
+    PropertyLoan(6),
+    Appliances(5),
+    AgricultureLoan(4),
+    Personal(3),
+    Scheme(100);
     private double loanInterestRate;
-    LoanType(double loanInterestRate){this.loanInterestRate=loanInterestRate;}
+
+    LoanType(double loanInterestRate) {
+        this.loanInterestRate = loanInterestRate;
+    }
 }

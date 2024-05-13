@@ -55,8 +55,7 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 		User optionalUser = userRepo.findByEmail(email);
 		if (optionalUser != null) {
 			// String accountNumber = generateRandomAccountNumber();
-			String accountNumber = generateAccountNumber(optionalUser.getUserName(),
-					optionalUser.getPhoneNumber());
+			String accountNumber = generateAccountNumber(optionalUser.getUserName(), optionalUser.getPhoneNumber());
 
 			// Create a new account object
 			Accounts newAccount = new Accounts();
@@ -219,6 +218,7 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 		}
 	}
 
+	@Override
 	public void addBankUserDetails(BankRequestDTO bankDto, String emailId) {
 		User userOptional = userRepo.findByEmail(emailId);
 		if (userOptional != null) {
@@ -227,19 +227,20 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 			BankDetails bankDetails = new BankDetails();
 
 			// bank details from the DTO
-			bankDetails.setAccHolderName(user.getUserName()); // Assuming user name is
-			// the account holder name
+			bankDetails.setAccHolderName(user.getUserName());
 			bankDetails.setAccNumber(bankDto.getAccountNumber());
 			bankDetails.setBankBranch(bankDto.getBranchName());
 			bankDetails.setBankName(bankDto.getBankName());
 			bankDetails.setIFSCCode(bankDto.getIfsc());
 
-			// Associate bank details with the user
+			// bank details with the user
 			user.setBankDetails(bankDetails);
 
 			// Save the bank details
-			bankDetails.setUser(user);
-			bankRepo.save(bankDetails);
+			userRepo.save(user);
+
+			// bankDetails.setUser(user);
+			// bankRepo.save(bankDetails);
 		} else {
 			// When the user is not found
 			System.out.println("User with email " + emailId + " not found");

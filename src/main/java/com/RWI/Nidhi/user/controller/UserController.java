@@ -39,12 +39,12 @@ public class UserController {
         }
         return new ResponseEntity<>(user,HttpStatus.OK);
     }
-    @PostMapping("/verifyEmail")
+    @PostMapping("/forget/verifyEmail")
     public ResponseEntity<String> verifyEmail(@RequestParam("email") String email) throws Exception {
         return userServiceImpl.userForgetPasswordSendVerificationCode(email);
     }
 
-    @PostMapping("/verifyOtp")
+    @PostMapping("/forget/verifyOtp")
     public ResponseEntity<String> verifyOtp(@RequestParam("email") String email, @RequestParam("enteredOtp") String enteredOtp ) throws Exception {
         return userServiceImpl.userForgetPasswordVerifyVerificationCode(email, enteredOtp);
     }
