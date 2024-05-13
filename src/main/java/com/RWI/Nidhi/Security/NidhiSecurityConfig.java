@@ -79,7 +79,7 @@ public class NidhiSecurityConfig {
                   .hasAnyRole("USER","ADMIN","AGENT")
               .anyRequest().authenticated()
         )
-//            .httpBasic(Customizer.withDefaults())
+            .httpBasic(Customizer.withDefaults())
 
 //            .formLogin(form->form.loginPage("/home/signin").permitAll())
             .logout(log->log.logoutSuccessUrl("/logout"));
