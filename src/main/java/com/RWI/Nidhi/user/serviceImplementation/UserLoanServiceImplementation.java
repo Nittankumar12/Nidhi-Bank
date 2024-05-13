@@ -62,7 +62,6 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         loan.setInterestRate(loanApplyDto.getLoanType().getLoanInterestRate());
         loan.setRePaymentTerm(loanApplyDto.getRePaymentTerm());
         loan.setPrincipalLoanAmount(loanApplyDto.getPrincipalLoanAmount());
-        loan.setStartDate(LocalDate.now());
         loan.setEmiDate(calcFirstEMIDate(loan.getStartDate()));
         //Payable
         loan.setPayableLoanAmount(calculateFirstPayableAmount(loanCalcDto));
@@ -86,12 +85,12 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     }
 
     @Override
-    public List<LoanHIstoryDTO> getLoansByLoanType(String loanType) {
+    public List<LoanHistoryDTO> getLoansByLoanType(String loanType) {
         return null;
     }
 
     @Override
-    public List<LoanHIstoryDTO> getLoansByLoanStatus(String status) {
+    public List<LoanHistoryDTO> getLoansByLoanStatus(String status) {
         return null;
     }
 

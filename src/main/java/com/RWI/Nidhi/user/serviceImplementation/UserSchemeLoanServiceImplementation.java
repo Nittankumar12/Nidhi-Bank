@@ -1,6 +1,8 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
-import com.RWI.Nidhi.dto.*;
+import com.RWI.Nidhi.dto.LoanCalcDto;
+import com.RWI.Nidhi.dto.MonthlyEmiDto;
+import com.RWI.Nidhi.dto.SchLoanCalcDto;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.entity.Scheme;
@@ -39,9 +41,9 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
         Scheme scheme = accounts.getScheme();
         if (scheme == null)
             return new ResponseEntity<>("No scheme running", HttpStatus.I_AM_A_TEAPOT);
-        else{
+        else {
             double schemeLoan = scheme.getMonthlyDepositAmount() * scheme.getTenure();
-            return new ResponseEntity<>(schemeLoan,HttpStatus.FOUND);
+            return new ResponseEntity<>(schemeLoan, HttpStatus.FOUND);
         }
     }
 
@@ -87,6 +89,7 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     public double calculateSchLoanEMI(SchLoanCalcDto schLoanCalcDto) {
         return userLoanService.calculateEMI(new LoanCalcDto(schLoanCalcDto));
     }
+
     @Override
     public ResponseEntity<?> getLoanInfo(String email) {
         User user = userService.getByEmail(email);
@@ -94,8 +97,7 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
         Scheme scheme = accounts.getScheme();
         if (scheme == null) {
             return userLoanService.getLoanInfo(email);
-        }
-        else
+        } else
             return null;
     }
 
@@ -106,19 +108,19 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
         Scheme scheme = accounts.getScheme();
         if (scheme == null) {
             return userLoanService.payEMI(email);
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     @Override
     public ResponseEntity<?> getLoanClosureDetails(String email) {
-        if(schemeService.CheckForSchemeRunning(email))
+        if (schemeService.CheckForSchemeRunning(email))
             return new ResponseEntity<>("No scheme was found running for this account", HttpStatus.NOT_FOUND);
         else
             return userLoanService.getLoanClosureDetails(email);
     }
+
     @Override
     public Boolean checkForExistingLoan(String email) {
         return userLoanService.checkForExistingLoan(email);
