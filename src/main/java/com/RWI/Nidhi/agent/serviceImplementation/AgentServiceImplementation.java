@@ -92,8 +92,8 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         try {
             String tempPassword = "user21";
 //                    otpServiceImplementation.generateOTP();
-            String subject = "Your temporary password";
-            String messageToSend = "Your temporary system generated password is: ";
+            String subject = newUser.getUserName();
+            String messageToSend = "Welcome to Nidhi Bank,Your temporary system generated password is: ";
             System.out.println("Sending email");
             otpServiceImplementation.sendEmailOtp(newUser.getEmail(), subject, messageToSend, tempPassword);
             newUser.setPassword(encoder.encode(tempPassword));
