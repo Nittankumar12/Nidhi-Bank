@@ -62,7 +62,7 @@ public class NidhiSecurityConfig {
        // .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> 
-          auth.requestMatchers("/home/**","/admin/addAdmin","/forget/verifyEmail","/forget/verifyOtp","/updateUserPassword").permitAll()
+          auth.requestMatchers("/home/**","/admin/addAdmin","/forget/verifyEmail","/forget/verifyOtp","/updateUserPassword","/ws/**").permitAll()
           .requestMatchers("/admin/**").hasAnyRole("ADMIN")
           .requestMatchers("/agent/**").hasAnyRole("AGENT","ADMIN")
           .requestMatchers("/user/**",

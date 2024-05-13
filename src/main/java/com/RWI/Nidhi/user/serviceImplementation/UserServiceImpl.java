@@ -98,9 +98,9 @@ public class UserServiceImpl implements UserService {
         userResponseDto.setEmail(user.getEmail());
         userResponseDto.setPhoneNumber(user.getPhoneNumber());
         return userResponseDto;
-    }
+    }//exit
 
-    @Override
+     @Override
     public UserResponseDto updateUserPhoneNum(String email, String phoneNum){
         User user = userRepo.findByEmail(email);
         if(user == null || user.getPhoneNumber().equals(phoneNum) ||agentRepo.existsByAgentPhoneNum(phoneNum) || userRepo.existsByPhoneNumber(phoneNum)){
