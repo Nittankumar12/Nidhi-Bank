@@ -277,8 +277,9 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                         loan.setRePaymentTerm((int) ChronoUnit.DAYS.between(loan.getStartDate(), firstDateOfNextMonth(LocalDate.now())));
                     } else
                         return new ResponseEntity<>("No Approved/Sanctioned Loan Found", HttpStatus.NOT_FOUND);
-                } else
+                } else {
                     return new ResponseEntity<>("No running loan found", HttpStatus.NOT_FOUND);
+                }
             }
             return new ResponseEntity<> ("Applied For Closure", HttpStatus.ACCEPTED);
         }

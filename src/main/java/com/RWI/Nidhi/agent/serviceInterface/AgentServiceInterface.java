@@ -20,7 +20,7 @@ public interface AgentServiceInterface {
     public ResponseEntity<?> closeAccount(String accountNumber, String agentEmail);
     ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus);
     ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus);
-
+    String deleteScheme(String email);
     ResponseEntity<String> agentForgetPasswordSendVerificationCode(String agentEmail) throws Exception;
     ResponseEntity<String> agentForgetPasswordVerifyVerificationCode(String agentEmail, String enteredOtp) throws Exception;
     AddAgentDto updateAgentPassword(String agentEmail, String agentPassword) throws Exception;
