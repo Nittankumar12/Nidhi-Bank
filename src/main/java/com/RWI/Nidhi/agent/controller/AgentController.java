@@ -7,6 +7,7 @@ import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.dto.LoanInfoDto;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanStatus;
+import com.RWI.Nidhi.enums.SchemeStatus;
 import com.RWI.Nidhi.user.serviceImplementation.AccountsServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,6 +51,10 @@ public class AgentController {
     }
     @PutMapping("/ChangeLoanStatus/{email}")
     public ResponseEntity<?> ChangeLoanStatus(@RequestParam("email")String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus){
-        return agentService.changeLoanStatus(userEmail,agentEmail,changedStatus,previousStatus);
-    } // DTO?
+        return agentService.ChangeLoanStatus(userEmail,agentEmail,changedStatus,previousStatus);
+    }
+    @PutMapping("/ChangeSchemeStatus/{email}")
+    public ResponseEntity<?> ChangeSchemeStatus(@RequestParam("email")String agentEmail, @RequestBody String userEmail, SchemeStatus changedStatus, SchemeStatus previousStatus){
+        return agentService.ChangeSchemeStatus(userEmail,agentEmail,changedStatus,previousStatus);
+    }
 }
