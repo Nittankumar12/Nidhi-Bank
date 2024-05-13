@@ -10,12 +10,12 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface AgentServiceInterface {
-    User addUser(SignupRequest signupRequest, String agentEmail) throws Exception;
-    boolean deleteUserById(int id) throws Exception;
-    List<User> getAllUsers();
-    User findUserById(int id) throws Exception;
-    Accounts deactivateAccount(String accountNumber) throws Exception;
-    Accounts closeAccount(String accountNumber) throws Exception;
-    ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus);
+    ResponseEntity<?> addUser(SignupRequest signupRequest, String agentEmail);
+    public ResponseEntity<?> deleteUserById(String userEmail, String agentEmail);
+    ResponseEntity<?> getAllUsers(String email);
+    ResponseEntity<?> findUserById(int id,String agentEmail);
+    public ResponseEntity<?> deactivateAccount(String accountNumber, String agentEmail);
+    public ResponseEntity<?> closeAccount(String accountNumber, String agentEmail);
+    ResponseEntity<?> changeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus);
 }
 

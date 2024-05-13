@@ -9,6 +9,7 @@ import com.RWI.Nidhi.Security.repository.CredentialsRepo;
 import com.RWI.Nidhi.Security.repository.RoleRepository;
 import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
 import com.RWI.Nidhi.dto.AddUserDto;
+import com.RWI.Nidhi.dto.UserResponseDto;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
@@ -18,6 +19,8 @@ import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
+import com.amazonaws.services.xray.model.Http;
+import org.apache.http.protocol.ResponseServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +32,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -62,18 +66,13 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     AdminRepo adminRepo;
 
     @Override
-    public User addUser(SignupRequest signUpRequest, String agentEmail) throws Exception {
-
-        //check if user already exists
-//        if (userRepo.existsByEmail(addUserDto.getEmail())) {
-//            throw new Exception("User already exists");
-//        }
+    public ResponseEntity<?> addUser(SignupRequest signUpRequest, String agentEmail){
 
         if(agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())){
-            throw new Exception("Email already exists");
+            return new ResponseEntity<>("Email already taken", HttpStatus.NOT_ACCEPTABLE);
         }
         if(adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getUsername()) || userRepo.existsByUserName(signUpRequest.getUsername())){
-            throw new Exception("Username already taken");
+            return new ResponseEntity<>("Username already taken", HttpStatus.NOT_ACCEPTABLE);
         }
 
         //Getting the agent from repo by email
@@ -81,7 +80,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
 
         //Check if agent exists or not
         if (agent == null) {
-            throw new Exception("Agent does not exists");
+            return new ResponseEntity<>("Agent doesn't exists", HttpStatus.NOT_FOUND);
         }
         //creation of new user
         User newUser = new User();
@@ -100,63 +99,102 @@ public class AgentServiceImplementation implements AgentServiceInterface {
             newUser.setPassword(encoder.encode(tempPassword));
             userRepo.save(newUser);
         } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            return new ResponseEntity<>(  "Email Error" + e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Credentials credentials = new Credentials(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPhoneNumber(),
                 newUser.getPassword());
 
         // Set default role as USER for user
         Set<Role> roles = new HashSet<>();
-        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        Role userRole = roleRepository.findByName(ERole.ROLE_USER).get();
+        if(userRole == null){
+            return new ResponseEntity<>("User role not found", HttpStatus.NOT_FOUND);
+        }
+//                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
         roles.add(userRole);
         credentials.setRoles(roles);
         newUser.setRoles(roles);
         userRepo.save(newUser);
         credentialsRepo.save(credentials);
         agentRepo.save(agent);
-        return newUser;
+        UserResponseDto userResponseDto = new UserResponseDto();
+        userResponseDto.setUserName(newUser.getUserName());
+        userResponseDto.setEmail(newUser.getEmail());
+        userResponseDto.setPhoneNumber(newUser.getPhoneNumber());
+        return new ResponseEntity<>(userResponseDto,HttpStatus.OK);
     }
 
     @Override
-    public boolean deleteUserById(int id) throws Exception {
-        try {
-            userRepo.deleteById(id);
-        } catch (Exception e) {
-            return false;
+    public ResponseEntity<?> deleteUserById(String userEmail, String agentEmail){
+        User user = userRepo.findByEmail(userEmail);
+        Agent agent = user.getAgent();
+        if(!agent.getAgentEmail().equals(agentEmail)){
+            return new ResponseEntity<>("This user is not in current agent's list",HttpStatus.NOT_FOUND);
         }
-        return true;
+        userRepo.deleteById(user.getUserId());
+        return new ResponseEntity<>("User Deleted",HttpStatus.OK);
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepo.findAll();
+    public ResponseEntity<?> getAllUsers(String email) {
+        Agent agent = agentRepo.findByAgentEmail(email);
+        List<User> users =  agent.getUserList();
+        if(users.size() == 0) return new ResponseEntity<>("No users found", HttpStatus.NOT_FOUND);
+        List<UserResponseDto> userResponseDtos = new ArrayList<>();
+        for(User user: users){
+            UserResponseDto userResponseDto = new UserResponseDto();
+            userResponseDto.setUserName(user.getUserName());
+            userResponseDto.setEmail(user.getEmail());
+            userResponseDto.setPhoneNumber(user.getPhoneNumber());
+            userResponseDtos.add(userResponseDto);
+        }
+        return new ResponseEntity<>(userResponseDtos,HttpStatus.OK);
     }
 
     @Override
-    public User findUserById(int id) throws Exception {
-        return userRepo.findById(id).orElseThrow(() -> {
-            return new Exception("User not found");
-        });
+    public ResponseEntity<?> findUserById(int id,String agentEmail){
+        Agent agent = agentRepo.findByAgentEmail(agentEmail);
+        User user = userRepo.findById(id).get();
+        if(!user.getAgent().getAgentEmail().equals(agentEmail)){
+            return new ResponseEntity<>("This user is not associated with this agent", HttpStatus.NOT_FOUND);
+        }
+        UserResponseDto userResponseDto = new UserResponseDto();
+        userResponseDto.setUserName(user.getUserName());
+        userResponseDto.setEmail(user.getEmail());
+        userResponseDto.setPhoneNumber(user.getPhoneNumber());
+        return new ResponseEntity<>(userResponseDto,HttpStatus.OK);
     }
 
 
     @Override
-    public Accounts deactivateAccount(String accountNumber) throws Exception {
-        Accounts currentAcc = accountsRepo.findByAccountNumber(accountNumber).orElseThrow(() -> {
-            return new Exception("Account Number Not Found");
-        });
+    public ResponseEntity<?> deactivateAccount(String accountNumber, String agentEmail) {
+        Accounts currentAcc = accountsRepo.findByAccountNumber(accountNumber).get();
+        if(currentAcc == null) return new ResponseEntity<>("Account number doesn't exists", HttpStatus.NOT_FOUND);
+
+        Agent agent = agentRepo.findByAgentEmail(agentEmail);
+        User user = currentAcc.getUser();
+        if(agent == null) return new ResponseEntity<>("Agent doesn't exists",HttpStatus.NOT_FOUND);
+        if(!user.getAgent().getAgentEmail().equals(agentEmail)) return new ResponseEntity<>("This agent is not associated with this account's owner", HttpStatus.NOT_FOUND);
+
+
         currentAcc.setAccountStatus(Status.INACTIVE);
-        return accountsRepo.save(currentAcc);
+        accountsRepo.save(currentAcc);
+        return new ResponseEntity<>("Account decativated!!" , HttpStatus.OK);
     }
 
     @Override
-    public Accounts closeAccount(String accountNumber) throws Exception {
-        Accounts currentAcc = accountsRepo.findByAccountNumber(accountNumber).orElseThrow(() -> {
-            return new Exception("Account Number Not Found");
-        });
+    public ResponseEntity<?> closeAccount(String accountNumber, String agentEmail){
+        Accounts currentAcc = accountsRepo.findByAccountNumber(accountNumber).get();
+        if(currentAcc == null) return new ResponseEntity<>("Account number doesn't exists", HttpStatus.NOT_FOUND);
+
+        Agent agent = agentRepo.findByAgentEmail(agentEmail);
+        User user = currentAcc.getUser();
+        if(agent == null) return new ResponseEntity<>("Agent doesn't exists",HttpStatus.NOT_FOUND);
+        if(!user.getAgent().getAgentEmail().equals(agentEmail)) return new ResponseEntity<>("This agent is not associated with this account's owner", HttpStatus.NOT_FOUND);
+
         currentAcc.setAccountStatus(Status.CLOSED);
-        return accountsRepo.save(currentAcc);
+        accountsRepo.save(currentAcc);
+        return new ResponseEntity<>("Account closed!!" , HttpStatus.OK);
     }
 
     private byte[] getSHA(String input) {
@@ -188,7 +226,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     }
 
     @Override
-    public ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
+    public ResponseEntity<?> changeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
         ResponseEntity<?> asd = new ResponseEntity<>("Invalid Agent",HttpStatus.I_AM_A_TEAPOT);
         if (agentRepo.existsByAgentEmail(agentEmail)) {
             User user = userService.getByEmail(userEmail);

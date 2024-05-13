@@ -24,33 +24,32 @@ public class AgentController {
     AccountsServiceImplementation accountsService;
 
     @PostMapping("/addUser")
-    public User addUser(@RequestBody SignupRequest signupRequest, @RequestParam("agentEmail") String agentEmail) throws Exception{
+    public ResponseEntity<?> addUser(@RequestBody SignupRequest signupRequest, @RequestParam("agentEmail") String agentEmail) throws Exception{
         return agentService.addUser(signupRequest, agentEmail);
     }
     @DeleteMapping("deleteUserById")
-    public boolean deleteUserById(@RequestParam("id") int id) throws Exception{
-        return agentService.deleteUserById(id);
+    public ResponseEntity<?> deleteUserById(@RequestParam("userEmail") String userEmail,@RequestParam("agentEmail") String agentEmail ) throws Exception{
+        return agentService.deleteUserById(userEmail,agentEmail);
     }
     @GetMapping("/getAllUsers")
-    public ResponseEntity<List<User>> getAllUsers(){
-        List<User> users= agentService.getAllUsers();
-        return new ResponseEntity<>(users,HttpStatus.OK);
+    public ResponseEntity<?> getAllUsers(@RequestParam("agentEmail") String agentEmail){
+        return new ResponseEntity<>(agentService.getAllUsers(agentEmail),HttpStatus.OK);
 
     }
     @GetMapping("findUserById")
-    public User findUserById(@RequestParam("id") int id) throws Exception{
-        return agentService.findUserById(id);
+    public ResponseEntity<?> findUserById(@RequestParam("id") int id, @RequestParam("agentEmail") String agentEmail) throws Exception{
+        return agentService.findUserById(id,agentEmail);
     }
     @PutMapping("/deactivateAccount")
-    public Accounts deactivateAccount(@RequestParam("accountNumber") String accountNumber) throws Exception{
-        return agentService.deactivateAccount(accountNumber);
+    public ResponseEntity<?> deactivateAccount(@RequestParam("accountNumber") String accountNumber, @RequestParam("agentEmail") String agentEmail){
+        return agentService.deactivateAccount(accountNumber,agentEmail);
     }
     @PutMapping("/closeAccount")
-    public Accounts closeAccount(@RequestParam("accountNumber") String accountNumber) throws Exception{
-        return agentService.closeAccount(accountNumber);
+    public ResponseEntity<?> closeAccount(@RequestParam("accountNumber") String accountNumber,  @RequestParam("agentEmail") String agentEmail) throws Exception{
+        return agentService.closeAccount(accountNumber,agentEmail);
     }
     @PutMapping("/ChangeLoanStatus/{email}")
     public ResponseEntity<?> ChangeLoanStatus(@RequestParam("email")String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus){
-        return agentService.ChangeLoanStatus(userEmail,agentEmail,changedStatus,previousStatus);
+        return agentService.changeLoanStatus(userEmail,agentEmail,changedStatus,previousStatus);
     } // DTO?
 }
