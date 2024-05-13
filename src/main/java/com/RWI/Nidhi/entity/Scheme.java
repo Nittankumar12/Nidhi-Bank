@@ -20,6 +20,7 @@ public class Scheme {
     private int schemeId;
     private double monthlyDepositAmount;
     private LocalDate startDate;
+    private LocalDate nextEMIDate;
     private int tenure;// should be counted terms of emi duration
     private double totalDepositAmount;// total amount till date
     private double interestRate;

@@ -2,6 +2,7 @@ package com.RWI.Nidhi.user.serviceInterface;
 
 
 import com.RWI.Nidhi.dto.SchemeApplyDTO;
+import com.RWI.Nidhi.dto.SchemeInfoDto;
 import org.springframework.http.ResponseEntity;
 
 public interface SchemeServiceInterface {
@@ -9,5 +10,8 @@ public interface SchemeServiceInterface {
 
     double findLoanOnSchemeBasis(int schemeId);
     ResponseEntity<?> addScheme(SchemeApplyDTO schemeApplyDTO);
-    ResponseEntity<?> depositMonthlySchPay(String email);
+    ResponseEntity<?> getSchemeInfo(String email);
+    ResponseEntity<?> monthlyDeposit(String email);
+    ResponseEntity<?> getSchemeLoanInfo(String email);
+    ResponseEntity<?> applyForSchemeLoan(String email);
 }
