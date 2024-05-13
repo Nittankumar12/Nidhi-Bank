@@ -1,7 +1,6 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
 import com.RWI.Nidhi.dto.*;
-import com.RWI.Nidhi.entity.Scheme;
 import com.RWI.Nidhi.entity.Transactions;
 
 import java.util.List;
@@ -17,6 +16,6 @@ public interface UserStatementService {
 
     List<Transactions> getTransactionsDetailsByEmail(String email);
 
-    List<LoanHistoryDTO> getLoanDetailsByEmail(String email);
+    List<LoanHistoryDto> getLoanDetailsByEmail(String email);
 }
 

@@ -1,8 +1,6 @@
 package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.*;
-import com.RWI.Nidhi.entity.Loan;
-import com.RWI.Nidhi.entity.Scheme;
 import com.RWI.Nidhi.entity.Transactions;
 import com.RWI.Nidhi.user.serviceImplementation.UserStatementServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +39,7 @@ public class UserStatementController {
     }
 
     @GetMapping("/getLoanDetails/{email}")
-    public List<LoanHistoryDTO> getLoanDetails(@PathVariable("email") String email) {
+    public List<LoanHistoryDto> getLoanDetails(@PathVariable("email") String email) {
         return service.getLoanDetailsByEmail(email);
     }
 

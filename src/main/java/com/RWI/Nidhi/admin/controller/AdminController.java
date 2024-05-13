@@ -6,12 +6,14 @@ import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
 import com.RWI.Nidhi.admin.ResponseDto.AgentMinimalDto;
 import com.RWI.Nidhi.admin.adminServiceImplementation.AdminServiceImplementation;
 import com.RWI.Nidhi.dto.AddAgentDto;
+import com.RWI.Nidhi.dto.LoanHistoryDto;
 import com.RWI.Nidhi.dto.TransactionsHistoryDto;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.dto.LoginReq;
 import com.RWI.Nidhi.entity.Admin;
 import com.RWI.Nidhi.entity.Agent;
+import com.RWI.Nidhi.enums.LoanType;
 import com.RWI.Nidhi.repository.AdminRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -95,6 +97,16 @@ public class AdminController {
     @GetMapping("/transactionOfDate")
     public ResponseEntity<?> getTransactionBetweenDates(@RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate){
         return adminService.getTransactionBetweenDates(startDate, endDate);
+    }
+    @GetMapping("/loanType")
+    public ResponseEntity<Object> getByLoanType(@RequestParam LoanType loanType) {
+        List<LoanHistoryDto> loanHistoryDtos = adminService.getLoansByLoanType(loanType);
+        return new ResponseEntity<>(loanHistoryDtos, HttpStatus.OK);
+    }
+    @GetMapping("/loanStatus")
+    public ResponseEntity<Object> getLoansByStatus(@RequestParam LoanStatus loanStatus) {
+        List<LoanHistoryDto> loanHistoryDtos =adminService.getLoansByLoanStatus(loanStatus);
+        return new ResponseEntity<>(loanHistoryDtos,HttpStatus.OK);
     }
 //    @PostMapping("/login-admin")
 //    public ResponseEntity<?> authenticateUser(@RequestBody LoginReq loginReq) {
