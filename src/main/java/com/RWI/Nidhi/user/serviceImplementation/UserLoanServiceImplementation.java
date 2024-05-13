@@ -85,20 +85,12 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     }
 
     @Override
-<<<<<<< HEAD
     public List<LoanHistoryDto> getLoansByLoanType(String loanType) {
-=======
-    public List<LoanHistoryDto> getLoansByLoanType(String loanType) {
->>>>>>> c5c9436c7afafb8ba499d051592754490c77a17f
         return null;
     }
 
     @Override
-<<<<<<< HEAD
     public List<LoanHistoryDto> getLoansByLoanStatus(String status) {
-=======
-    public List<LoanHistoryDto> getLoansByLoanStatus(String status) {
->>>>>>> c5c9436c7afafb8ba499d051592754490c77a17f
         return null;
     }
 
