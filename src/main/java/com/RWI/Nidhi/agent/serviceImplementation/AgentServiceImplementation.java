@@ -11,6 +11,7 @@ import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
 import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.dto.UserResponseDto;
 import com.RWI.Nidhi.entity.*;
+import com.RWI.Nidhi.enums.SchemeStatus;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -64,6 +66,8 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     CredentialsRepo credentialsRepo;
     @Autowired
     AdminRepo adminRepo;
+    @Autowired
+    SchemeRepo schemeRepo;
 
     @Override
     public ResponseEntity<?> addUser(SignupRequest signUpRequest, String agentEmail){
@@ -73,6 +77,9 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         }
         if(adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getUsername()) || userRepo.existsByUserName(signUpRequest.getUsername())){
             return new ResponseEntity<>("Username already taken", HttpStatus.NOT_ACCEPTABLE);
+        }
+        if(adminRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber()) || agentRepo.existsByAgentPhoneNum(signUpRequest.getPhoneNumber()) || userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())){
+            return new ResponseEntity<>("Phone number already taken", HttpStatus.NOT_ACCEPTABLE);
         }
 
         //Getting the agent from repo by email
@@ -90,8 +97,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         newUser.setAgent(agent);
         agent.getUserList().add(newUser);
         try {
-            String tempPassword = "user21";
-//                    otpServiceImplementation.generateOTP();
+            String tempPassword = otpServiceImplementation.generateOTP();
             String subject = "Your temporary password";
             String messageToSend = "Your temporary system generated password is: ";
             System.out.println("Sending email");
@@ -217,17 +223,8 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         return null;
     }
 
-    private void sendStatusEmail(Loan loan) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(loan.getUser().getEmail());
-        mailMessage.setSubject("Change in Loan Status");
-        mailMessage.setText("Hello User," + loan.getUser().getUserName() + ",\n\n Your loan has been changed to" + loan.getStatus() + "Please confirm so with your respective agent.");
-        javaMailSender.send(mailMessage);
-    }
-
     @Override
-    public ResponseEntity<?> changeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
-        ResponseEntity<?> asd = new ResponseEntity<>("Invalid Agent",HttpStatus.I_AM_A_TEAPOT);
+    public ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
         if (agentRepo.existsByAgentEmail(agentEmail)) {
             User user = userService.getByEmail(userEmail);
             Accounts accounts = user.getAccounts();
@@ -240,6 +237,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
                     if(loan.getStatus()==previousStatus){
                         if(previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.APPROVED){
                             loan.setStatus(changedStatus);
+                            loan.setStartDate(LocalDate.now());
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
                         } else if (previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.PENDING){
@@ -281,4 +279,76 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         } else
             return new ResponseEntity<>("Invalid Agent",HttpStatus.I_AM_A_TEAPOT);
     }
+
+    private void sendStatusEmail(Loan loan) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(loan.getUser().getEmail());
+        mailMessage.setSubject("Change in Loan Status");
+        mailMessage.setText("Hello User," + loan.getUser().getUserName() + ",\n\n Your loan status has been changed to" + loan.getStatus() + "Please confirm so with your respective agent.");
+        javaMailSender.send(mailMessage);
+    }
+    public ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus){
+        if (agentRepo.existsByAgentEmail(agentEmail)) {
+            User user = userService.getByEmail(userEmail);
+            Accounts accounts = user.getAccounts();
+            Scheme scheme = accounts.getScheme();
+            if(scheme==null){
+                return new ResponseEntity<>("No Scheme exists for the given user",HttpStatus.I_AM_A_TEAPOT);
+            }
+            else {
+                if(scheme.getSStatus()==previousStatus){
+                    if(previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.APPROVED){
+                        scheme.setSStatus(changedStatus);
+                        scheme.setStartDate(LocalDate.now());
+                        scheme.setAgent(agentRepo.findByAgentEmail(agentEmail));
+                        schemeRepo.save(scheme);
+                        sendStatusEmail(scheme);
+                    } else if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.PENDING){
+                        scheme.setSStatus(changedStatus);
+                        schemeRepo.save(scheme);
+                        sendStatusEmail(scheme);
+                    } else if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.REJECTED){
+                        scheme.setSStatus(changedStatus);
+                        schemeRepo.save(scheme);
+                        sendStatusEmail(scheme);
+                    } else if (previousStatus == SchemeStatus.APPROVED && changedStatus == SchemeStatus.SANCTIONED){
+                        scheme.setSStatus(changedStatus);
+                        schemeRepo.save(scheme);
+                        sendStatusEmail(scheme);
+                    } else if (previousStatus == SchemeStatus.APPROVED && changedStatus == SchemeStatus.PENDING){
+                        scheme.setSStatus(changedStatus);
+                        schemeRepo.save(scheme);
+                        sendStatusEmail(scheme);
+                    } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.CLOSED){
+                        scheme.setSStatus(changedStatus);
+                        schemeRepo.save(scheme);
+                        sendStatusEmail(scheme);
+                    } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.PENDING){
+                        scheme.setSStatus(changedStatus);
+                        schemeRepo.save(scheme);
+                        sendStatusEmail(scheme);
+                    } else if (previousStatus == SchemeStatus.APPLIEDFORLOAN && changedStatus == SchemeStatus.APPROVEDLOAN){
+                        scheme.setSStatus(changedStatus);
+                        //approveSchemeLoan method
+                        schemeRepo.save(scheme);
+                        sendStatusEmail(scheme);
+                    }else {
+                        return new ResponseEntity<>("Invalid Change in status",HttpStatus.I_AM_A_TEAPOT);
+                    }
+                }else
+                    return new ResponseEntity<>("Applied Change in status doesn't match recorded status",HttpStatus.I_AM_A_TEAPOT);
+            }
+        }
+        else
+            return new ResponseEntity<>("Invalid Agent",HttpStatus.I_AM_A_TEAPOT);
+        return null;
+    }
+    private void sendStatusEmail(Scheme scheme) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(scheme.getAccount().getUser().getEmail());
+        mailMessage.setSubject("Change in Scheme Status");
+        mailMessage.setText("Hello User," + scheme.getAccount().getUser().getUserName() + ",\n\n Your Scheme Status has been changed to" + scheme.getSStatus() + "Please confirm so with your respective agent.");
+        javaMailSender.send(mailMessage);
+    }
+
 }

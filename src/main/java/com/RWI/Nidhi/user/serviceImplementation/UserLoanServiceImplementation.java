@@ -62,7 +62,6 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         loan.setInterestRate(loanApplyDto.getLoanType().getLoanInterestRate());
         loan.setRePaymentTerm(loanApplyDto.getRePaymentTerm());
         loan.setPrincipalLoanAmount(loanApplyDto.getPrincipalLoanAmount());
-        loan.setStartDate(LocalDate.now());
         loan.setEmiDate(calcFirstEMIDate(loan.getStartDate()));
         //Payable
         loan.setPayableLoanAmount(calculateFirstPayableAmount(loanCalcDto));
