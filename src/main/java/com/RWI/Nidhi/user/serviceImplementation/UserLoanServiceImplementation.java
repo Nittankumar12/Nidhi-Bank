@@ -85,12 +85,12 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     }
 
     @Override
-    public List<LoanHIstoryDTO> getLoansByLoanType(String loanType) {
+    public List<LoanHistoryDTO> getLoansByLoanType(String loanType) {
         return null;
     }
 
     @Override
-    public List<LoanHIstoryDTO> getLoansByLoanStatus(String status) {
+    public List<LoanHistoryDTO> getLoansByLoanStatus(String status) {
         return null;
     }
 
