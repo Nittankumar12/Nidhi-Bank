@@ -1,8 +1,8 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.FdDto;
-import com.RWI.Nidhi.dto.FdResponseDto;
 import com.RWI.Nidhi.dto.FdRequestDto;
+import com.RWI.Nidhi.dto.FdResponseDto;
 import com.RWI.Nidhi.entity.Agent;
 import com.RWI.Nidhi.entity.FixedDeposit;
 import com.RWI.Nidhi.entity.User;
@@ -20,7 +20,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Service
 public class UserFdServiceImplementation implements UserFdServiceInterface {

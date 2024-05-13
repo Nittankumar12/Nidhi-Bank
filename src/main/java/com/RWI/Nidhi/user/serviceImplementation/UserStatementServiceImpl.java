@@ -1,8 +1,6 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
-import com.RWI.Nidhi.dto.FdRequestDto;
-import com.RWI.Nidhi.dto.MisRequestDto;
-import com.RWI.Nidhi.dto.RdRequestDto;
+import com.RWI.Nidhi.dto.*;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.UserStatementService;
@@ -11,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Service
 public class UserStatementServiceImpl implements UserStatementService {
@@ -60,6 +57,7 @@ public class UserStatementServiceImpl implements UserStatementService {
             tempRdResponse.setRdId(recurringDeposit.getRdId());
             tempRdResponse.setMonthlyDepositAmount(recurringDeposit.getMonthlyDepositAmount());
             tempRdResponse.setRdStatus(recurringDeposit.getRdStatus());
+
             rdRequestDtoList.add(tempRdResponse);
         }
         return rdRequestDtoList;
@@ -76,15 +74,28 @@ public class UserStatementServiceImpl implements UserStatementService {
             tempMisResponse.setMisId(mis.getMisId());
             tempMisResponse.setTotalDepositedAmount(mis.getTotalDepositedAmount());
             tempMisResponse.setStatus(mis.getStatus());
+
             misRequestDtoList.add(tempMisResponse);
         }
         return misRequestDtoList;
     }
 
     @Override
-    public Scheme getSchemeDetailsByEmail(String email) {
+    public List<SchemeDto> getSchemeDetailsByEmail(String email) {
         User user = userRepo.findByEmail(email);
-        return user.getAccounts().getScheme();
+        List<Scheme> misList = (List<Scheme>) user.getAccounts().getScheme();
+        List<SchemeDto> schemeDtoList = new ArrayList<SchemeDto>();
+        for (Scheme scheme : misList) {
+            SchemeDto tempSchemeResponse = new SchemeDto();
+            tempSchemeResponse.setSchemeId(scheme.getSchemeId());
+            tempSchemeResponse.setMonthlyDepositAmount(scheme.getMonthlyDepositAmount());
+            tempSchemeResponse.setTenure(scheme.getTenure());
+            tempSchemeResponse.setInterestRate(scheme.getInterestRate());
+            tempSchemeResponse.setSStatus(scheme.getSStatus());
+
+            schemeDtoList.add(tempSchemeResponse);
+        }
+        return schemeDtoList;
     }
 
     @Override
@@ -94,9 +105,22 @@ public class UserStatementServiceImpl implements UserStatementService {
     }
 
     @Override
-    public List<Loan> getLoanDetailsByEmail(String email) {
+    public List<LoanHistoryDto> getLoanDetailsByEmail(String email) {
         User user = userRepo.findByEmail(email);
-        return user.getAccounts().getLoanList();
-    }
+        List<Loan> loanList = user.getAccounts().getLoanList();
+        List<LoanHistoryDto> loanDtoList = new ArrayList<LoanHistoryDto>();
+        for (Loan loan : loanList) {
+            LoanHistoryDto tempLoanResponse = new LoanHistoryDto();
+            tempLoanResponse.setLoanId(loan.getLoanId());
+            tempLoanResponse.setRequestedLoanAmount(loan.getPrincipalLoanAmount());
+            tempLoanResponse.setLoanType(loan.getLoanType().name());
+            tempLoanResponse.setInterestRate(loan.getInterestRate());
+            tempLoanResponse.setUserName(loan.getUser().getUserName());
+            tempLoanResponse.setMonthlyEmi(loan.getMonthlyEMI());
+            tempLoanResponse.setStatus(loan.getStatus().name());
 
+            loanDtoList.add(tempLoanResponse);
+        }
+        return loanDtoList;
+    }
 }

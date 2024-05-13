@@ -66,6 +66,9 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         if(adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getEmail()) || userRepo.existsByUserName(signUpRequest.getUsername())){
             return new ResponseEntity<>("Username Already taken", HttpStatus.NOT_ACCEPTABLE);
         }
+        if(adminRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber()) || agentRepo.existsByAgentPhoneNum(signUpRequest.getPhoneNumber()) || userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())){
+            return new ResponseEntity<>("Phone number already taken", HttpStatus.NOT_ACCEPTABLE);
+        }
 
         Agent newAgent = new Agent();
         newAgent.setAgentName(signUpRequest.getUsername());
@@ -105,6 +108,9 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
         if(adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getEmail()) || userRepo.existsByUserName(signUpRequest.getUsername())){
             return new ResponseEntity<>("Username already taken", HttpStatus.NOT_ACCEPTABLE);
+        }
+        if(adminRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber()) || agentRepo.existsByAgentPhoneNum(signUpRequest.getPhoneNumber()) || userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())){
+            return new ResponseEntity<>("Phone number already taken", HttpStatus.NOT_ACCEPTABLE);
         }
         Admin newAdmin = new Admin();
         newAdmin.setAdminName(signUpRequest.getUsername());

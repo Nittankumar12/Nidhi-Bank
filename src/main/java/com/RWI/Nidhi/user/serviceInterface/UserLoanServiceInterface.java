@@ -32,4 +32,5 @@ public interface UserLoanServiceInterface {
     List<LoanHistoryDto> getLoansByLoanType(String loanType);
 
     List<LoanHistoryDto> getLoansByLoanStatus(String status);
+
 }

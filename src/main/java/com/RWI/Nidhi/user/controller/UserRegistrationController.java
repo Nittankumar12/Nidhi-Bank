@@ -17,17 +17,7 @@ public class UserRegistrationController {
     @Autowired
     UserServiceImpl userServiceImpl;
 
-    @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserLoginDto user) {
-        String email = user.getEmail();
-        String password = user.getPassword();
-        boolean isAuthenticated = userServiceImpl.authenticate(email, password);
-        if (isAuthenticated) {
-            return ResponseEntity.ok("Login successful");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-        }
-    }
+
 
     @PostMapping("/sendEmailOtp")
     public ResponseEntity<String> sendEmailOtp(@RequestParam("email") String email) throws Exception {
