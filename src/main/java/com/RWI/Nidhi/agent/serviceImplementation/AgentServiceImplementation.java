@@ -74,6 +74,9 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         if(adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getUsername()) || userRepo.existsByUserName(signUpRequest.getUsername())){
             return new ResponseEntity<>("Username already taken", HttpStatus.NOT_ACCEPTABLE);
         }
+        if(adminRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber()) || agentRepo.existsByAgentPhoneNum(signUpRequest.getPhoneNumber()) || userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())){
+            return new ResponseEntity<>("Phone number already taken", HttpStatus.NOT_ACCEPTABLE);
+        }
 
         //Getting the agent from repo by email
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
@@ -90,8 +93,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         newUser.setAgent(agent);
         agent.getUserList().add(newUser);
         try {
-            String tempPassword = "user21";
-//                    otpServiceImplementation.generateOTP();
+            String tempPassword = otpServiceImplementation.generateOTP();
             String subject = "Your temporary password";
             String messageToSend = "Your temporary system generated password is: ";
             System.out.println("Sending email");

@@ -62,15 +62,27 @@ public class NidhiSecurityConfig {
        // .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> 
-          auth.requestMatchers("/home/**","/admin/addAdmin").permitAll()
+          auth.requestMatchers("/home/**","/admin/addAdmin","/forget/verifyEmail","/forget/verifyOtp","/updateUserPassword").permitAll()
           .requestMatchers("/admin/**").hasAnyRole("ADMIN")
           .requestMatchers("/agent/**").hasAnyRole("AGENT","ADMIN")
-//          .requestMatchers("/driver/**").hasAnyRole("ADMIN","MODERATOR","SUBMODERATOR")
-          .requestMatchers("/user/**").hasAnyRole("USER","ADMIN","AGENT")
+          .requestMatchers("/user/**",
+                  "/accounts/**",
+                  "/kyc/**",
+                  "/Statement**",
+                  "/scheme/loan**",
+                  "/rd/**",
+                  "/mis/**",
+                  "/loan/**",
+                  "/fd/**",
+                  "/Calculator/**",
+                  "/email/**")
+                  .hasAnyRole("USER","ADMIN","AGENT")
               .anyRequest().authenticated()
-        ).httpBasic(Customizer.withDefaults());
+        )
+//            .httpBasic(Customizer.withDefaults())
 
-//            .formLogin(form->form.loginPage("/home/signin").permitAll()).logout(log->log.logoutSuccessUrl("/"));
+//            .formLogin(form->form.loginPage("/home/signin").permitAll())
+            .logout(log->log.logoutSuccessUrl("/logout"));
     
     http.authenticationProvider(authenticationProvider());
 
