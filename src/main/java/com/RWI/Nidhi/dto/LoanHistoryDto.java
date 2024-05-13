@@ -3,7 +3,7 @@ package com.RWI.Nidhi.dto;
 import lombok.Data;
 
 @Data
-public class LoanHIstoryDTO {
+public class LoanHistoryDto {
 
     private Integer loanId;
 
