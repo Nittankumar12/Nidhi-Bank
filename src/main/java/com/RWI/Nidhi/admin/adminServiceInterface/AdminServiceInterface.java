@@ -1,14 +1,9 @@
 package com.RWI.Nidhi.admin.adminServiceInterface;
 
 import com.RWI.Nidhi.Security.payload.request.SignupRequest;
-import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
-import com.RWI.Nidhi.admin.ResponseDto.AgentMinimalDto;
-import com.RWI.Nidhi.dto.AddAgentDto;
-import com.RWI.Nidhi.dto.TransactionsHistoryDto;
-import com.RWI.Nidhi.entity.Admin;
-import com.RWI.Nidhi.entity.Agent;
-import com.RWI.Nidhi.entity.Loan;
+import com.RWI.Nidhi.dto.LoanHistoryDto;
 import com.RWI.Nidhi.enums.LoanStatus;
+import com.RWI.Nidhi.enums.LoanType;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
@@ -39,4 +34,6 @@ public interface AdminServiceInterface {
     ResponseEntity<?> getTransactionForToday();
     ResponseEntity<?> getTransactionBetweenDates(LocalDate startDate, LocalDate endDate);
     ResponseEntity<?> findByStatus(LoanStatus status);
+    public List<LoanHistoryDto> getLoansByLoanStatus(LoanStatus loanStatus);
+    public List<LoanHistoryDto> getLoansByLoanType(LoanType loanType);
 }
