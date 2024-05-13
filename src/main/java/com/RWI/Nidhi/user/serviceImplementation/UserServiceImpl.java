@@ -116,23 +116,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AddUserDto updateUserPassword(String email, String password) throws Exception {
-        User currUser = userRepo.findByEmail(email);
-        AddUserDto newUser = new AddUserDto();
-
-        currUser.setPassword(encoder.encode(password));
-        try {
-            userRepo.save(currUser);
-            newUser.setUserName(currUser.getUserName());
-            newUser.setEmail(currUser.getEmail());
-            newUser.setPhoneNumber(currUser.getPhoneNumber());
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-        return newUser;
-    }
-
-    @Override
     public ResponseEntity<String> userForgetPasswordSendVerificationCode(String email) throws Exception {
         //check if user already exists
         if (!userRepo.existsByEmail(email)) {
@@ -159,6 +142,23 @@ public class UserServiceImpl implements UserService {
             throw new Exception(e.getMessage());
         }
         return new ResponseEntity("Email Verify Successfully", HttpStatus.OK);
+    }
+
+    @Override
+    public AddUserDto updateUserPassword(String email, String password) throws Exception {
+        User currUser = userRepo.findByEmail(email);
+        AddUserDto newUser = new AddUserDto();
+
+        currUser.setPassword(encoder.encode(password));
+        try {
+            userRepo.save(currUser);
+            newUser.setUserName(currUser.getUserName());
+            newUser.setEmail(currUser.getEmail());
+            newUser.setPhoneNumber(currUser.getPhoneNumber());
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+        return newUser;
     }
 }
 
