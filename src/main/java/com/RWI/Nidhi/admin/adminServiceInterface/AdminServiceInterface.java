@@ -9,33 +9,34 @@ import com.RWI.Nidhi.entity.Admin;
 import com.RWI.Nidhi.entity.Agent;
 import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.enums.LoanStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface AdminServiceInterface {
 
-    SignupRequest addAgent(SignupRequest signupRequest) throws Exception;
+    ResponseEntity<?> addAgent(SignupRequest signupRequest) throws Exception;
 
-    Admin addAdmin(SignupRequest signUpRequest) throws Exception;
+    ResponseEntity<?> addAdmin(SignupRequest signUpRequest, String adminPassword);
 
-    AddAgentDto updateAgentName(String agentEmail, String agentName) throws Exception;
+    ResponseEntity<?> updateAgentName(String agentEmail, String agentName) throws Exception;
 
-    AddAgentDto updateAgentAddress(String agentEmail , String agentAddress) throws Exception;
+    ResponseEntity<?> updateAgentAddress(String agentEmail , String agentAddress) throws Exception;
 
-    AddAgentDto updateAgentEmail(String agentOldEmail, String agentNewEmail) throws Exception;
+    ResponseEntity<?> updateAgentEmail(String agentOldEmail, String agentNewEmail) throws Exception;
 
-    AddAgentDto updateAgentPhoneNum(String agentEmail, String phoneNum) throws Exception;
+    ResponseEntity<?> updateAgentPhoneNum(String agentEmail, String phoneNum) throws Exception;
 
-    boolean deleteAgentById(int id) throws Exception;
+    ResponseEntity<?> deleteAgentById(int id) throws Exception;
 
-    List<AgentMinimalDto> getAllAgents();
+    ResponseEntity<?> getAllAgents();
 
-    AdminViewsAgentDto getAgentById(int id) throws Exception;
+    ResponseEntity<?> getAgentById(int id) throws Exception;
 
-    List<TransactionsHistoryDto> getTransactionForCurrentMonth();
-    List<TransactionsHistoryDto> getTransactionForCurrentWeek();
-    List<TransactionsHistoryDto> getTransactionForToday();
-    List<TransactionsHistoryDto> getTransactionBetweenDates(LocalDate startDate, LocalDate endDate);
-    List<Loan> findByStatus(LoanStatus status);
+    ResponseEntity<?> getTransactionForCurrentMonth();
+    ResponseEntity<?> getTransactionForCurrentWeek();
+    ResponseEntity<?> getTransactionForToday();
+    ResponseEntity<?> getTransactionBetweenDates(LocalDate startDate, LocalDate endDate);
+    ResponseEntity<?> findByStatus(LoanStatus status);
 }
