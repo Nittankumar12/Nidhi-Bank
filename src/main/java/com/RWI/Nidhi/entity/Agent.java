@@ -30,7 +30,7 @@ public class Agent {
             joinColumns = @JoinColumn(name = "agent_id")
             , inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles;
 
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
     private List<User> userList;

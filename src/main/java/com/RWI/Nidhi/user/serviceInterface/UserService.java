@@ -13,7 +13,7 @@ public interface UserService {
     ResponseEntity<String> userForgetPasswordSendVerificationCode(String email) throws Exception;
     ResponseEntity<String> userForgetPasswordVerifyVerificationCode(String email, String enteredOtp) throws Exception;
     User getByEmail(String email);
-    boolean authenticate(String username, String password);
+
 
 }
 

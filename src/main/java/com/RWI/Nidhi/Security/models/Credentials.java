@@ -44,7 +44,7 @@ public class Credentials {
   @JoinTable(  name = "cred_roles",
         joinColumns = @JoinColumn(name = "cred_id"),
         inverseJoinColumns = @JoinColumn(name = "role_id"))
-  private Set<Role> roles = new HashSet<>();
+  private Set<Role> roles;
 
   public Credentials() {
   }
