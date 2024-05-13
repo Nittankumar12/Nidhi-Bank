@@ -1,9 +1,8 @@
 package com.RWI.Nidhi.user.controller;
 
-
 import com.RWI.Nidhi.dto.FdDto;
-import com.RWI.Nidhi.dto.FdResponseDto;
 import com.RWI.Nidhi.dto.FdRequestDto;
+import com.RWI.Nidhi.dto.FdResponseDto;
 import com.RWI.Nidhi.user.serviceImplementation.UserFdServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,25 +18,27 @@ public class FdController {
     private UserFdServiceImplementation service;
 
     @PostMapping("/createFd")
-    public ResponseEntity<Object> createFd(@RequestParam String agentEmail, @RequestParam String email, @RequestBody FdDto fdDto) {
+    public ResponseEntity<Object> createFd(@RequestParam String agentEmail, @RequestParam String email, @RequestBody FdDto fdDto) throws Exception {
         FdResponseDto fd = service.createFd(agentEmail, email, fdDto);
         return new ResponseEntity<>(fd, HttpStatus.OK);
     }
 
     @PutMapping("/delete/{id}")
-    public void closeFd(@PathVariable("id") int fdId) {
+    public ResponseEntity<String> closeFd(@PathVariable("id") int fdId) throws Exception {
         System.out.println(fdId);
         service.closeFd(fdId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/findById/{id}")
-    public ResponseEntity<FdRequestDto> findFdById(@RequestParam int fdId) {
+
+    @GetMapping("/findById")
+    public ResponseEntity<FdRequestDto> findFdById(@RequestParam int fdId) throws Exception {
         FdRequestDto fdRequestDto = service.getFdById(fdId);
         return new ResponseEntity<>(fdRequestDto, HttpStatus.OK);
     }
 
     @GetMapping("/findAllFdsByEmail")
-    public ResponseEntity<List<FdRequestDto>> findFdByEmail(@RequestParam String email) {
+    public ResponseEntity<List<FdRequestDto>> findFdByEmail(@RequestParam String email) throws Exception {
         List<FdRequestDto> fdRequestDtoList = service.getFdByEmail(email);
         return new ResponseEntity<>(fdRequestDtoList, HttpStatus.OK);
     }

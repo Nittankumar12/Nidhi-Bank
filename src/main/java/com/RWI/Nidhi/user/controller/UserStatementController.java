@@ -1,8 +1,9 @@
 package com.RWI.Nidhi.user.controller;
 
-import com.RWI.Nidhi.dto.FdRequestDto;
-import com.RWI.Nidhi.dto.MisRequestDto;
-import com.RWI.Nidhi.dto.RdRequestDto;
+import com.RWI.Nidhi.dto.*;
+import com.RWI.Nidhi.entity.Loan;
+import com.RWI.Nidhi.entity.Scheme;
+import com.RWI.Nidhi.entity.Transactions;
 import com.RWI.Nidhi.user.serviceImplementation.UserStatementServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,4 +35,18 @@ public class UserStatementController {
         return service.getMisDetailsByEmail(email);
     }
 
+    @GetMapping("/getTransactionDetails/{email}")
+    public List<Transactions> getTransactionDetails(@PathVariable("email") String email) {
+        return service.getTransactionsDetailsByEmail(email);
+    }
+
+    @GetMapping("/getLoanDetails/{email}")
+    public List<LoanHistoryDTO> getLoanDetails(@PathVariable("email") String email) {
+        return service.getLoanDetailsByEmail(email);
+    }
+
+    @GetMapping("/getSchemeDetails/{email}")
+    public List<SchemeDto> getSchemeDetails(@PathVariable("email") String email) {
+        return service.getSchemeDetailsByEmail(email);
+    }
 }

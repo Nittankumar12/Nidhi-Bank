@@ -18,21 +18,26 @@ import java.util.List;
 public interface LoanRepo extends JpaRepository<Loan, Integer> {
     @Transactional
     @Modifying
-    @Query(value = "SELECT l.monthlyemi FROM loan l WHERE l.loan_id = :loanId",nativeQuery = true)
+    @Query(value = "SELECT l.monthlyemi FROM loan l WHERE l.loan_id = :loanId", nativeQuery = true)
     double findEMIByLoanId(@Param("loanId") int loanId);
+
     @Transactional
     @Modifying
-    @Query(value = "SELECT l.status FROM loan l WHERE l.loan_id = :loanId",nativeQuery = true)
+    @Query(value = "SELECT l.status FROM loan l WHERE l.loan_id = :loanId", nativeQuery = true)
     LoanStatus findStatusByLoanId(@Param("loanId") int loanId);
+
     @Transactional
     @Modifying
-    @Query(value = "SELECT l.current_fine FROM loan l WHERE loan_id = :loanId",nativeQuery = true)
+    @Query(value = "SELECT l.current_fine FROM loan l WHERE loan_id = :loanId", nativeQuery = true)
     double findCurrentFineByLoanId(int loanId);
+
     // neeed to make the query
     List<Loan> findByEmiDateBetween(LocalDate startDate, LocalDate endDate);
+
     @Transactional
     @Modifying
-    @Query(value = "SELECT * FROM loan l WHERE l.status = :status",nativeQuery = true)
+    @Query(value = "SELECT * FROM loan l WHERE l.status = :status", nativeQuery = true)
     List<Loan> findByStatus(@Param("status") LoanStatus status);
+
     Agent save(Credentials cred);
 }
