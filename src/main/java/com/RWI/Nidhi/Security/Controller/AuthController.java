@@ -61,7 +61,7 @@ public class AuthController {
                     .map(item -> item.getAuthority())
                     .collect(Collectors.toList());
             System.out.println(roles.get(0));
-            if (roles.get(0).equals("ROLE_USER")) {
+            if (!roles.get(0).equals("ROLE_USER")) {
                 // Return JWT response
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Access not granted");
 
