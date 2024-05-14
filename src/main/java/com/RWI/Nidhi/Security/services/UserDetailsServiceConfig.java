@@ -33,7 +33,7 @@ public class UserDetailsServiceConfig implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
 
-        Credentials credentials = credRepository.findByUsername(username)
+        Credentials credentials = credRepository.findByUsernameOrEmailOrPhoneNumber(username,username,username)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username/email/phone number: " + username));
 
         return UserDetailsImpl.buildUser(credentials);
