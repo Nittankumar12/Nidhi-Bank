@@ -10,7 +10,7 @@ import java.util.Set;
 public class SignupRequest {
 
     @Size(min = 3, max = 20)
-    private String name;
+    private String username;
     @Size(max = 50)
     @Email
     private String email;
@@ -24,18 +24,18 @@ public class SignupRequest {
     public SignupRequest(@Size(min = 3, max = 20) String username, @Size(max = 50) @Email String email
                          /*Set<String> role*/  /*@Size(min = 6, max = 40)*//* String password*/, @Size(max = 10) String phoneNumber) {
         super();
-        this.name = username;
+        this.username = username;
         this.email = email;
         this.phoneNumber = phoneNumber;
     }
 
 
     public String getUsername() {
-        return name;
+        return username;
     }
 
     public void setUsername(String username) {
-        this.name = username;
+        this.username = username;
     }
 
     public String getEmail() {
@@ -57,7 +57,7 @@ public class SignupRequest {
 
     @Override
     public String toString() {
-        return "SignupRequest [username=" + name + ", email=" + email +
+        return "SignupRequest [username=" + username + ", email=" + email +
 //                " password=" + password+
                 "phoneNumber=" + phoneNumber + "]";
     }
