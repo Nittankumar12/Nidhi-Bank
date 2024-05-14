@@ -2,15 +2,8 @@ package com.RWI.Nidhi.Security.Controller;
 
 
 import com.RWI.Nidhi.Security.Jwt.Jwtgen;
-import com.RWI.Nidhi.Security.models.Credentials;
-import com.RWI.Nidhi.Security.models.ERole;
-import com.RWI.Nidhi.Security.models.Role;
 import com.RWI.Nidhi.Security.payload.request.LoginRequest;
-import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.Security.payload.response.JwtResponse;
-import com.RWI.Nidhi.Security.payload.response.MessageResponse;
-import com.RWI.Nidhi.Security.repository.CredentialsRepo;
-import com.RWI.Nidhi.Security.repository.RoleRepository;
 import com.RWI.Nidhi.Security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +13,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+
 @RestController
 @RequestMapping("/home")
 public class AuthController {
@@ -40,6 +30,7 @@ public class AuthController {
     Jwtgen jwtUtils;
 
 
+    @CrossOrigin(origins = "http://localhost:5173/")
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         try {
@@ -76,6 +67,7 @@ public class AuthController {
 //            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
 //        }
     }
+    @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/agent")
     public ResponseEntity<?> authenticateAgent(@Valid @RequestBody LoginRequest loginRequest) {
         try {
@@ -110,6 +102,7 @@ public class AuthController {
 //            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
 //        }
     }
+    @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/admin")
     public ResponseEntity<?> authenticateAdmin(@Valid @RequestBody LoginRequest loginRequest) {
         try {
