@@ -29,6 +29,7 @@ public class FixedDeposit {
     private LocalDate closingDate;
     private int penalty;
     private int compoundingFrequency;
+
 //    @Transient
 //    @Enumerated(EnumType.STRING)
 //    private FdCompoundingFrequency fdCompoundingFrequency;
@@ -46,5 +47,8 @@ public class FixedDeposit {
 
     @OneToMany(mappedBy = "fd", cascade = CascadeType.ALL)
     private List<Transactions> transactionsList;
+
+    @OneToMany(mappedBy = "fd", cascade = CascadeType.ALL)
+    private Commission commission;
 
 }

@@ -41,4 +41,7 @@ public class MIS {
 
     @OneToMany(mappedBy = "mis", cascade = CascadeType.ALL)
     private List<Transactions> transactionsList;
+
+    @OneToMany(mappedBy = "mis", cascade = CascadeType.ALL)
+    private Commission commission;
 }
