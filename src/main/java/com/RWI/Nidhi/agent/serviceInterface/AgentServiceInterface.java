@@ -24,5 +24,6 @@ public interface AgentServiceInterface {
     ResponseEntity<String> agentForgetPasswordSendVerificationCode(String agentEmail) throws Exception;
     ResponseEntity<String> agentForgetPasswordVerifyVerificationCode(String agentEmail, String enteredOtp) throws Exception;
     AddAgentDto updateAgentPassword(String agentEmail, String agentPassword) throws Exception;
+
 }
 
