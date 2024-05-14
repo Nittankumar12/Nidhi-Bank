@@ -68,7 +68,8 @@ public class NidhiSecurityConfig {
                           ,"/admin/addAdmin"
                           ,"/forget/verifyEmail"
                           ,"/forget/verifyOtp"
-                          ,"/updateUserPassword","/ws/**").permitAll()
+                          ,"/updateUserPassword"
+                          ,"/ws/**").permitAll()
 
           .requestMatchers("/admin/**").hasAnyRole("ADMIN")
           .requestMatchers("/agent/**").hasAnyRole("AGENT","ADMIN")
