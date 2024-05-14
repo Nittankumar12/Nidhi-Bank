@@ -10,9 +10,13 @@ import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
 import com.RWI.Nidhi.admin.ResponseDto.AgentMinimalDto;
 import com.RWI.Nidhi.admin.adminServiceInterface.AdminServiceInterface;
 import com.RWI.Nidhi.dto.AddAgentDto;
+import com.RWI.Nidhi.dto.LoanHistoryDto;
 import com.RWI.Nidhi.dto.TransactionsHistoryDto;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.LoanStatus;
+import com.RWI.Nidhi.enums.LoanType;
+import com.RWI.Nidhi.enums.TransactionStatus;
+import com.RWI.Nidhi.enums.TransactionType;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
 import com.amazonaws.services.xray.model.Http;
@@ -29,10 +33,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,6 +56,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     AdminRepo adminRepo;
     @Autowired
     UserRepo userRepo;
+
     @Override
     public ResponseEntity<?> addAgent(SignupRequest signUpRequest){
 
@@ -138,8 +140,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         return new ResponseEntity<>("Admin Registered Successfully",HttpStatus.OK);
 
     }
-
-
     @Override
     public ResponseEntity<?> updateAgentName(String agentEmail, String agentName) throws Exception{
         Agent currAgent = agentRepo.findByAgentEmail(agentEmail);
@@ -314,6 +314,71 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     public ResponseEntity<?> findByStatus(LoanStatus status) {
         return new ResponseEntity<>(loanRepo.findByStatus(status), HttpStatus.OK);
     }
+
+    @Override
+    public List<LoanHistoryDto> getLoansByLoanType(LoanType loanType) {
+        List<Loan> loans = loanRepo.findAll().stream().filter((loan ->loan.getLoanType().equals(loanType))).toList();
+
+        List<LoanHistoryDto> loanDTOList = new ArrayList<>();
+        for(Loan loan:loans){
+            LoanHistoryDto loanHistoryDto = new LoanHistoryDto();
+            loanHistoryDto.setLoanId(loan.getLoanId());
+            loanHistoryDto.setUserName(loan.getAccount().getUser().getUserName());
+            loanHistoryDto.setRequestedLoanAmount(loan.getPrincipalLoanAmount());
+            loanHistoryDto.setInterestRate(loan.getInterestRate());
+            loanHistoryDto.setMonthlyEmi(loan.getMonthlyEMI());
+            loanHistoryDto.setStatus(loan.getStatus().toString());
+            loanHistoryDto.setLoanType(loan.getLoanType().toString());
+            loanDTOList.add(loanHistoryDto);
+            System.out.println(loanDTOList);
+        }
+        return loanDTOList;
+    }
+
+    @Override
+    public ResponseEntity<?> addBalanceToAccount(double amount) {
+        Transactions.setTotalBalance(Transactions.getTotalBalance() + amount);
+        Transactions newTransaction = new Transactions();
+        newTransaction.setTransactionDate(new Date());
+        newTransaction.setTransactionType(TransactionType.CREDITED);
+        newTransaction.setTransactionAmount(amount);
+        newTransaction.setTransactionStatus(TransactionStatus.COMPLETED);
+
+        transactionRepo.save(newTransaction);
+        return new ResponseEntity<>(newTransaction, HttpStatus.OK);
+    }
+    @Override
+    public ResponseEntity<?> deductBalanceToAccount(double amount) {
+        Transactions.setTotalBalance(Transactions.getTotalBalance() + amount);
+        Transactions newTransaction = new Transactions();
+        newTransaction.setTransactionDate(new Date());
+        newTransaction.setTransactionType(TransactionType.DEBITED);
+        newTransaction.setTransactionAmount(amount);
+        newTransaction.setTransactionStatus(TransactionStatus.COMPLETED);
+
+        transactionRepo.save(newTransaction);
+        return new ResponseEntity<>(newTransaction, HttpStatus.OK);
+    }
+
+    @Override
+    public List<LoanHistoryDto> getLoansByLoanStatus(LoanStatus loanStatus) {
+        List<Loan> loans = loanRepo.findAll().stream().filter((loan) ->loan.getStatus().equals(loanStatus)).toList();
+        List<LoanHistoryDto> loanDTOList = new ArrayList<>();
+        loans.forEach(loan -> {
+            LoanHistoryDto loanHistoryDto = new LoanHistoryDto();
+            loanHistoryDto.setLoanId(loan.getLoanId());
+            loanHistoryDto.setUserName(loan.getAccount().getUser().getUserName());
+            loanHistoryDto.setRequestedLoanAmount(loan.getPrincipalLoanAmount());
+            loanHistoryDto.setInterestRate(loan.getInterestRate());
+            loanHistoryDto.setStatus(loan.getStatus().toString());
+            loanHistoryDto.setMonthlyEmi(loan.getMonthlyEMI());
+            loanHistoryDto.setInterestRate(loan.getInterestRate());
+            loanDTOList.add(loanHistoryDto);
+        });
+
+        return loanDTOList;
+    }
+
     private byte[] getSHA(String input) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");

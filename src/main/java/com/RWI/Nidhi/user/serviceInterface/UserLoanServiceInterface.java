@@ -29,7 +29,8 @@ public interface UserLoanServiceInterface {
     ResponseEntity<?> applyForLoanClosure(String email);
 
     //Prince
-    List<LoanHistoryDTO> getLoansByLoanType(String loanType);
+    List<LoanHistoryDto> getLoansByLoanType(String loanType);
 
-    List<LoanHistoryDTO> getLoansByLoanStatus(String status);
+    List<LoanHistoryDto> getLoansByLoanStatus(String status);
+
 }

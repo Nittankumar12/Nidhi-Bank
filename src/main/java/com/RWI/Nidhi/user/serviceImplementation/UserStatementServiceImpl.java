@@ -105,12 +105,12 @@ public class UserStatementServiceImpl implements UserStatementService {
     }
 
     @Override
-    public List<LoanHistoryDTO> getLoanDetailsByEmail(String email) {
+    public List<LoanHistoryDto> getLoanDetailsByEmail(String email) {
         User user = userRepo.findByEmail(email);
         List<Loan> loanList = user.getAccounts().getLoanList();
-        List<LoanHistoryDTO> loanDtoList = new ArrayList<LoanHistoryDTO>();
+        List<LoanHistoryDto> loanDtoList = new ArrayList<LoanHistoryDto>();
         for (Loan loan : loanList) {
-            LoanHistoryDTO tempLoanResponse = new LoanHistoryDTO();
+            LoanHistoryDto tempLoanResponse = new LoanHistoryDto();
             tempLoanResponse.setLoanId(loan.getLoanId());
             tempLoanResponse.setRequestedLoanAmount(loan.getPrincipalLoanAmount());
             tempLoanResponse.setLoanType(loan.getLoanType().name());
