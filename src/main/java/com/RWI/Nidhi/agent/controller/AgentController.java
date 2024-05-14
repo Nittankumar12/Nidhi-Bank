@@ -2,10 +2,7 @@ package com.RWI.Nidhi.agent.controller;
 
 import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceImplementation;
-import com.RWI.Nidhi.dto.AddUserDto;
-import com.RWI.Nidhi.entity.Accounts;
-import com.RWI.Nidhi.dto.LoanInfoDto;
-import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.SchemeStatus;
 import com.RWI.Nidhi.user.serviceImplementation.AccountsServiceImplementation;
@@ -13,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/agent")
@@ -25,29 +21,34 @@ public class AgentController {
     AccountsServiceImplementation accountsService;
 
     @PostMapping("/addUser")
-    public ResponseEntity<?> addUser(@RequestBody SignupRequest signupRequest, @RequestParam("agentEmail") String agentEmail) throws Exception{
+    public ResponseEntity<?> addUser(@RequestBody SignupRequest signupRequest, @RequestParam("agentEmail") String agentEmail) throws Exception {
         return agentService.addUser(signupRequest, agentEmail);
     }
+
     @DeleteMapping("deleteUserById")
-    public ResponseEntity<?> deleteUserById(@RequestParam("userEmail") String userEmail,@RequestParam("agentEmail") String agentEmail ) throws Exception{
-        return agentService.deleteUserById(userEmail,agentEmail);
+    public ResponseEntity<?> deleteUserById(@RequestParam("userEmail") String userEmail, @RequestParam("agentEmail") String agentEmail) throws Exception {
+        return agentService.deleteUserById(userEmail, agentEmail);
     }
+
     @GetMapping("/getAllUsers")
-    public ResponseEntity<?> getAllUsers(@RequestParam("agentEmail") String agentEmail){
-        return new ResponseEntity<>(agentService.getAllUsers(agentEmail),HttpStatus.OK);
+    public ResponseEntity<?> getAllUsers(@RequestParam("agentEmail") String agentEmail) {
+        return new ResponseEntity<>(agentService.getAllUsers(agentEmail), HttpStatus.OK);
 
     }
+
     @GetMapping("findUserById")
-    public ResponseEntity<?> findUserById(@RequestParam("id") int id, @RequestParam("agentEmail") String agentEmail) throws Exception{
-        return agentService.findUserById(id,agentEmail);
+    public ResponseEntity<?> findUserById(@RequestParam("id") int id, @RequestParam("agentEmail") String agentEmail) throws Exception {
+        return agentService.findUserById(id, agentEmail);
     }
+
     @PutMapping("/deactivateAccount")
-    public ResponseEntity<?> deactivateAccount(@RequestParam("accountNumber") String accountNumber, @RequestParam("agentEmail") String agentEmail){
-        return agentService.deactivateAccount(accountNumber,agentEmail);
+    public ResponseEntity<?> deactivateAccount(@RequestParam("accountNumber") String accountNumber, @RequestParam("agentEmail") String agentEmail) {
+        return agentService.deactivateAccount(accountNumber, agentEmail);
     }
+
     @PutMapping("/closeAccount")
-    public ResponseEntity<?> closeAccount(@RequestParam("accountNumber") String accountNumber,  @RequestParam("agentEmail") String agentEmail) throws Exception{
-        return agentService.closeAccount(accountNumber,agentEmail);
+    public ResponseEntity<?> closeAccount(@RequestParam("accountNumber") String accountNumber, @RequestParam("agentEmail") String agentEmail) throws Exception {
+        return agentService.closeAccount(accountNumber, agentEmail);
     }
     @PutMapping("/ChangeLoanStatus/{email}")
     public ResponseEntity<?> ChangeLoanStatus(@RequestParam("email")String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus){
@@ -56,5 +57,24 @@ public class AgentController {
     @PutMapping("/ChangeSchemeStatus/{email}")
     public ResponseEntity<?> ChangeSchemeStatus(@RequestParam("email")String agentEmail, @RequestBody String userEmail, SchemeStatus changedStatus, SchemeStatus previousStatus){
         return agentService.ChangeSchemeStatus(userEmail,agentEmail,changedStatus,previousStatus);
+    }
+    @DeleteMapping("/deleteScheme/{email}")
+    public String deleteScheme(@PathVariable String email){
+        return agentService.deleteScheme(email);
+    }
+
+    @PostMapping("/forget/verifyEmail")
+    public ResponseEntity<String> verifyEmail(@RequestParam("agentEmail") String agentEmail) throws Exception {
+        return agentService.agentForgetPasswordSendVerificationCode(agentEmail);
+    }
+
+    @PostMapping("/forget/verifyOtp")
+    public ResponseEntity<String> verifyOtp(@RequestParam("agentEmail") String agentEmail, @RequestParam("enteredOtp") String enteredOtp) throws Exception {
+        return agentService.agentForgetPasswordVerifyVerificationCode(agentEmail, enteredOtp);
+    }
+
+    @PutMapping("/updateAgentPassword")
+    public AddAgentDto updateAgentPassword(@RequestParam("agentEmail") String agentEmail, @RequestParam("agentPassword") String agentPassword) throws Exception {
+        return agentService.updateAgentPassword(agentEmail, agentPassword);
     }
 }

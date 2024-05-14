@@ -10,9 +10,11 @@ import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
 import com.RWI.Nidhi.admin.ResponseDto.AgentMinimalDto;
 import com.RWI.Nidhi.admin.adminServiceInterface.AdminServiceInterface;
 import com.RWI.Nidhi.dto.AddAgentDto;
+import com.RWI.Nidhi.dto.LoanHistoryDto;
 import com.RWI.Nidhi.dto.TransactionsHistoryDto;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.LoanStatus;
+import com.RWI.Nidhi.enums.LoanType;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
 import com.amazonaws.services.xray.model.Http;
@@ -314,6 +316,46 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     public ResponseEntity<?> findByStatus(LoanStatus status) {
         return new ResponseEntity<>(loanRepo.findByStatus(status), HttpStatus.OK);
     }
+
+    @Override
+    public List<LoanHistoryDto> getLoansByLoanType(LoanType loanType) {
+        List<Loan> loans = loanRepo.findAll().stream().filter((loan ->loan.getLoanType().equals(loanType))).toList();
+
+        List<LoanHistoryDto> loanDTOList = new ArrayList<>();
+        for(Loan loan:loans){
+            LoanHistoryDto loanHistoryDto = new LoanHistoryDto();
+            loanHistoryDto.setLoanId(loan.getLoanId());
+            loanHistoryDto.setUserName(loan.getAccount().getUser().getUserName());
+            loanHistoryDto.setRequestedLoanAmount(loan.getPrincipalLoanAmount());
+            loanHistoryDto.setInterestRate(loan.getInterestRate());
+            loanHistoryDto.setMonthlyEmi(loan.getMonthlyEMI());
+            loanHistoryDto.setStatus(loan.getStatus().toString());
+            loanHistoryDto.setLoanType(loan.getLoanType().toString());
+            loanDTOList.add(loanHistoryDto);
+            System.out.println(loanDTOList);
+        }
+        return loanDTOList;
+    }
+
+    @Override
+    public List<LoanHistoryDto> getLoansByLoanStatus(LoanStatus loanStatus) {
+        List<Loan> loans = loanRepo.findAll().stream().filter((loan) ->loan.getStatus().equals(loanStatus)).toList();
+        List<LoanHistoryDto> loanDTOList = new ArrayList<>();
+        loans.forEach(loan -> {
+            LoanHistoryDto loanHistoryDto = new LoanHistoryDto();
+            loanHistoryDto.setLoanId(loan.getLoanId());
+            loanHistoryDto.setUserName(loan.getAccount().getUser().getUserName());
+            loanHistoryDto.setRequestedLoanAmount(loan.getPrincipalLoanAmount());
+            loanHistoryDto.setInterestRate(loan.getInterestRate());
+            loanHistoryDto.setStatus(loan.getStatus().toString());
+            loanHistoryDto.setMonthlyEmi(loan.getMonthlyEMI());
+            loanHistoryDto.setInterestRate(loan.getInterestRate());
+            loanDTOList.add(loanHistoryDto);
+        });
+
+        return loanDTOList;
+    }
+
     private byte[] getSHA(String input) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
