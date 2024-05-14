@@ -15,6 +15,8 @@ import com.RWI.Nidhi.dto.TransactionsHistoryDto;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.LoanType;
+import com.RWI.Nidhi.enums.TransactionStatus;
+import com.RWI.Nidhi.enums.TransactionType;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
 import com.amazonaws.services.xray.model.Http;
@@ -31,10 +33,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,6 +56,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     AdminRepo adminRepo;
     @Autowired
     UserRepo userRepo;
+
     @Override
     public ResponseEntity<?> addAgent(SignupRequest signUpRequest){
 
@@ -140,8 +140,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         return new ResponseEntity<>("Admin Registered Successfully",HttpStatus.OK);
 
     }
-
-
     @Override
     public ResponseEntity<?> updateAgentName(String agentEmail, String agentName) throws Exception{
         Agent currAgent = agentRepo.findByAgentEmail(agentEmail);
@@ -335,6 +333,31 @@ public class AdminServiceImplementation implements AdminServiceInterface {
             System.out.println(loanDTOList);
         }
         return loanDTOList;
+    }
+
+    @Override
+    public ResponseEntity<?> addBalanceToAccount(double amount) {
+        Transactions.setTotalBalance(Transactions.getTotalBalance() + amount);
+        Transactions newTransaction = new Transactions();
+        newTransaction.setTransactionDate(new Date());
+        newTransaction.setTransactionType(TransactionType.CREDITED);
+        newTransaction.setTransactionAmount(amount);
+        newTransaction.setTransactionStatus(TransactionStatus.COMPLETED);
+
+        transactionRepo.save(newTransaction);
+        return new ResponseEntity<>(newTransaction, HttpStatus.OK);
+    }
+    @Override
+    public ResponseEntity<?> deductBalanceToAccount(double amount) {
+        Transactions.setTotalBalance(Transactions.getTotalBalance() + amount);
+        Transactions newTransaction = new Transactions();
+        newTransaction.setTransactionDate(new Date());
+        newTransaction.setTransactionType(TransactionType.DEBITED);
+        newTransaction.setTransactionAmount(amount);
+        newTransaction.setTransactionStatus(TransactionStatus.COMPLETED);
+
+        transactionRepo.save(newTransaction);
+        return new ResponseEntity<>(newTransaction, HttpStatus.OK);
     }
 
     @Override

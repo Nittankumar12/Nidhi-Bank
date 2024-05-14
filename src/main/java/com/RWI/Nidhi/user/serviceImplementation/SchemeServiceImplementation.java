@@ -57,13 +57,17 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
         if (userRepo.existsByEmail(schemeApplyDTO.getEmail())) {
             User user = userService.getByEmail(schemeApplyDTO.getEmail());
             Accounts accounts = user.getAccounts();
-            Scheme scheme = new Scheme();
-            scheme.setTenure(schemeApplyDTO.getTenure());
-            scheme.setMonthlyDepositAmount(schemeApplyDTO.getSchemeAmount()/schemeApplyDTO.getTenure());
-            scheme.setSStatus(SchemeStatus.APPLIED);
-            scheme.setAccount(accounts);
-            schemeRepo.save(scheme);
-            return new ResponseEntity<>(scheme, HttpStatus.ACCEPTED);
+            if (accounts != null) {
+                Scheme scheme = new Scheme();
+                scheme.setTenure(schemeApplyDTO.getTenure());
+                scheme.setMonthlyDepositAmount(schemeApplyDTO.getSchemeAmount() / schemeApplyDTO.getTenure());
+                scheme.setSStatus(SchemeStatus.APPLIED);
+                scheme.setAccount(accounts);
+                schemeRepo.save(scheme);
+                return new ResponseEntity<>(scheme, HttpStatus.ACCEPTED);
+            } else {
+                return new ResponseEntity<>("Account not created", HttpStatus.NOT_FOUND);
+            }
         } else {
             return new ResponseEntity<>("User doesn't exist", HttpStatus.BAD_REQUEST);
         }

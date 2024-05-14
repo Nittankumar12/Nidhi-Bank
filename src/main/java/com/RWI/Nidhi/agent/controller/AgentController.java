@@ -50,19 +50,6 @@ public class AgentController {
     public ResponseEntity<?> closeAccount(@RequestParam("accountNumber") String accountNumber, @RequestParam("agentEmail") String agentEmail) throws Exception {
         return agentService.closeAccount(accountNumber, agentEmail);
     }
-    @PutMapping("/ChangeLoanStatus/{email}")
-    public ResponseEntity<?> ChangeLoanStatus(@RequestParam("email")String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus){
-        return agentService.ChangeLoanStatus(userEmail,agentEmail,changedStatus,previousStatus);
-    }
-    @PutMapping("/ChangeSchemeStatus/{email}")
-    public ResponseEntity<?> ChangeSchemeStatus(@RequestParam("email")String agentEmail, @RequestBody String userEmail, SchemeStatus changedStatus, SchemeStatus previousStatus){
-        return agentService.ChangeSchemeStatus(userEmail,agentEmail,changedStatus,previousStatus);
-    }
-    @DeleteMapping("/deleteScheme/{email}")
-    public String deleteScheme(@PathVariable String email){
-        return agentService.deleteScheme(email);
-    }
-
     @PostMapping("/forget/verifyEmail")
     public ResponseEntity<String> verifyEmail(@RequestParam("agentEmail") String agentEmail) throws Exception {
         return agentService.agentForgetPasswordSendVerificationCode(agentEmail);
@@ -76,5 +63,18 @@ public class AgentController {
     @PutMapping("/updateAgentPassword")
     public AddAgentDto updateAgentPassword(@RequestParam("agentEmail") String agentEmail, @RequestParam("agentPassword") String agentPassword) throws Exception {
         return agentService.updateAgentPassword(agentEmail, agentPassword);
+    }
+
+    @PutMapping("/ChangeLoanStatus/{email}")
+    public ResponseEntity<?> ChangeLoanStatus(@RequestParam("email")String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus){
+        return agentService.ChangeLoanStatus(userEmail,agentEmail,changedStatus,previousStatus);
+    }
+    @PutMapping("/ChangeSchemeStatus/{email}")
+    public ResponseEntity<?> ChangeSchemeStatus(@RequestParam("email")String agentEmail, @RequestBody String userEmail, SchemeStatus changedStatus, SchemeStatus previousStatus){
+        return agentService.ChangeSchemeStatus(userEmail,agentEmail,changedStatus,previousStatus);
+    }
+    @DeleteMapping("/deleteScheme/{email}")
+    public String deleteScheme(@PathVariable String email){
+        return agentService.deleteScheme(email);
     }
 }

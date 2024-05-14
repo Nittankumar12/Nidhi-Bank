@@ -10,30 +10,22 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface AdminServiceInterface {
-
     ResponseEntity<?> addAgent(SignupRequest signupRequest) throws Exception;
-
     ResponseEntity<?> addAdmin(SignupRequest signUpRequest, String adminPassword);
-
     ResponseEntity<?> updateAgentName(String agentEmail, String agentName) throws Exception;
-
     ResponseEntity<?> updateAgentAddress(String agentEmail , String agentAddress) throws Exception;
-
     ResponseEntity<?> updateAgentEmail(String agentOldEmail, String agentNewEmail) throws Exception;
-
     ResponseEntity<?> updateAgentPhoneNum(String agentEmail, String phoneNum) throws Exception;
-
     ResponseEntity<?> deleteAgentById(int id) throws Exception;
-
     ResponseEntity<?> getAllAgents();
-
     ResponseEntity<?> getAgentById(int id) throws Exception;
-
     ResponseEntity<?> getTransactionForCurrentMonth();
     ResponseEntity<?> getTransactionForCurrentWeek();
     ResponseEntity<?> getTransactionForToday();
     ResponseEntity<?> getTransactionBetweenDates(LocalDate startDate, LocalDate endDate);
     ResponseEntity<?> findByStatus(LoanStatus status);
-    public List<LoanHistoryDto> getLoansByLoanStatus(LoanStatus loanStatus);
-    public List<LoanHistoryDto> getLoansByLoanType(LoanType loanType);
+    List<LoanHistoryDto> getLoansByLoanStatus(LoanStatus loanStatus);
+    List<LoanHistoryDto> getLoansByLoanType(LoanType loanType);
+    ResponseEntity<?> addBalanceToAccount(double amount);
+    ResponseEntity<?> deductBalanceToAccount(double amount);
 }
