@@ -60,18 +60,21 @@ public class AuthController {
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(item -> item.getAuthority())
                     .collect(Collectors.toList());
+            System.out.println(roles.get(0));
             if (roles.get(0).equals("ROLE_USER")) {
                 // Return JWT response
-                return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(),
-                        userDetails.getEmail(), roles));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Access not granted");
+
             }
+            return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(),
+                    userDetails.getEmail(), roles));
         } catch (BadCredentialsException ex) {
             // Handle authentication failure due to bad credentials
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
         }
-        finally {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
+//        finally {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+//        }
     }
     @PostMapping("/agent")
     public ResponseEntity<?> authenticateAgent(@Valid @RequestBody LoginRequest loginRequest) {
@@ -93,17 +96,19 @@ public class AuthController {
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(item -> item.getAuthority())
                     .collect(Collectors.toList());
-            if (roles.get(0).equals("ROLE_AGENT")) {
+            if (!roles.get(0).equals("ROLE_AGENT")) {
                 // Return JWT response
-                return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(),
-                        userDetails.getEmail(), roles));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Access not granted");
+
             }
+            return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(),
+                    userDetails.getEmail(), roles));
         } catch (BadCredentialsException ex) {
             // Handle authentication failure due to bad credentials
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
-        } finally {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");}
+//         finally {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+//        }
     }
     @PostMapping("/admin")
     public ResponseEntity<?> authenticateAdmin(@Valid @RequestBody LoginRequest loginRequest) {
@@ -125,17 +130,19 @@ public class AuthController {
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(item -> item.getAuthority())
                     .collect(Collectors.toList());
-            if (roles.get(0).equals("ROLE_ADMIN")) {
+            System.out.println(roles.get(0));
+            if (!roles.get(0).equals("ROLE_ADMIN")) {
                 // Return JWT response
-                return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(),
-                        userDetails.getEmail(), roles));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Access not granted");
             }
+            return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(),
+                    userDetails.getEmail(), roles));
         } catch (BadCredentialsException ex) {
             // Handle authentication failure due to bad credentials
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
         }
-        finally {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
+//        finally {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+//        }
     }
 }
