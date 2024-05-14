@@ -272,7 +272,6 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         }
         return agentDto;
     }
-
     @Override
     public ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
         if (agentRepo.existsByAgentEmail(agentEmail)) {
@@ -339,57 +338,68 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     }
     public ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus){
         if (agentRepo.existsByAgentEmail(agentEmail)) {
-            User user = userService.getByEmail(userEmail);
-            Accounts accounts = user.getAccounts();
-            Scheme scheme = accounts.getScheme();
-            if(scheme==null){
-                return new ResponseEntity<>("No Scheme exists for the given user",HttpStatus.I_AM_A_TEAPOT);
-            }
-            else {
-                if(scheme.getSStatus()==previousStatus){
-                    if(previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.APPROVED){
-                        scheme.setSStatus(changedStatus);
-                        scheme.setStartDate(LocalDate.now());
-                        scheme.setAgent(agentRepo.findByAgentEmail(agentEmail));
-                        schemeRepo.save(scheme);
-                        sendStatusEmail(scheme);
-                    } else if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.PENDING){
-                        scheme.setSStatus(changedStatus);
-                        schemeRepo.save(scheme);
-                        sendStatusEmail(scheme);
-                    } else if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.REJECTED){
-                        scheme.setSStatus(changedStatus);
-                        schemeRepo.save(scheme);
-                        sendStatusEmail(scheme);
-                    } else if (previousStatus == SchemeStatus.APPROVED && changedStatus == SchemeStatus.SANCTIONED){
-                        scheme.setSStatus(changedStatus);
-                        schemeRepo.save(scheme);
-                        sendStatusEmail(scheme);
-                    } else if (previousStatus == SchemeStatus.APPROVED && changedStatus == SchemeStatus.PENDING){
-                        scheme.setSStatus(changedStatus);
-                        schemeRepo.save(scheme);
-                        sendStatusEmail(scheme);
-                    } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.CLOSED){
-                        scheme.setSStatus(changedStatus);
-                        schemeRepo.save(scheme);
-                        sendStatusEmail(scheme);
-                    } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.PENDING){
-                        scheme.setSStatus(changedStatus);
-                        schemeRepo.save(scheme);
-                        sendStatusEmail(scheme);
-                    } else if (previousStatus == SchemeStatus.APPLIEDFORLOAN && changedStatus == SchemeStatus.APPROVEDLOAN){
-                        scheme.setSStatus(changedStatus);
-                        schemeRepo.save(scheme);
-                        sendStatusEmail(scheme);
-                    }else {
-                        return new ResponseEntity<>("Invalid Change in status",HttpStatus.I_AM_A_TEAPOT);
+            if (userRepo.existsByEmail(userEmail)) {
+                User user = userService.getByEmail(userEmail);
+                Accounts accounts = user.getAccounts();
+                if (accounts != null) {
+                    Scheme scheme = accounts.getScheme();
+                    if (scheme == null) {
+                        return new ResponseEntity<>("No Scheme exists for the given user", HttpStatus.I_AM_A_TEAPOT);
+                    } else {
+                        if (scheme.getSStatus() == previousStatus) {
+                            if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.APPROVED) {
+                                scheme.setSStatus(changedStatus);
+                                scheme.setStartDate(LocalDate.now());
+                                scheme.setInterestRate(10);
+                                scheme.setNextEMIDate(firstDateOfNextMonth(LocalDate.now()));
+                                scheme.setAgent(agentRepo.findByAgentEmail(agentEmail));
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.PENDING) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.REJECTED) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus == SchemeStatus.APPROVED && changedStatus == SchemeStatus.SANCTIONED) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus == SchemeStatus.APPROVED && changedStatus == SchemeStatus.PENDING) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.CLOSED) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.PENDING) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus == SchemeStatus.APPLIEDFORLOAN && changedStatus == SchemeStatus.APPROVEDLOAN) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else {
+                                return new ResponseEntity<>("Invalid Change in status", HttpStatus.I_AM_A_TEAPOT);
+                            }
+                        } else {
+                            return new ResponseEntity<>("Applied Change in status doesn't match recorded status", HttpStatus.I_AM_A_TEAPOT);
+                        }
                     }
-                }else
-                    return new ResponseEntity<>("Applied Change in status doesn't match recorded status",HttpStatus.I_AM_A_TEAPOT);
+                } else {
+                    return new ResponseEntity<>("Account doesn't exist", HttpStatus.I_AM_A_TEAPOT);
+                }
+            }else {
+                return  new ResponseEntity<>("User doesn't exist", HttpStatus.I_AM_A_TEAPOT);
             }
         }
-        else
-            return new ResponseEntity<>("Invalid Agent",HttpStatus.I_AM_A_TEAPOT);
+        else {
+            return new ResponseEntity<>("Invalid Agent", HttpStatus.I_AM_A_TEAPOT);
+        }
         return null;
     }
     private void sendStatusEmail(Scheme scheme) {
@@ -398,6 +408,10 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         mailMessage.setSubject("Change in Scheme Status");
         mailMessage.setText("Hello User," + scheme.getAccount().getUser().getUserName() + ",\n\n Your Scheme Status has been changed to" + scheme.getSStatus() + "Please confirm so with your respective agent.");
         javaMailSender.send(mailMessage);
+    }
+    private LocalDate firstDateOfNextMonth(LocalDate date) {
+        LocalDate nextMonth = date.plusMonths(1);
+        return nextMonth.withDayOfMonth(1);
     }
     @Override
     public String deleteScheme(String email) {// scheme delete for when scheme has ended
