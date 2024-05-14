@@ -6,6 +6,7 @@ import com.RWI.Nidhi.entity.Loan;
 import com.RWI.Nidhi.entity.Penalty;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanStatus;
+import com.RWI.Nidhi.enums.LoanType;
 import com.RWI.Nidhi.enums.PenaltyStatus;
 import com.RWI.Nidhi.repository.AccountsRepo;
 import com.RWI.Nidhi.repository.LoanRepo;
@@ -286,6 +287,10 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     public LocalDate firstDateOfNextMonth(LocalDate date) {
         LocalDate nextMonth = date.plusMonths(1);
         return nextMonth.withDayOfMonth(1);
+    }
+    @Override
+    public ResponseEntity<?> findRateByLoanType(LoanType loanType){
+        return new ResponseEntity<>(loanType+" - "+loanType.getLoanInterestRate(),HttpStatus.FOUND);
     }
     // to here
 }
