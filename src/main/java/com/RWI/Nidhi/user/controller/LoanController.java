@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.LoanApplyDto;
+import com.RWI.Nidhi.enums.LoanType;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,10 @@ public class LoanController {
             return new ResponseEntity<>("No Loan currently recorded", HttpStatus.BAD_REQUEST);
         } else
             return new ResponseEntity<>(userLoanService.payEMI(email), HttpStatus.ACCEPTED);
+    }
+    @GetMapping("/findInterest/")
+    public ResponseEntity<?> findRateByLoanType(@RequestParam LoanType loanType){
+        return userLoanService.findRateByLoanType(loanType);
     }
 
     @GetMapping("/getLoanClosureDetails/{email}")
