@@ -47,4 +47,7 @@ public class Agent {
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
     private List<Scheme> schemeList;
 
+    @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
+    private List<Commission> commissionList;
+
 }

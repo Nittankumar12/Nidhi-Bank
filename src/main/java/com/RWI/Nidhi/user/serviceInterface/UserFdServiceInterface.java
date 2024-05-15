@@ -6,7 +6,6 @@ import com.RWI.Nidhi.dto.FdRequestDto;
 
 import java.util.List;
 
-
 public interface UserFdServiceInterface {
     FdResponseDto createFd(String agentEmail, String email, FdDto fdDto);
 

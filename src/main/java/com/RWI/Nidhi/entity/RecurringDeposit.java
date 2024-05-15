@@ -43,4 +43,6 @@ public class RecurringDeposit {
 
     @OneToMany(mappedBy = "rd", cascade = CascadeType.ALL)
     private List<Transactions> transactionsList;
+
+
 }

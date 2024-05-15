@@ -31,6 +31,7 @@ public class Accounts {
     @Enumerated(EnumType.STRING)
     private Status accountStatus;
     private String Pin;
+
     @OneToOne
     @JoinColumn
     private User user;

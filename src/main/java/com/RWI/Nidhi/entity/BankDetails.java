@@ -21,6 +21,7 @@ public class BankDetails {
     private String bankName;
     private String bankBranch;
     private String IFSCCode;
+
     @OneToOne
     private User user;
 }

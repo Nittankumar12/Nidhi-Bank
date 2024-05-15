@@ -186,7 +186,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
 
         currentAcc.setAccountStatus(Status.INACTIVE);
         accountsRepo.save(currentAcc);
-        return new ResponseEntity<>("Account decativated!!", HttpStatus.OK);
+        return new ResponseEntity<>("Account deactivated!!", HttpStatus.OK);
     }
 
     @Override
