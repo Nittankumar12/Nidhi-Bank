@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.entity;
 
 //import com.nidhi.kyc.KYC.Enum.AdressDocumentType;
+
 import com.RWI.Nidhi.enums.AdressDocumentType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

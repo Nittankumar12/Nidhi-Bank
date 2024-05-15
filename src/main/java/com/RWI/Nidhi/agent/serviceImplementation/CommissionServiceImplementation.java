@@ -18,31 +18,31 @@ public class CommissionServiceImplementation implements CommissionService {
 
     @Override
     public void calculateCommission(Commission commission) {
-        if (commission.getFixedDeposit() != null) {
+        if (commission.getFd() != null) {
             calculateFixedDepositCommission(commission);
-        } else if (commission.getRecurringDeposit() != null) {
+        } else if (commission.getRd() != null) {
             calculateRecurringDepositCommission(commission);
-        } else if (commission.getMonthlyIncomeScheme() != null) {
+        } else if (commission.getMis() != null) {
             calculateMonthlyIncomeSchemeCommission(commission);
         }
     }
 
     private void calculateFixedDepositCommission(Commission commission) {
-        FixedDeposit fixedDeposit = commission.getFixedDeposit();
+        FixedDeposit fixedDeposit = commission.getFd();
         double commissionAmount = fixedDeposit.getAmount() * commission.getCommissionRate();
         commission.setCommissionAmount(commissionAmount);
         commissionRepository.save(commission);
     }
 
     private void calculateRecurringDepositCommission(Commission commission) {
-        RecurringDeposit recurringDeposit = commission.getRecurringDeposit();
+        RecurringDeposit recurringDeposit = commission.getRd();
         double commissionAmount = recurringDeposit.getMonthlyDepositAmount() * commission.getCommissionRate();
         commission.setCommissionAmount(commissionAmount);
         commissionRepository.save(commission);
     }
 
     private void calculateMonthlyIncomeSchemeCommission(Commission commission) {
-        MIS monthlyIncomeScheme = commission.getMonthlyIncomeScheme();
+        MIS monthlyIncomeScheme = commission.getMis();
         double commissionAmount = monthlyIncomeScheme.getTotalDepositedAmount() * commission.getCommissionRate();
         commission.setCommissionAmount(commissionAmount);
         commissionRepository.save(commission);

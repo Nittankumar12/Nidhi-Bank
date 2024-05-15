@@ -48,7 +48,6 @@ public class FixedDeposit {
     @OneToMany(mappedBy = "fd", cascade = CascadeType.ALL)
     private List<Transactions> transactionsList;
 
-    @OneToMany(mappedBy = "fd", cascade = CascadeType.ALL)
-    private Commission commission;
+
 
 }

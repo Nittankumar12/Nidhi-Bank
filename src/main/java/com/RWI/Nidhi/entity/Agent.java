@@ -48,6 +48,6 @@ public class Agent {
     private List<Scheme> schemeList;
 
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
-    private Commission commission;
+    private List<Commission> commissionList;
 
 }

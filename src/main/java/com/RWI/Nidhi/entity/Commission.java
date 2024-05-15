@@ -24,13 +24,13 @@ public class Commission {
 
     @ManyToOne
     @JoinColumn
-    private FixedDeposit fixedDeposit;
+    private FixedDeposit fd;
 
     @ManyToOne
     @JoinColumn
-    private RecurringDeposit recurringDeposit;
+    private RecurringDeposit rd;
 
     @ManyToOne
     @JoinColumn
-    private MIS monthlyIncomeScheme;
+    private MIS mis;
 }

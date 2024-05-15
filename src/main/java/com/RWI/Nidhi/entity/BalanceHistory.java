@@ -50,6 +50,6 @@ public class BalanceHistory {
 //		this.balance = balance;
 //	}
 //
-    
+
 }
 

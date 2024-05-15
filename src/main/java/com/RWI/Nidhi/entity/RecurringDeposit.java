@@ -44,6 +44,5 @@ public class RecurringDeposit {
     @OneToMany(mappedBy = "rd", cascade = CascadeType.ALL)
     private List<Transactions> transactionsList;
 
-    @OneToMany(mappedBy = "rd", cascade = CascadeType.ALL)
-    private Commission commission;
+
 }
