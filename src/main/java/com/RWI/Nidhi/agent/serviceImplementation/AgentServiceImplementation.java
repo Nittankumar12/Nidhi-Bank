@@ -10,9 +10,7 @@ import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
 import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.dto.UserResponseDto;
 import com.RWI.Nidhi.entity.*;
-import com.RWI.Nidhi.enums.LoanStatus;
-import com.RWI.Nidhi.enums.SchemeStatus;
-import com.RWI.Nidhi.enums.Status;
+import com.RWI.Nidhi.enums.*;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
@@ -29,10 +27,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class AgentServiceImplementation implements AgentServiceInterface {
@@ -41,6 +36,8 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     UserRepo userRepo;
     @Autowired
     OtpServiceImplementation otpServiceImplementation;
+    @Autowired
+    TransactionRepo transactionRepo;
     @Autowired
     AccountsRepo accountsRepo;
     @Autowired
@@ -287,6 +284,16 @@ public class AgentServiceImplementation implements AgentServiceInterface {
                         if(previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.APPROVED){
                             loan.setStatus(changedStatus);
                             loan.setStartDate(LocalDate.now());
+                            Transactions transactions = new Transactions();
+                            transactions.setAccount(accounts);
+                            transactions.setLoan(loan);
+                            transactions.setTransactionAmount(loan.getPrincipalLoanAmount());
+                            Transactions.deductTotalBalance(loan.getPrincipalLoanAmount());
+                            transactions.setTransactionDate(new Date());
+                            transactions.setTransactionType(TransactionType.DEBITED);
+                            transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+                            transactionRepo.save(transactions);
+                            loan.getTransactionsList().add(transactions);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
                         } else if (previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.PENDING){
