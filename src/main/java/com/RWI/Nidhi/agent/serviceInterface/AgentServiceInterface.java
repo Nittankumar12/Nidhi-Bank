@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface AgentServiceInterface {
     ResponseEntity<?> addUser(SignupRequest signupRequest, String agentEmail);
-    public ResponseEntity<?> deleteUserById(String userEmail, String agentEmail);
+    ResponseEntity<?> deleteUserById(String userEmail, String agentEmail);
     ResponseEntity<?> getAllUsers(String email);
     ResponseEntity<?> findUserById(int id,String agentEmail);
     public ResponseEntity<?> deactivateAccount(String accountNumber, String agentEmail);

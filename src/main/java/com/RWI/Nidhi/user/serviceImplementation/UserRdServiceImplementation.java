@@ -28,14 +28,12 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
 
     private final int penalty = 500;
     double currentInterest;
-
     @Autowired
     private RecurringDepositRepo rdRepo;
     @Autowired
     private AgentRepo agentRepo;
     @Autowired
     private UserRepo userRepo;
-
     @Autowired
     private AccountsRepo accountRepo;
 
@@ -74,7 +72,6 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             rdResponseDto.setMaturityDate(rd.getMaturityDate());
             rdResponseDto.setRdStatus(rd.getRdStatus());
             rdResponseDto.setAgentName(rd.getAgent().getAgentName());
-
 
             return rdResponseDto;
         }
