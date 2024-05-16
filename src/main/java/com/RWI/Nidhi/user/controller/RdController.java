@@ -30,7 +30,6 @@ public class RdController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
     @GetMapping("/findById")
     public ResponseEntity<RdRequestDto> findRdById(@RequestParam int rdId) throws Exception {
         RdRequestDto responseDto = service.getRdById(rdId);
@@ -43,9 +42,8 @@ public class RdController {
         return new ResponseEntity<>(rdRequestDtoList, HttpStatus.OK);
     }
 
-    @GetMapping("/MonthlyIncomeToUser")
-    public ResponseEntity<?> MonthlyIncomeToUser(@RequestParam int rdId) throws Exception {
-        ResponseEntity<?> rd = service.sendMonthlyIncomeToUser(rdId);
-        return new ResponseEntity<>(rd, HttpStatus.OK);
+    @PutMapping("/sendMonthlyIncome")
+    public ResponseEntity<?> sendMonthlyIncomeToUser(@RequestParam("rdId") int rdId) throws Exception {
+        return service.sendMonthlyIncomeToUser(rdId);
     }
 }
