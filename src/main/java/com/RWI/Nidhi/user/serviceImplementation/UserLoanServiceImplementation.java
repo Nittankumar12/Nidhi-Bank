@@ -1,17 +1,9 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.*;
-import com.RWI.Nidhi.entity.Accounts;
-import com.RWI.Nidhi.entity.Loan;
-import com.RWI.Nidhi.entity.Penalty;
-import com.RWI.Nidhi.entity.User;
-import com.RWI.Nidhi.enums.LoanStatus;
-import com.RWI.Nidhi.enums.LoanType;
-import com.RWI.Nidhi.enums.PenaltyStatus;
-import com.RWI.Nidhi.repository.AccountsRepo;
-import com.RWI.Nidhi.repository.LoanRepo;
-import com.RWI.Nidhi.repository.PenaltyRepo;
-import com.RWI.Nidhi.repository.UserRepo;
+import com.RWI.Nidhi.entity.*;
+import com.RWI.Nidhi.enums.*;
+import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -30,6 +23,8 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     LoanRepo loanRepository;
     @Autowired
     UserService userService;
+    @Autowired
+    TransactionRepo transactionRepo;
     @Autowired
     AccountsRepo accountsRepo;
     @Autowired
@@ -183,7 +178,20 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                 payableLoanAmount = temp - loan.getMonthlyEMI();
                 loan.setPayableLoanAmount(payableLoanAmount);
                 loan.setEmiDate(firstDateOfNextMonth(LocalDate.now()));
+                //transaction part
 
+                Transactions transactions = new Transactions();
+                transactions.setAccount(acc);
+                transactions.setLoan(loan);
+                transactions.setTransactionAmount(loan.getMonthlyEMI());
+                Transactions.deductTotalBalance(loan.getMonthlyEMI());
+                transactions.setTransactionDate(new Date());
+                transactions.setTransactionType(TransactionType.CREDITED);
+                transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+                transactionRepo.save(transactions);
+                loan.getTransactionsList().add(transactions);
+
+                //transaction part
                 LocalDate endDate = ChronoUnit.DAYS.addTo(loan.getStartDate(), loan.getRePaymentTerm());
                 int rePaymentTermLeft = (int) ChronoUnit.DAYS.between(endDate, LocalDate.now());
 
