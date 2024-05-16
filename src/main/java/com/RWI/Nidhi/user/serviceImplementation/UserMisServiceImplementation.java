@@ -11,6 +11,8 @@ import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.UserMisServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -124,6 +126,27 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         misRequestDto.setAgentName(mis.getAgent().getAgentName());
         misRequestDto.setStatus(mis.getStatus());
         return misRequestDto;
+    }
+
+    @Override
+    public ResponseEntity<?> sendMonthlyIncomeToUser(int misId) throws Exception{
+        MIS currMis = misRepo.findById(misId).orElseThrow(() -> {return new Exception("Mis not found");});
+        Transactions transactions = new Transactions();
+        transactions.setTransactionDate(new Date());
+        transactions.setTransactionType(TransactionType.DEBITED);
+        transactions.setTransactionAmount(currMis.getMonthlyIncome());
+        transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+        transactions.setAccount(currMis.getAccount());
+        transactions.setMis(currMis);
+        Transactions.deductTotalBalance(currMis.getMonthlyIncome());
+        try {
+            transactionRepo.save(transactions);
+            misRepo.save(currMis);
+        }
+        catch (Exception e){
+            throw new Exception("Error");
+        }
+        return new ResponseEntity<>(currMis.getMonthlyIncome(), HttpStatus.OK);
     }
 
     @Override
