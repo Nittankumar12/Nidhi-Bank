@@ -190,6 +190,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                 transactions.setTransactionStatus(TransactionStatus.COMPLETED);
                 transactionRepo.save(transactions);
                 loan.getTransactionsList().add(transactions);
+                loanRepository.save(loan);
 
                 //transaction part
                 LocalDate endDate = ChronoUnit.DAYS.addTo(loan.getStartDate(), loan.getRePaymentTerm());
