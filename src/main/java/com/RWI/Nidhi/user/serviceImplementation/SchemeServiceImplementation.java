@@ -4,8 +4,12 @@ import com.RWI.Nidhi.dto.SchemeApplyDTO;
 import com.RWI.Nidhi.dto.SchemeInfoDto;
 import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.Scheme;
+import com.RWI.Nidhi.entity.Transactions;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.SchemeStatus;
+import com.RWI.Nidhi.enums.TransactionStatus;
+import com.RWI.Nidhi.enums.TransactionType;
+import com.RWI.Nidhi.repository.TransactionRepo;
 import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceInterface.SchemeServiceInterface;
 import com.RWI.Nidhi.repository.SchemeRepo;
@@ -16,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 @Service
 public class SchemeServiceImplementation implements SchemeServiceInterface {
@@ -23,6 +28,8 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
     SchemeRepo schemeRepo;
     @Autowired
     UserService userService;
+    @Autowired
+    TransactionRepo transactionRepo;
     @Autowired
     UserRepo userRepo;
     @Autowired
@@ -111,6 +118,18 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
                 double newTotal = total + monthly + (monthly*rate/100);
                 scheme.setTotalDepositAmount(newTotal);
                 scheme.setNextEMIDate(firstDateOfNextMonth(LocalDate.now()));
+                //Transaction part
+                Transactions transactions = new Transactions();
+                transactions.setAccount(accounts);
+                transactions.setScheme(scheme);
+                transactions.setTransactionAmount(scheme.getMonthlyDepositAmount());
+                Transactions.addTotalBalance(scheme.getMonthlyDepositAmount());
+                transactions.setTransactionDate(new Date());
+                transactions.setTransactionType(TransactionType.CREDITED);
+                transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+                transactionRepo.save(transactions);
+                scheme.getTransactionsList().add(transactions);
+
                 schemeRepo.save(scheme);
                 return new ResponseEntity<>("Monthly Deposit successfull", HttpStatus.ACCEPTED);
             } else {
