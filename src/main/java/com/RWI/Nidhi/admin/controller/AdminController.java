@@ -108,10 +108,12 @@ public class AdminController {
         List<LoanHistoryDto> loanHistoryDtos =adminService.getLoansByLoanStatus(loanStatus);
         return new ResponseEntity<>(loanHistoryDtos,HttpStatus.OK);
     }
-    ResponseEntity<?> addBalanceToAccount(double amount){
+    @PostMapping("/addBalance")
+    ResponseEntity<?> addBalanceToAccount(@RequestParam("amount") double amount){
         return adminService.addBalanceToAccount(amount);
     }
-    ResponseEntity<?> deductBalanceToAccount(double amount){
+    @PostMapping("/deductBalance")
+    ResponseEntity<?> deductBalanceToAccount(@RequestParam("amount") double amount){
         return adminService.deductBalanceToAccount(amount);
     }
 //    @PostMapping("/login-admin")

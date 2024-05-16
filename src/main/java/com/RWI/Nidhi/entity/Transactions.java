@@ -50,7 +50,10 @@ public class Transactions {
     public static double getTotalBalance() {
         return totalBalance;
     }
-    public static void setTotalBalance(double totalBalance) {
-        Transactions.totalBalance = totalBalance;
+    public static void addTotalBalance(double amount) {
+        Transactions.totalBalance += amount;
+    }
+    public static void deductTotalBalance(double amount) {
+        Transactions.totalBalance -= amount;
     }
 }

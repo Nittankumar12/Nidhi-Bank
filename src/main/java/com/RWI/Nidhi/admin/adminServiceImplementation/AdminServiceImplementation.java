@@ -337,7 +337,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 
     @Override
     public ResponseEntity<?> addBalanceToAccount(double amount) {
-        Transactions.setTotalBalance(Transactions.getTotalBalance() + amount);
+        Transactions.addTotalBalance(amount);
         Transactions newTransaction = new Transactions();
         newTransaction.setTransactionDate(new Date());
         newTransaction.setTransactionType(TransactionType.CREDITED);
@@ -349,7 +349,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     }
     @Override
     public ResponseEntity<?> deductBalanceToAccount(double amount) {
-        Transactions.setTotalBalance(Transactions.getTotalBalance() + amount);
+        Transactions.addTotalBalance(amount);
         Transactions newTransaction = new Transactions();
         newTransaction.setTransactionDate(new Date());
         newTransaction.setTransactionType(TransactionType.DEBITED);
