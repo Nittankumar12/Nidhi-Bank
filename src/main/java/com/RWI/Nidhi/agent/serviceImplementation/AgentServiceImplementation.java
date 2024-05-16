@@ -343,6 +343,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         mailMessage.setText("Hello User," + loan.getUser().getUserName() + ",\n\n Your loan status has been changed to" + loan.getStatus() + "Please confirm so with your respective agent.");
         javaMailSender.send(mailMessage);
     }
+    @Override
     public ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus){
         if (agentRepo.existsByAgentEmail(agentEmail)) {
             if (userRepo.existsByEmail(userEmail)) {
@@ -380,6 +381,18 @@ public class AgentServiceImplementation implements AgentServiceInterface {
                                 sendStatusEmail(scheme);
                             } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.CLOSED) {
                                 scheme.setSStatus(changedStatus);
+                                //Transaction part
+                                Transactions transactions = new Transactions();
+                                transactions.setAccount(accounts);
+                                transactions.setScheme(scheme);
+                                transactions.setTransactionAmount(scheme.getTotalDepositAmount());
+                                Transactions.deductTotalBalance(scheme.getTotalDepositAmount());
+                                transactions.setTransactionDate(new Date());
+                                transactions.setTransactionType(TransactionType.DEBITED);
+                                transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+                                transactionRepo.save(transactions);
+                                scheme.getTransactionsList().add(transactions);
+
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
                             } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.PENDING) {
