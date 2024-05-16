@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
 import com.RWI.Nidhi.dto.*;
+import com.RWI.Nidhi.enums.LoanType;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
@@ -27,6 +28,7 @@ public interface UserLoanServiceInterface {
     ResponseEntity<?> getLoanClosureDetails(String email);
 
     ResponseEntity<?> applyForLoanClosure(String email);
+    ResponseEntity<?> findRateByLoanType(LoanType loanType);
 
     //Prince
     List<LoanHistoryDto> getLoansByLoanType(String loanType);

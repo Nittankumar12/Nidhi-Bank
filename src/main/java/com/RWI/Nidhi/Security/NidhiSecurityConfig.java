@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 
@@ -59,6 +60,7 @@ public class NidhiSecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())
+            .cors(corsconfig -> corsconfig.configurationSource(req->new CorsConfiguration().applyPermitDefaultValues()))
        // .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth ->
@@ -66,7 +68,8 @@ public class NidhiSecurityConfig {
                           ,"/admin/addAdmin"
                           ,"/forget/verifyEmail"
                           ,"/forget/verifyOtp"
-                          ,"/updateUserPassword","/ws/**").permitAll()
+                          ,"/updateUserPassword"
+                          ,"/ws/**").permitAll()
 
           .requestMatchers("/admin/**").hasAnyRole("ADMIN")
           .requestMatchers("/agent/**").hasAnyRole("AGENT","ADMIN")
