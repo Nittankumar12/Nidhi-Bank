@@ -3,6 +3,7 @@ package com.RWI.Nidhi.user.serviceInterface;
 import com.RWI.Nidhi.dto.MisDto;
 import com.RWI.Nidhi.dto.MisResponseDto;
 import com.RWI.Nidhi.dto.MisRequestDto;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -16,5 +17,7 @@ public interface UserMisServiceInterface {
     List<MisRequestDto> getMisByEmail(String email);
 
     MisRequestDto getMisById(int misId);
+
+    ResponseEntity<?> sendMonthlyIncomeToUser(int misId) throws Exception;
 
 }
