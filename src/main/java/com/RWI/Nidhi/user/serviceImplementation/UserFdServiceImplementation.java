@@ -5,12 +5,12 @@ import com.RWI.Nidhi.dto.FdRequestDto;
 import com.RWI.Nidhi.dto.FdResponseDto;
 import com.RWI.Nidhi.entity.Agent;
 import com.RWI.Nidhi.entity.FixedDeposit;
+import com.RWI.Nidhi.entity.Transactions;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.Status;
-import com.RWI.Nidhi.repository.AccountsRepo;
-import com.RWI.Nidhi.repository.AgentRepo;
-import com.RWI.Nidhi.repository.FixedDepositRepo;
-import com.RWI.Nidhi.repository.UserRepo;
+import com.RWI.Nidhi.enums.TransactionStatus;
+import com.RWI.Nidhi.enums.TransactionType;
+import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.UserFdServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -33,12 +34,14 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     private UserRepo userRepo;
     @Autowired
     private AccountsRepo accountRepo;
+    @Autowired
+    private TransactionRepo transactionRepo;
 
     @Override
     public FdResponseDto createFd(String agentEmail, String email, FdDto fdDto) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
         User user = userRepo.findByEmail(email);
-//        Accounts accounts = new Accounts();
+
         FixedDeposit fd = new FixedDeposit();
         if (agent != null && user != null) {
             fd.setAmount(fdDto.getAmount());
@@ -55,6 +58,18 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
 
             fd.setAgent(agent);
             fd.setAccount(user.getAccounts());
+
+            Transactions transactions = new Transactions();
+            transactions.setAccount(user.getAccounts());
+            transactions.setTransactionAmount(fd.getAmount());
+            Transactions.addTotalBalance(fd.getAmount());
+            transactions.setTransactionDate(new Date());
+            transactions.setTransactionType(TransactionType.CREDITED);
+            transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+            transactions.setFd(fd);
+
+            transactionRepo.save(transactions);
+            fd.getTransactionsList().add(transactions);
             fdRepo.save(fd);
 
             FdResponseDto fdResponseDto = new FdResponseDto();
@@ -69,7 +84,6 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
             fdResponseDto.setMaturityDate(fd.getMaturityDate());
             fdResponseDto.setFdStatus(fd.getFdStatus());
             fdResponseDto.setAgentName(fd.getAgent().getAgentName());
-
 
             return fdResponseDto;
         }
@@ -119,6 +133,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         fdRequestDto.setUserName(fixedDeposit.getAccount().getUser().getUserName());
         fdRequestDto.setAgentName(fixedDeposit.getAgent().getAgentName());
         fdRequestDto.setFdStatus(fixedDeposit.getFdStatus());
+
         return fdRequestDto;
     }
 
@@ -136,6 +151,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
             fdRequestDto.setNomineeName(fixedDeposit.getNomineeName());
             fdRequestDto.setAgentName(user.getAgent().getAgentName());
             fdRequestDto.setFdStatus(fixedDeposit.getFdStatus());
+
             fdRequestDtoList.add(fdRequestDto);
         }
         return fdRequestDtoList;
