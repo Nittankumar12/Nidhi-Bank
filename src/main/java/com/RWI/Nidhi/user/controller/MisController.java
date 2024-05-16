@@ -29,6 +29,10 @@ public class MisController {
     public Double closeMis(@RequestParam("misId") int misId) throws Exception {
         return misService.closeMis(misId);
     }
+    @PutMapping("/sendMonthlyIncome")
+    public ResponseEntity<?> sendMonthlyIncomeToUser(@RequestParam("misId") int misId) throws Exception{
+        return misService.sendMonthlyIncomeToUser(misId);
+    }
 
     @GetMapping("/findById")
     public ResponseEntity<MisRequestDto> findMisById(@RequestParam int misId)throws Exception {
