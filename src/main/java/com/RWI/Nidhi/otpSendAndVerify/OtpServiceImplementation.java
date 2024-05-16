@@ -44,6 +44,7 @@ public class OtpServiceImplementation implements OtpServiceInterface {
 		message.setSubject(subject);
 		message.setText(messageToSend + this.otp);
 		javaMailSender.send(message);
+
 		return ResponseEntity.ok("Message sent to " + userEmailId);
 	}
 
