@@ -94,8 +94,19 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         currMis.setTotalInterestEarned(currMis.getTenure() * 12 * currMis.getMonthlyIncome());
         currMis.setClosingDate(LocalDate.now());
         currMis.setStatus(Status.CLOSED);
-//        Transactions transactions = new Transactions();
-//        transactions.setMis(currMis);
+
+        Transactions transactions = new Transactions();
+        transactions.setTransactionDate(new Date());
+        transactions.setTransactionType(TransactionType.DEBITED);
+        transactions.setTransactionAmount(currMis.getTotalDepositedAmount());
+        transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+        transactions.setAccount(currMis.getAccount());
+        transactions.setMis(currMis);
+        Transactions.deductTotalBalance(currMis.getTotalDepositedAmount());
+        transactionRepo.save(transactions);
+        currMis.getAccount().getTransactionsList().add(transactions);
+        currMis.getTransactionsList().add(transactions);
+        accountsRepo.save(currMis.getAccount());
         misRepo.save(currMis);
         return currMis.getTotalInterestEarned();
     }
