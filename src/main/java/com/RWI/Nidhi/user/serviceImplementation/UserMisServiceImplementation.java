@@ -3,14 +3,11 @@ package com.RWI.Nidhi.user.serviceImplementation;
 import com.RWI.Nidhi.dto.MisDto;
 import com.RWI.Nidhi.dto.MisRequestDto;
 import com.RWI.Nidhi.dto.MisResponseDto;
-import com.RWI.Nidhi.entity.Accounts;
-import com.RWI.Nidhi.entity.Agent;
-import com.RWI.Nidhi.entity.MIS;
-import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.Status;
-import com.RWI.Nidhi.repository.AgentRepo;
-import com.RWI.Nidhi.repository.MisRepo;
-import com.RWI.Nidhi.repository.UserRepo;
+import com.RWI.Nidhi.enums.TransactionStatus;
+import com.RWI.Nidhi.enums.TransactionType;
+import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.UserMisServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -28,6 +26,10 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
     private AgentRepo agentRepo;
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private TransactionRepo transactionRepo;
+    @Autowired
+    private AccountsRepo accountsRepo;
 
     @Override
     public MisResponseDto createMis(String agentEmail, String email, MisDto misDto) {
@@ -47,6 +49,19 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
 
             newMis.setAgent(agent);
             newMis.setAccount(user.getAccounts());
+
+            Transactions transactions = new Transactions();
+            transactions.setTransactionDate(new Date());
+            transactions.setTransactionType(TransactionType.CREDITED);
+            transactions.setTransactionAmount(misDto.getTotalDepositedAmount());
+            transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+            transactions.setAccount(user.getAccounts());
+            transactions.setMis(newMis);
+            Transactions.addTotalBalance(misDto.getTotalDepositedAmount());
+            transactionRepo.save(transactions);
+            accounts.getTransactionsList().add(transactions);
+            accountsRepo.save(accounts);
+
 
             misRepo.save(newMis);
 
@@ -79,6 +94,8 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         currMis.setTotalInterestEarned(currMis.getTenure() * 12 * currMis.getMonthlyIncome());
         currMis.setClosingDate(LocalDate.now());
         currMis.setStatus(Status.CLOSED);
+//        Transactions transactions = new Transactions();
+//        transactions.setMis(currMis);
         misRepo.save(currMis);
         return currMis.getTotalInterestEarned();
     }

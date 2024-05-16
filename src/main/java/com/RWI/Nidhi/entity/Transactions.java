@@ -20,6 +20,7 @@ public class Transactions {
     @Transient
     private static double totalBalance;
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int transactionId;
     @UpdateTimestamp
     private Date transactionDate;
