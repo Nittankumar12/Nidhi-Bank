@@ -8,13 +8,7 @@ import java.lang.reflect.Array;
 
 @Service
 public class EmiCalculatorServiceImplementation implements EmiCalculatorService {
-//    @Override
-//    public double calculateEMI(double principal, double rate, int time) {
-//        rate = rate / 100 / 12; // convert monthly rate and time to decimal
-//        time = time * 12;
-//        double EMI = principal * rate * Math.pow(1 + rate, time) / (Math.pow(1 + rate, time) - 1);
-//        return EMI;
-//    }
+
 
     @Override
     public double[] calculateEMI(double principle, LoanType loanType, int time) {

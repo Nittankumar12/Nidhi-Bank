@@ -30,9 +30,6 @@ public class FixedDeposit {
     private int penalty;
     private int compoundingFrequency;
 
-//    @Transient
-//    @Enumerated(EnumType.STRING)
-//    private FdCompoundingFrequency fdCompoundingFrequency;
 
     @Enumerated(EnumType.STRING)
     private Status fdStatus;

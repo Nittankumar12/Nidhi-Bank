@@ -3,25 +3,23 @@ package com.RWI.Nidhi.user.serviceImplementation;
 import com.RWI.Nidhi.dto.RdDto;
 import com.RWI.Nidhi.dto.RdRequestDto;
 import com.RWI.Nidhi.dto.RdResponseDto;
-import com.RWI.Nidhi.entity.Accounts;
-import com.RWI.Nidhi.entity.Agent;
-import com.RWI.Nidhi.entity.RecurringDeposit;
-import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.Status;
-import com.RWI.Nidhi.repository.AccountsRepo;
-import com.RWI.Nidhi.repository.AgentRepo;
-import com.RWI.Nidhi.repository.RecurringDepositRepo;
-import com.RWI.Nidhi.repository.UserRepo;
+import com.RWI.Nidhi.enums.TransactionStatus;
+import com.RWI.Nidhi.enums.TransactionType;
+import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.UserRdServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserRdServiceImplementation implements UserRdServiceInterface {
@@ -36,6 +34,8 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     private UserRepo userRepo;
     @Autowired
     private AccountsRepo accountRepo;
+    @Autowired
+    private TransactionRepo transactionRepo;
 
     @Override
     public RdResponseDto createRd(String agentEmail, String email, RdDto rdDto) {
@@ -58,6 +58,20 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             rd.setRdStatus(Status.ACTIVE);
             rd.setAgent(agent);
             rd.setAccount(user.getAccounts());
+
+            Transactions transactions = new Transactions();
+            transactions.setTransactionDate(new Date());
+            transactions.setTransactionType(TransactionType.CREDITED);
+            transactions.setTransactionAmount(rdDto.getMonthlyDepositAmount());
+            transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+            transactions.setAccount(user.getAccounts());
+            transactions.setRd(rd);
+            Transactions.addTotalBalance(rdDto.getMonthlyDepositAmount());
+            transactionRepo.save(transactions);
+            accounts.getTransactionsList().add(transactions);
+            accountRepo.save(accounts);
+
+            rd.getTransactionsList().add(transactions);
             rdRepo.save(rd);
 
             RdResponseDto rdResponseDto = new RdResponseDto();
@@ -107,15 +121,30 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
 
 
     @Override
-    public RecurringDeposit closeRd(int rdId) {
-        Optional<RecurringDeposit> optionalRd = rdRepo.findById(rdId);
-        if (optionalRd.isPresent()) {
-            RecurringDeposit rd = optionalRd.get();
+    public RecurringDeposit closeRd(int rdId) throws Exception{
+        RecurringDeposit currRd = rdRepo.findById(rdId).orElseThrow(() -> {
+            return new Exception("RD not found");
+        });
+        if (currRd != null) {
+            RecurringDeposit rd = currRd;
             if (rd.getMaturityAmount() == 0) {
                 double interest = calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getInterestRate(), rd.getMaturityDate());
                 rd.setMaturityAmount(rd.getMonthlyDepositAmount() * rd.getTenure() + interest);
             }
             rd.setRdStatus(Status.CLOSED);
+
+            Transactions transactions = new Transactions();
+            transactions.setTransactionDate(new Date());
+            transactions.setTransactionType(TransactionType.DEBITED);
+            transactions.setTransactionAmount(currRd.getTotalAmountDeposited());
+            transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+            transactions.setAccount(currRd.getAccount());
+            transactions.setRd(currRd);
+            Transactions.deductTotalBalance(currRd.getMonthlyDepositAmount());
+            transactionRepo.save(transactions);
+            currRd.getAccount().getTransactionsList().add(transactions);
+            currRd.getTransactionsList().add(transactions);
+            accountRepo.save(currRd.getAccount());
             rdRepo.save(rd);
             return rd;
         } else {
@@ -124,9 +153,9 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     }
 
     @Override
-    public RdRequestDto getRdById(int rdId) {
+    public RdRequestDto getRdById(int rdId) throws Exception {
         RecurringDeposit recurringDeposit = rdRepo.findById(rdId)
-                .orElseThrow(() -> new EntityNotFoundException("Id not found"));
+                .orElseThrow(() -> new EntityNotFoundException("RD not found"));
         RdRequestDto responseDto = new RdRequestDto();
         responseDto.setRdId(rdId);
         responseDto.setUserName(recurringDeposit.getAccount().getUser().getUserName());
@@ -137,6 +166,28 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         responseDto.setRdStatus(recurringDeposit.getRdStatus());
         return responseDto;
     }
+
+    @Override
+    public ResponseEntity<?> sendMonthlyIncomeToUser(int rdId) throws Exception{
+        RecurringDeposit currRd = rdRepo.findById(rdId).orElseThrow(() -> {return new Exception("RD not found");});
+        Transactions transactions = new Transactions();
+        transactions.setTransactionDate(new Date());
+        transactions.setTransactionType(TransactionType.DEBITED);
+        transactions.setTransactionAmount(currRd.getMonthlyDepositAmount());
+        transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+        transactions.setAccount(currRd.getAccount());
+        transactions.setRd(currRd);
+        Transactions.deductTotalBalance(currRd.getMonthlyDepositAmount());
+        try {
+            transactionRepo.save(transactions);
+            rdRepo.save(currRd);
+        }
+        catch (Exception e){
+            throw new Exception("Error");
+        }
+        return new ResponseEntity<>(currRd.getMonthlyDepositAmount(), HttpStatus.OK);
+    }
+
 
     @Override
     public List<RdRequestDto> getRdByEmail(String email) {

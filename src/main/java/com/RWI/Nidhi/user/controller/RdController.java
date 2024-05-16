@@ -30,7 +30,6 @@ public class RdController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
     @GetMapping("/findById")
     public ResponseEntity<RdRequestDto> findRdById(@RequestParam int rdId) throws Exception {
         RdRequestDto responseDto = service.getRdById(rdId);
@@ -41,5 +40,10 @@ public class RdController {
     public ResponseEntity<List<RdRequestDto>> findRdByEmail(@RequestParam String email) throws Exception {
         List<RdRequestDto> rdRequestDtoList = service.getRdByEmail(email);
         return new ResponseEntity<>(rdRequestDtoList, HttpStatus.OK);
+    }
+
+    @PutMapping("/sendMonthlyIncome")
+    public ResponseEntity<?> sendMonthlyIncomeToUser(@RequestParam("rdId") int rdId) throws Exception {
+        return service.sendMonthlyIncomeToUser(rdId);
     }
 }

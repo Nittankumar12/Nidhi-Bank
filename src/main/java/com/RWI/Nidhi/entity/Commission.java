@@ -18,19 +18,10 @@ public class Commission {
     private Double commissionAmount;
     private double CommissionRate;
 
+
     @ManyToOne
     @JoinColumn
     private Agent agent;
 
-    @ManyToOne
-    @JoinColumn
-    private FixedDeposit fd;
 
-    @ManyToOne
-    @JoinColumn
-    private RecurringDeposit rd;
-
-    @ManyToOne
-    @JoinColumn
-    private MIS mis;
 }

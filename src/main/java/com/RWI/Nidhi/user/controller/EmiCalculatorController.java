@@ -13,7 +13,7 @@ public class EmiCalculatorController {
     private EmiCalculatorServiceImplementation service;
 
     @PostMapping("/emi")
-    public double[] calculateEmi(@RequestParam("principal") double principle, @RequestParam("loanType") LoanType loanType, @RequestParam("time") int time){
+    public double[] calculateEmi(@RequestParam("principle") double principle, @RequestParam("loanType") LoanType loanType, @RequestParam("time") int time) {
         return service.calculateEMI(principle, loanType, time);
     }
 }
