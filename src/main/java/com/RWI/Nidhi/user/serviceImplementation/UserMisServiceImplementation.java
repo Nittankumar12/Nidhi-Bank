@@ -114,7 +114,7 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
     }
 
     @Override
-    public MisRequestDto getMisById(int misId) {
+    public MisRequestDto getMisById(int misId) throws Exception {
         MIS mis = misRepo.findById(misId)
                 .orElseThrow(() -> new EntityNotFoundException("Id not found"));
         MisRequestDto misRequestDto = new MisRequestDto();
@@ -148,6 +148,7 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         }
         return new ResponseEntity<>(currMis.getMonthlyIncome(), HttpStatus.OK);
     }
+
 
     @Override
     public List<MisRequestDto> getMisByEmail(String email) {

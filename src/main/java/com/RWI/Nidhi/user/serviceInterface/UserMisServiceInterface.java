@@ -16,7 +16,7 @@ public interface UserMisServiceInterface {
 
     List<MisRequestDto> getMisByEmail(String email);
 
-    MisRequestDto getMisById(int misId);
+    MisRequestDto getMisById(int misId) throws Exception;
 
     ResponseEntity<?> sendMonthlyIncomeToUser(int misId) throws Exception;
 

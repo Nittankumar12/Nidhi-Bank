@@ -105,8 +105,10 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
 
 
     @Override
-    public Double closeFd(int fdId) {
-        FixedDeposit fd = fdRepo.findById(fdId).get();
+    public Double closeFd(int fdId) throws Exception {
+        FixedDeposit fd = fdRepo.findById(fdId).orElseThrow(() -> {
+            return new Exception("FD not found");
+        });
         fd.setMaturityAmount(calculateFdAmount(fd.getAmount(), fd.getInterestRate(), fd.getCompoundingFrequency(), getCompleteDaysCount(fd.getDepositDate(), LocalDate.now())));
         fd.setClosingDate(LocalDate.now());
         if (fd.getClosingDate().isBefore(fd.getMaturityDate())) {
@@ -114,6 +116,19 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
             fd.setFdStatus(Status.FORECLOSED);
         } else {
             fd.setFdStatus(Status.CLOSED);
+            Transactions transactions = new Transactions();
+            transactions.setTransactionDate(new Date());
+            transactions.setTransactionType(TransactionType.DEBITED);
+            transactions.setTransactionAmount(fd.getAmount());
+            transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+            transactions.setAccount(fd.getAccount());
+            transactions.setFd(fd);
+            Transactions.deductTotalBalance(fd.getAmount());
+            transactionRepo.save(transactions);
+            fd.getAccount().getTransactionsList().add(transactions);
+            fd.getTransactionsList().add(transactions);
+            accountRepo.save(fd.getAccount());
+//            fdRepo.save(fd);
         }
         fd.setMaturityAmount(fd.getMaturityAmount() - fd.getPenalty());
         fdRepo.save(fd);
@@ -122,7 +137,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
 
 
     @Override
-    public FdRequestDto getFdById(int fdId) {
+    public FdRequestDto getFdById(int fdId) throws Exception {
         FixedDeposit fixedDeposit = fdRepo.findById(fdId)
                 .orElseThrow(() -> new EntityNotFoundException("Id not found"));
         FdRequestDto fdRequestDto = new FdRequestDto();
