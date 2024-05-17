@@ -60,7 +60,9 @@ public class NidhiSecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())
-            .cors(corsconfig -> corsconfig.configurationSource(req->new CorsConfiguration().applyPermitDefaultValues()))
+            .cors(
+                    corsconfig -> corsconfig.configurationSource(req->new CorsConfiguration().applyPermitDefaultValues())
+            )
        // .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth ->
