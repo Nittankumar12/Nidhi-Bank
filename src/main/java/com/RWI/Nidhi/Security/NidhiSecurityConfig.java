@@ -4,6 +4,7 @@ package com.RWI.Nidhi.Security;
 import com.RWI.Nidhi.Security.Jwt.AuthEntryPoint;
 import com.RWI.Nidhi.Security.Jwt.JwtTokenFilter;
 import com.RWI.Nidhi.Security.services.UserDetailsServiceConfig;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
+
+import java.util.Arrays;
 
 @Configuration
 
@@ -61,17 +66,37 @@ public class NidhiSecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())
             .cors(
-                    corsconfig -> corsconfig.configurationSource(req->new CorsConfiguration().applyPermitDefaultValues())
+                    corsconfig -> corsconfig.configurationSource(new CorsConfigurationSource() {
+                      @Override
+                      public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+
+
+                          CorsConfiguration configuration = new CorsConfiguration();
+                          configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173/"));
+                          configuration.setAllowedMethods(Arrays.asList("GET","PUT","POST","DELETE","OPTIONS"));
+                          configuration.setAllowedHeaders(Arrays.asList("Content-Type"
+                                                               ,"x-xsrf-token"
+                                                                  ,"Authorization"
+                                                                 ,"Access-Control-Allow-Headers"
+                                                                 ,"Access-Control-Request-Method"
+                                                                  ,"Access-Control-Request-Headers"
+                                                                  ,"Origin","Accept","X-Requested-With"));
+                        configuration.setAllowCredentials(true);
+                        configuration.setMaxAge(3600L);
+                        return configuration;
+
+
+                    }})
             )
-       // .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+       // .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler)
+                              .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth ->
           auth.requestMatchers("/home/**"
                           ,"/admin/addAdmin"
                           ,"/forget/verifyEmail"
                           ,"/forget/verifyOtp"
                           ,"/updateUserPassword"
-                          ,"/ws/**").permitAll()
+                          ,"/ws/**").permitAll().requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 
           .requestMatchers("/admin/**").hasAnyRole("ADMIN")
           .requestMatchers("/agent/**").hasAnyRole("AGENT","ADMIN")

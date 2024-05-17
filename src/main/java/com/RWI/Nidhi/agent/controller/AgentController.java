@@ -2,6 +2,7 @@ package com.RWI.Nidhi.agent.controller;
 
 import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceImplementation;
+import com.RWI.Nidhi.dto.Agentforgetpassword;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.SchemeStatus;
 import com.RWI.Nidhi.user.serviceImplementation.AccountsServiceImplementation;
@@ -65,11 +66,10 @@ public class AgentController {
     @CrossOrigin(origins = "http://localhost:5173")
     @PutMapping("/updateAgentPassword")
     public ResponseEntity<?> updateAgentPassword(
-            @RequestParam("agentEmail") String agentEmail,
-            @RequestParam("agentPassword") String agentPassword
-    ) {
+            @RequestBody Agentforgetpassword agentforgetpassword
+            ) {
         try {
-            return agentService.updateAgentPassword(agentEmail, agentPassword);
+            return agentService.updateAgentPassword(agentforgetpassword);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

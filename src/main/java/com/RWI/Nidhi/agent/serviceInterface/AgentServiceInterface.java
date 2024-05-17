@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.agent.serviceInterface;
 
 import com.RWI.Nidhi.Security.payload.request.SignupRequest;
+import com.RWI.Nidhi.dto.Agentforgetpassword;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.SchemeStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public interface AgentServiceInterface {
     String deleteScheme(String email);
     ResponseEntity<String> agentForgetPasswordSendVerificationCode(String agentEmail) throws Exception;
     ResponseEntity<String> agentForgetPasswordVerifyVerificationCode(String agentEmail, String enteredOtp) throws Exception;
-    ResponseEntity<?> updateAgentPassword(String agentEmail, String agentPassword) throws Exception;
+    ResponseEntity<?> updateAgentPassword(Agentforgetpassword agentforgetpassword) throws Exception;
 
 }
 
