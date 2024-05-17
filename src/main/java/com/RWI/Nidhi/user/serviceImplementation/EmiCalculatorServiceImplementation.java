@@ -4,20 +4,25 @@ import com.RWI.Nidhi.enums.LoanType;
 import com.RWI.Nidhi.user.serviceInterface.EmiCalculatorService;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
+import java.util.HashMap;
 
 @Service
 public class EmiCalculatorServiceImplementation implements EmiCalculatorService {
 
-
     @Override
-    public double[] calculateEMI(double principle, LoanType loanType, int time) {
+    public HashMap<String, Double> calculateEMI(double principle, LoanType loanType, int time) {
         double rate = loanType.getLoanInterestRate();
         double monthlyRate = rate / 12 / 100;
         int numberOfPayments = time * 12;
-        double emi = (principle * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
-        double totalPayment = emi * numberOfPayments;
+        double loanEmi = (principle * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+        double totalPayment = loanEmi * numberOfPayments;
         double totalInterestPayable = totalPayment - principle;
-        return new double[]{emi, totalInterestPayable, totalPayment};
+
+        HashMap<String, Double> result = new HashMap<>();
+        result.put("emi", loanEmi);
+        result.put("totalInterestPayable", totalInterestPayable);
+        result.put("totalPayment", totalPayment);
+
+        return result;
     }
 }
