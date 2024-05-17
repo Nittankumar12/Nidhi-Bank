@@ -1,18 +1,9 @@
 package com.RWI.Nidhi.admin.controller;
 
 import com.RWI.Nidhi.Security.payload.request.SignupRequest;
-import com.RWI.Nidhi.Security.payload.response.MessageResponse;
-import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
-import com.RWI.Nidhi.admin.ResponseDto.AgentMinimalDto;
 import com.RWI.Nidhi.admin.adminServiceImplementation.AdminServiceImplementation;
-import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.dto.LoanHistoryDto;
-import com.RWI.Nidhi.dto.TransactionsHistoryDto;
-import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.LoanStatus;
-import com.RWI.Nidhi.dto.LoginReq;
-import com.RWI.Nidhi.entity.Admin;
-import com.RWI.Nidhi.entity.Agent;
 import com.RWI.Nidhi.enums.LoanType;
 import com.RWI.Nidhi.repository.AdminRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +30,7 @@ public class AdminController {
     public ResponseEntity<?> addAgent(@RequestBody SignupRequest signupRequest){
         return adminService.addAgent(signupRequest);
     }
+    @CrossOrigin(origins = "http://localhost:5173/")
     @PostMapping("/addAdmin")
     public ResponseEntity<?> addAdmin(@RequestBody SignupRequest signupRequest,@RequestParam("adminPassword") String adminPassword){
         return adminService.addAdmin(signupRequest, adminPassword);
@@ -108,12 +100,10 @@ public class AdminController {
         List<LoanHistoryDto> loanHistoryDtos =adminService.getLoansByLoanStatus(loanStatus);
         return new ResponseEntity<>(loanHistoryDtos,HttpStatus.OK);
     }
-    @PostMapping("/addBalance")
-    ResponseEntity<?> addBalanceToAccount(@RequestParam("amount") double amount){
+    ResponseEntity<?> addBalanceToAccount(double amount){
         return adminService.addBalanceToAccount(amount);
     }
-    @PostMapping("/deductBalance")
-    ResponseEntity<?> deductBalanceToAccount(@RequestParam("amount") double amount){
+    ResponseEntity<?> deductBalanceToAccount(double amount){
         return adminService.deductBalanceToAccount(amount);
     }
 //    @PostMapping("/login-admin")

@@ -2,7 +2,6 @@ package com.RWI.Nidhi.agent.controller;
 
 import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceImplementation;
-import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.SchemeStatus;
 import com.RWI.Nidhi.user.serviceImplementation.AccountsServiceImplementation;
@@ -20,6 +19,7 @@ public class AgentController {
     @Autowired
     AccountsServiceImplementation accountsService;
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/addUser")
     public ResponseEntity<?> addUser(@RequestBody SignupRequest signupRequest, @RequestParam("agentEmail") String agentEmail) throws Exception {
         return agentService.addUser(signupRequest, agentEmail);
@@ -50,6 +50,7 @@ public class AgentController {
     public ResponseEntity<?> closeAccount(@RequestParam("accountNumber") String accountNumber, @RequestParam("agentEmail") String agentEmail) throws Exception {
         return agentService.closeAccount(accountNumber, agentEmail);
     }
+
     @PostMapping("/forget/verifyEmail")
     public ResponseEntity<String> verifyEmail(@RequestParam("agentEmail") String agentEmail) throws Exception {
         return agentService.agentForgetPasswordSendVerificationCode(agentEmail);
@@ -60,21 +61,32 @@ public class AgentController {
         return agentService.agentForgetPasswordVerifyVerificationCode(agentEmail, enteredOtp);
     }
 
+
+    @CrossOrigin(origins = "http://localhost:5173")
     @PutMapping("/updateAgentPassword")
-    public AddAgentDto updateAgentPassword(@RequestParam("agentEmail") String agentEmail, @RequestParam("agentPassword") String agentPassword) throws Exception {
-        return agentService.updateAgentPassword(agentEmail, agentPassword);
+    public ResponseEntity<?> updateAgentPassword(
+            @RequestParam("agentEmail") String agentEmail,
+            @RequestParam("agentPassword") String agentPassword
+    ) {
+        try {
+            return agentService.updateAgentPassword(agentEmail, agentPassword);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PutMapping("/ChangeLoanStatus/{email}")
-    public ResponseEntity<?> ChangeLoanStatus(@RequestParam("email")String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus){
-        return agentService.ChangeLoanStatus(userEmail,agentEmail,changedStatus,previousStatus);
+    public ResponseEntity<?> ChangeLoanStatus(@RequestParam("email") String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
+        return agentService.ChangeLoanStatus(userEmail, agentEmail, changedStatus, previousStatus);
     }
+
     @PutMapping("/ChangeSchemeStatus/{email}")
-    public ResponseEntity<?> ChangeSchemeStatus(@RequestParam("email")String agentEmail, @RequestBody String userEmail, SchemeStatus changedStatus, SchemeStatus previousStatus){
-        return agentService.ChangeSchemeStatus(userEmail,agentEmail,changedStatus,previousStatus);
+    public ResponseEntity<?> ChangeSchemeStatus(@RequestParam("email") String agentEmail, @RequestBody String userEmail, SchemeStatus changedStatus, SchemeStatus previousStatus) {
+        return agentService.ChangeSchemeStatus(userEmail, agentEmail, changedStatus, previousStatus);
     }
+
     @DeleteMapping("/deleteScheme/{email}")
-    public String deleteScheme(@PathVariable String email){
+    public String deleteScheme(@PathVariable String email) {
         return agentService.deleteScheme(email);
     }
 }

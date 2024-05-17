@@ -10,7 +10,9 @@ import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
 import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.dto.UserResponseDto;
 import com.RWI.Nidhi.entity.*;
-import com.RWI.Nidhi.enums.*;
+import com.RWI.Nidhi.enums.LoanStatus;
+import com.RWI.Nidhi.enums.SchemeStatus;
+import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
@@ -37,8 +39,6 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     @Autowired
     OtpServiceImplementation otpServiceImplementation;
     @Autowired
-    TransactionRepo transactionRepo;
-    @Autowired
     AccountsRepo accountsRepo;
     @Autowired
     UserService userService;
@@ -60,6 +60,8 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     AdminRepo adminRepo;
     @Autowired
     SchemeRepo schemeRepo;
+    @Autowired
+    CredentialsRepo credRepo;
 
     @Override
     public ResponseEntity<?> addUser(SignupRequest signUpRequest, String agentEmail) {
@@ -183,7 +185,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
 
         currentAcc.setAccountStatus(Status.INACTIVE);
         accountsRepo.save(currentAcc);
-        return new ResponseEntity<>("Account deactivated!!", HttpStatus.OK);
+        return new ResponseEntity<>("Account decativated!!", HttpStatus.OK);
     }
 
     @Override
@@ -253,8 +255,14 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     }
 
     @Override
-    public AddAgentDto updateAgentPassword(String agentEmail, String agentPassword) throws Exception {
+    public ResponseEntity<?> updateAgentPassword(String agentEmail, String agentPassword) throws Exception {
         Agent currAgent = agentRepo.findByAgentEmail(agentEmail);
+        Optional<Credentials> currAgent1=credRepo.findByEmail(agentEmail);
+        if(currAgent1.isPresent()) {
+            currAgent1.get().setPassword(encoder.encode(agentPassword));
+
+            credRepo.save(currAgent1.get());
+        }
         AddAgentDto agentDto = new AddAgentDto();
 
         currAgent.setAgentPassword(encoder.encode(agentPassword));
@@ -267,7 +275,9 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
-        return agentDto;
+        return new ResponseEntity<>(agentDto,HttpStatus.OK);
+
+
     }
     @Override
     public ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
@@ -284,16 +294,6 @@ public class AgentServiceImplementation implements AgentServiceInterface {
                         if(previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.APPROVED){
                             loan.setStatus(changedStatus);
                             loan.setStartDate(LocalDate.now());
-                            Transactions transactions = new Transactions();
-                            transactions.setAccount(accounts);
-                            transactions.setLoan(loan);
-                            transactions.setTransactionAmount(loan.getPrincipalLoanAmount());
-                            Transactions.deductTotalBalance(loan.getPrincipalLoanAmount());
-                            transactions.setTransactionDate(new Date());
-                            transactions.setTransactionType(TransactionType.DEBITED);
-                            transactions.setTransactionStatus(TransactionStatus.COMPLETED);
-                            transactionRepo.save(transactions);
-                            loan.getTransactionsList().add(transactions);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
                         } else if (previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.PENDING){
@@ -343,7 +343,6 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         mailMessage.setText("Hello User," + loan.getUser().getUserName() + ",\n\n Your loan status has been changed to" + loan.getStatus() + "Please confirm so with your respective agent.");
         javaMailSender.send(mailMessage);
     }
-    @Override
     public ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus){
         if (agentRepo.existsByAgentEmail(agentEmail)) {
             if (userRepo.existsByEmail(userEmail)) {
@@ -381,18 +380,6 @@ public class AgentServiceImplementation implements AgentServiceInterface {
                                 sendStatusEmail(scheme);
                             } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.CLOSED) {
                                 scheme.setSStatus(changedStatus);
-                                //Transaction part
-                                Transactions transactions = new Transactions();
-                                transactions.setAccount(accounts);
-                                transactions.setScheme(scheme);
-                                transactions.setTransactionAmount(scheme.getTotalDepositAmount());
-                                Transactions.deductTotalBalance(scheme.getTotalDepositAmount());
-                                transactions.setTransactionDate(new Date());
-                                transactions.setTransactionType(TransactionType.DEBITED);
-                                transactions.setTransactionStatus(TransactionStatus.COMPLETED);
-                                transactionRepo.save(transactions);
-                                scheme.getTransactionsList().add(transactions);
-
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
                             } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.PENDING) {
