@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 public class IdentityDocsServiceImp implements IdentityDocsService {
@@ -70,5 +71,28 @@ public class IdentityDocsServiceImp implements IdentityDocsService {
             return "Failed to upload";
         }
     }
+
+    @Override
+    public String getDownloadUrlForFront(Integer id) {
+        Optional<IdentityDocs> identityDocs = identityRepo.findById(id);
+        return identityDocs.map(IdentityDocs :: getAadharImageFront).orElse(null);
+
+    }
+
+    @Override
+    public String getDownloadUrlForBack(Integer id) {
+        Optional<IdentityDocs> identityDocs = identityRepo.findById(id);
+        return identityDocs.map(IdentityDocs::getAadharImageBack).orElse(null);
+
+    }
+
+    @Override
+    public String getProfilePhoto(Integer id) {
+        Optional<IdentityDocs> identityDocs = identityRepo.findById(id);
+        return identityDocs.map(IdentityDocs::getProfilePhoto).orElse(null);
+    }
+
+
+
 
 }

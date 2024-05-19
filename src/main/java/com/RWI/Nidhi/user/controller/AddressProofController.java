@@ -1,15 +1,16 @@
 package com.RWI.Nidhi.user.controller;
 
 //import com.nidhi.kyc.KYC.Enum.AdressDocumentType;
+import com.RWI.Nidhi.entity.AddressProof;
 import com.RWI.Nidhi.enums.AdressDocumentType;
 //import com.nidhi.kyc.KYC.Service.AddressProofServiceImp;
 import com.RWI.Nidhi.user.serviceImplementation.AddressProofServiceImp;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/kyc")
@@ -36,4 +37,13 @@ public class AddressProofController {
                                                                       selectDocument,
                                                                       docPhoto)));
     }
+
+
+    @GetMapping("/get/address")
+    public ResponseEntity<Object> getAddressDetails(){
+        List<AddressProof> addressProof = addressProofServiceImp.getAllAddress();
+        return new ResponseEntity<>(addressProof, HttpStatus.OK);
+    }
+
+
 }
