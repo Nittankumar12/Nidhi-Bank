@@ -48,5 +48,27 @@ public class identityDocsController {
 
     }
 
+    @GetMapping("/front/image-url/{id}")
+    public ResponseEntity<String> getImageUrl(@PathVariable Integer id) {
+        String string = identityDocsService.getDownloadUrlForFront(id);
+        return new ResponseEntity<>(string, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/back/image-url/{docId}")
+    public ResponseEntity<String> getAdharImageBack(@PathVariable Integer id) {
+        String string = identityDocsService.getDownloadUrlForBack(id);
+        return new ResponseEntity<>(string, HttpStatus.OK);
+    }
+
+    @GetMapping("/ProfilePhoto/image-url/{docId}")
+    public ResponseEntity<String> getProfilePhoto(@PathVariable Integer id) {
+        String string = identityDocsService.getProfilePhoto(id);
+        return new ResponseEntity<>(string, HttpStatus.OK);
+    }
+
+
+
+
 }
 

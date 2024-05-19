@@ -1,7 +1,9 @@
 package com.RWI.Nidhi.user.imageUpload.ControllerS3;
 
-import com.aws.serviceS3.FileService;
-import com.aws.serviceS3.FileUpload;
+//import com.aws.serviceS3.FileService;
+//import com.aws.serviceS3.FileUpload;
+import com.RWI.Nidhi.user.imageUpload.serviceS3.FileService;
+import com.RWI.Nidhi.user.imageUpload.serviceS3.FileUpload;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
