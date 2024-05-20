@@ -17,6 +17,11 @@ public interface IdentityDocsService {
                              MultipartFile voterIdImageFront,
                              MultipartFile voterIdImageBack,
                              MultipartFile profilePhoto);
+
+    public String getDownloadUrlForFront(Integer id);
+    public String getDownloadUrlForBack(Integer id);
+    public String getProfilePhoto(Integer id);
+
 }
 
 
