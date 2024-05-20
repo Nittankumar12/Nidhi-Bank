@@ -57,7 +57,6 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             loan.setRePaymentTerm(loanApplyDto.getRePaymentTerm());
             loan.setPrincipalLoanAmount(loanApplyDto.getPrincipalLoanAmount());
 
-
             //Status
             loan.setStatus(LoanStatus.APPLIED);
             loan.setAccount(acc);// save acc in loan
@@ -121,8 +120,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         LoanType t = loanCalcDto.getLoanType();
         int n = loanCalcDto.getRePaymentTerm();
         HashMap<String, Double> map = emiCalculatorServiceImplementation.calculateEMI(p,t,n);
-        Double value = map.get("totalPayment");
-        return value;
+        return map.get("totalPayment");
     }
 
     @Override
@@ -132,8 +130,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         LoanType t = loanCalcDto.getLoanType();
         int n = loanCalcDto.getRePaymentTerm();
         HashMap<String, Double> map = emiCalculatorServiceImplementation.calculateEMI(p,t,n);
-        Double value = map.get("loanEmi");
-        return value;
+        return map.get("loanEmi");
     }
     @Override
     public ResponseEntity<?> getLoanInfo(String email) {
@@ -171,39 +168,44 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         MonthlyEmiDto monthlyEmiDto = new MonthlyEmiDto();
         List<Loan> loanList = acc.getLoanList();
         for (Loan loan : loanList) {
-            if (penaltyService.noOfMonthsEmiMissed(loan.getLoanId()) == 0) {
-                double payableLoanAmount = loan.getPayableLoanAmount();
-                double temp = payableLoanAmount;
-                payableLoanAmount = temp - loan.getMonthlyEMI();
-                loan.setPayableLoanAmount(payableLoanAmount);
-                loan.setEmiDate(firstDateOfNextMonth(LocalDate.now()));
-                //transaction part
+            if(loan.getStatus()==LoanStatus.SANCTIONED) {
+                if (penaltyService.noOfMonthsEmiMissed(loan.getLoanId()) == 0) {
+                    double payableLoanAmount = loan.getPayableLoanAmount();
+                    double temp = payableLoanAmount;
+                    payableLoanAmount = temp - loan.getMonthlyEMI();
+                    loan.setPayableLoanAmount(payableLoanAmount);
+                    loan.setEmiDate(firstDateOfNextMonth(LocalDate.now()));
+                    //transaction part
 
-                Transactions transactions = new Transactions();
-                transactions.setAccount(acc);
-                transactions.setLoan(loan);
-                transactions.setTransactionAmount(loan.getMonthlyEMI());
-                Transactions.deductTotalBalance(loan.getMonthlyEMI());
-                transactions.setTransactionDate(new Date());
-                transactions.setTransactionType(TransactionType.CREDITED);
-                transactions.setTransactionStatus(TransactionStatus.COMPLETED);
-                transactionRepo.save(transactions);
-                loan.getTransactionsList().add(transactions);
+                    Transactions transactions = new Transactions();
+                    transactions.setAccount(acc);
+                    transactions.setLoan(loan);
+                    transactions.setTransactionAmount(loan.getMonthlyEMI());
+                    Transactions.addTotalBalance(loan.getMonthlyEMI());
+                    transactions.setTransactionDate(new Date());
+                    transactions.setTransactionType(TransactionType.CREDITED);
+                    transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+                    transactionRepo.save(transactions);
+                    loan.getTransactionsList().add(transactions);
 
-                //transaction part
-                LocalDate endDate = ChronoUnit.DAYS.addTo(loan.getStartDate(), loan.getRePaymentTerm());
-                int rePaymentTermLeft = (int) ChronoUnit.DAYS.between(endDate, LocalDate.now());
+                    //transaction part
+                    LocalDate endDate = ChronoUnit.DAYS.addTo(loan.getStartDate(), loan.getRePaymentTerm());
+                    int rePaymentTermLeft = (int) ChronoUnit.DAYS.between(endDate, LocalDate.now());
+                    loanRepository.save(loan);
 
-                monthlyEmiDto.setPayableLoanAmount(payableLoanAmount);
-                monthlyEmiDto.setMonthlyEMI(loan.getMonthlyEMI());
-                monthlyEmiDto.setRePaymentTermLeft(rePaymentTermLeft);
-                monthlyEmiDto.setPaymentDate(LocalDate.now());
-                monthlyEmiDto.setNextEMIDate(firstDateOfNextMonth(LocalDate.now()));
-            } else {
-                return payEMIWithFine(email);
+                    monthlyEmiDto.setPayableLoanAmount(payableLoanAmount);
+                    monthlyEmiDto.setMonthlyEMI(loan.getMonthlyEMI());
+                    monthlyEmiDto.setRePaymentTermLeft(rePaymentTermLeft);
+                    monthlyEmiDto.setPaymentDate(LocalDate.now());
+                    monthlyEmiDto.setNextEMIDate(firstDateOfNextMonth(LocalDate.now()));
+                } else {
+                    return payEMIWithFine(email);
+                }
+            }else {
+                return null;
             }
         }
-        return monthlyEmiDto;
+        return null;
         // In return - EMI paid, EMI month, Months left, amount left, next payment date
     }
 
@@ -213,7 +215,6 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         MonthlyEmiDto monthlyEmiDto = new MonthlyEmiDto();
         List<Loan> loanList = acc.getLoanList();
         for (Loan loan : loanList) {
-            if (checkForExistingLoan(email) == Boolean.FALSE) {
                 Penalty penalty = penaltyService.chargePenaltyForLoan(loan.getLoanId());
                 double payableLoanAmount = loan.getPayableLoanAmount();
                 double temp = payableLoanAmount;
@@ -224,6 +225,19 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                 penalty.setPenaltyStatus(PenaltyStatus.PAID);
                 penaltyRepo.save(penalty);
 
+                Transactions transactions = new Transactions();
+                transactions.setAccount(acc);
+                transactions.setLoan(loan);
+                transactions.setTransactionAmount(loan.getMonthlyEMI()+penalty.getPenaltyAmount());
+                Transactions.addTotalBalance(loan.getMonthlyEMI()+penalty.getPenaltyAmount());
+                transactions.setTransactionDate(new Date());
+                transactions.setTransactionType(TransactionType.CREDITED);
+                transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+                transactionRepo.save(transactions);
+                loan.getTransactionsList().add(transactions);
+                loan.setCurrentFine(0);//set currentFine to 0
+                loanRepository.save(loan);
+
                 LocalDate endDate = ChronoUnit.DAYS.addTo(loan.getStartDate(), loan.getRePaymentTerm());
                 int rePaymentTermLeft = (int) ChronoUnit.DAYS.between(endDate, LocalDate.now());
 
@@ -232,12 +246,8 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                 monthlyEmiDto.setRePaymentTermLeft(rePaymentTermLeft);
                 monthlyEmiDto.setPaymentDate(LocalDate.now());
                 monthlyEmiDto.setNextEMIDate(firstDateOfNextMonth(LocalDate.now()));
-                loan.setCurrentFine(0);//set currentFine to 0
-            } else
-                return new MonthlyEmiDto();
         }
         return monthlyEmiDto;
-        // In return - EMI paid, EMI month, Months left, amount left, next payment date
     }
     @Override
     public ResponseEntity<?> getLoanClosureDetails(String email) {
@@ -290,7 +300,6 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             return new ResponseEntity<> ("Applied For Closure", HttpStatus.ACCEPTED);
         }
     }
-
     public LocalDate firstDateOfNextMonth(LocalDate date) {
         LocalDate nextMonth = date.plusMonths(1);
         return nextMonth.withDayOfMonth(1);
@@ -299,5 +308,4 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     public ResponseEntity<?> findRateByLoanType(LoanType loanType){
         return new ResponseEntity<>(loanType+" - "+loanType.getLoanInterestRate(),HttpStatus.FOUND);
     }
-    // to here
 }

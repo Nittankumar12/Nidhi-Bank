@@ -36,9 +36,7 @@ public class UserPenaltyServiceImplementation implements UserPenaltyServiceInter
             penalty.setLoan(currLoan);
             penalty.setPenaltyStatus(PenaltyStatus.DUE);
             penaltyRepo.save(penalty);
-            List<Penalty> penaltyList = new ArrayList<>();
-            penaltyList.add(penalty);
-            currLoan.setPenalty(penaltyList);
+            currLoan.getPenalty().add(penalty);
             currLoan.setCurrentFine(penaltyAmount);
             loanRepo.save(currLoan);
             return penalty;
@@ -52,9 +50,8 @@ public class UserPenaltyServiceImplementation implements UserPenaltyServiceInter
         if (noOfMonthsEmiMissed(loanId) == 0)
             return penaltyAmount;
         else {
-            double penaltyEMI = noOfMonthsEmiMissed(loanId) * loanRepo.findById(loanId).orElseThrow().getMonthlyEMI();
-            double penaltyRate = 0.02;
-            penaltyAmount = penaltyRate * penaltyEMI * noOfMonthsEmiMissed(loanId);
+            double penaltyRate = 0.02;//per month
+            penaltyAmount = penaltyRate *  noOfMonthsEmiMissed(loanId) * loanRepo.findById(loanId).orElseThrow().getMonthlyEMI();
             return penaltyAmount;
         }
     }

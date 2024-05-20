@@ -5,7 +5,6 @@ import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceImplementation;
 import com.RWI.Nidhi.dto.Agentforgetpassword;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.SchemeStatus;
-import com.RWI.Nidhi.user.serviceImplementation.AccountsServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +16,6 @@ public class AgentController {
 
     @Autowired
     AgentServiceImplementation agentService;
-    @Autowired
-    AccountsServiceImplementation accountsService;
 
     @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/addUser")
