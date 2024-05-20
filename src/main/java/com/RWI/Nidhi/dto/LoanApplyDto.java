@@ -7,7 +7,8 @@ import lombok.Data;
 
 @Data
 public class LoanApplyDto {
-    private String email;
+    private String userEmail;
+    private String agentEmail;
     private int rePaymentTerm;
     private double principalLoanAmount;
     private LoanType loanType;

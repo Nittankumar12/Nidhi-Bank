@@ -34,6 +34,8 @@ public class Agent {
 
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
     private List<User> userList;
+    @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
+    private List<Loan> loanList;
 
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
     private List<FixedDeposit> fixedDepositList;

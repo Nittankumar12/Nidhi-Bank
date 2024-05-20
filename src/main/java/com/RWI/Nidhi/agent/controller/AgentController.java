@@ -62,7 +62,6 @@ public class AgentController {
         return agentService.agentForgetPasswordVerifyVerificationCode(agentEmail, enteredOtp);
     }
 
-
     @CrossOrigin(origins = "http://localhost:5173")
     @PutMapping("/updateAgentPassword")
     public ResponseEntity<?> updateAgentPassword(
