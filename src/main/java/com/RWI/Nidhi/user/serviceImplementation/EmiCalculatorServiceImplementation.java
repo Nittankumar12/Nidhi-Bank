@@ -18,8 +18,13 @@ public class EmiCalculatorServiceImplementation implements EmiCalculatorService 
         double totalPayment = loanEmi * numberOfPayments;
         double totalInterestPayable = totalPayment - principle;
 
+        // Round off the calculated values to two decimal places
+        loanEmi = Math.round(loanEmi * 100.0) / 100.0;
+        totalPayment = Math.round(totalPayment * 100.0) / 100.0;
+        totalInterestPayable = Math.round(totalInterestPayable * 100.0) / 100.0;
+
         HashMap<String, Double> result = new HashMap<>();
-        result.put("emi", loanEmi);
+        result.put("loanEmi", loanEmi);
         result.put("totalInterestPayable", totalInterestPayable);
         result.put("totalPayment", totalPayment);
 
