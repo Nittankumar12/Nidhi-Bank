@@ -259,17 +259,22 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     @Override
     public ResponseEntity<?> updateAgentPassword(Agentforgetpassword agentforgetpassword) throws Exception {
         Agent currAgent = agentRepo.findByAgentEmail(agentforgetpassword.getEmail());
-        Optional<Credentials> currAgent1=credRepo.findByEmail(agentforgetpassword.getEmail());
-        if(currAgent1.isPresent()) {
-            currAgent1.get().setPassword(encoder.encode(agentforgetpassword.getPassword()));
 
-            credRepo.save(currAgent1.get());
-        }
         AddAgentDto agentDto = new AddAgentDto();
 
         currAgent.setAgentPassword(encoder.encode(agentforgetpassword.getPassword()));
         try {
-            agentRepo.save(currAgent);
+            Optional<Credentials> currAgent1=credRepo.findByEmail(agentforgetpassword.getEmail());
+            if(currAgent1.isPresent()) {
+                currAgent1.get().setPassword(encoder.encode(agentforgetpassword.getPassword()));
+
+                credRepo.save(currAgent1.get());
+                agentRepo.save(currAgent);
+            }
+            else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
             agentDto.setAgentId(currAgent.getAgentId());
             agentDto.setAgentName(currAgent.getAgentName());
             agentDto.setAgentEmail(currAgent.getAgentEmail());
