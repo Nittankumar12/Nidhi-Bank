@@ -1,8 +1,11 @@
 package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.LoanApplyDto;
+import com.RWI.Nidhi.entity.Agent;
+import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanType;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
+import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +16,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/loan")
 public class LoanController {
     @Autowired
+    UserService userService;
+    @Autowired
     UserLoanServiceInterface userLoanService;
-
     @GetMapping("/maxLoan/{email}")
     public ResponseEntity<Double> maxLoan(@PathVariable("email") String email) {
         if (userLoanService.checkForExistingLoan(email) == Boolean.TRUE)
@@ -22,17 +26,27 @@ public class LoanController {
         else
             return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
     }
+/* if (!agent.getAgentEmail().equals(agentEmail)) {
+            return new ResponseEntity<>("This user is not in current agent's list", HttpStatus.NOT_FOUND);
+        }
 
+ */
     @PostMapping("/applyLoan")
     public ResponseEntity<?> applyLoan(@RequestBody LoanApplyDto loanApplyDto) {
-        if (userLoanService.checkForExistingLoan(loanApplyDto.getEmail()) == Boolean.TRUE) {
-            if (userLoanService.checkForLoanBound(loanApplyDto.getEmail(), loanApplyDto.getPrincipalLoanAmount()) == Boolean.TRUE) {
-                userLoanService.applyLoan(loanApplyDto);
-                return new ResponseEntity<>(userLoanService.getLoanInfo(loanApplyDto.getEmail()), HttpStatus.ACCEPTED);
+        User user = userService.getByEmail(loanApplyDto.getUserEmail());
+        Agent agent = user.getAgent();
+        if (!agent.getAgentEmail().equals(loanApplyDto.getAgentEmail())) {
+            return new ResponseEntity<>("This user is not in current agent's list", HttpStatus.NOT_FOUND);
+        } else {
+            if (userLoanService.checkForExistingLoan(loanApplyDto.getUserEmail()) == Boolean.TRUE) {
+                if (userLoanService.checkForLoanBound(loanApplyDto.getUserEmail(), loanApplyDto.getPrincipalLoanAmount()) == Boolean.TRUE) {
+                    userLoanService.applyLoan(loanApplyDto);
+                    return new ResponseEntity<>(userLoanService.getLoanInfo(loanApplyDto.getUserEmail()), HttpStatus.ACCEPTED);
+                } else
+                    return new ResponseEntity<>("Loan Amount Request exceed allowed amount", HttpStatus.BAD_REQUEST);
             } else
-                return new ResponseEntity<>("Loan Amount Request exceed allowed amount", HttpStatus.BAD_REQUEST);
-        } else
-            return new ResponseEntity<>("You have another active loan", HttpStatus.I_AM_A_TEAPOT);
+                return new ResponseEntity<>("You have another active loan", HttpStatus.I_AM_A_TEAPOT);
+        }
     }
 
 

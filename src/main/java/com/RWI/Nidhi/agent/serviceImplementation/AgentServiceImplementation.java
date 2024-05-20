@@ -9,6 +9,7 @@ import com.RWI.Nidhi.Security.repository.RoleRepository;
 import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
 import com.RWI.Nidhi.dto.AddAgentDto;
 import com.RWI.Nidhi.dto.Agentforgetpassword;
+import com.RWI.Nidhi.dto.LoanCalcDto;
 import com.RWI.Nidhi.dto.UserResponseDto;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.LoanStatus;
@@ -295,6 +296,14 @@ public class AgentServiceImplementation implements AgentServiceInterface {
                         if(previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.APPROVED){
                             loan.setStatus(changedStatus);
                             loan.setStartDate(LocalDate.now());
+                            loan.setEmiDate(userLoanService.calcFirstEMIDate(loan.getStartDate()));
+                            LoanCalcDto loanCalcDto = new LoanCalcDto();
+                            loanCalcDto.setLoanType(loan.getLoanType());
+                            loanCalcDto.setRePaymentTerm(loan.getRePaymentTerm());
+                            loanCalcDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
+                            loanCalcDto.setInterestRate(loan.getLoanType());
+                            loan.setMonthlyEMI(userLoanService.calculateEMI(loanCalcDto));
+                            loan.setPayableLoanAmount(userLoanService.calculateFirstPayableAmount(loanCalcDto));
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
                         } else if (previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.PENDING){

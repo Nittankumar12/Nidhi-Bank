@@ -25,7 +25,6 @@ import org.springframework.web.cors.CorsUtils;
 import java.util.Arrays;
 
 @Configuration
-
 public class NidhiSecurityConfig {
   @Autowired
   UserDetailsServiceConfig userDetailsService;
@@ -84,7 +83,6 @@ public class NidhiSecurityConfig {
                         configuration.setAllowCredentials(true);
                         configuration.setMaxAge(3600L);
                         return configuration;
-
 
                     }})
             )
