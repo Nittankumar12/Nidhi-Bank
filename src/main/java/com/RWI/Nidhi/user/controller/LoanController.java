@@ -26,11 +26,6 @@ public class LoanController {
         else
             return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
     }
-/* if (!agent.getAgentEmail().equals(agentEmail)) {
-            return new ResponseEntity<>("This user is not in current agent's list", HttpStatus.NOT_FOUND);
-        }
-
- */
     @PostMapping("/applyLoan")
     public ResponseEntity<?> applyLoan(@RequestBody LoanApplyDto loanApplyDto) {
         User user = userService.getByEmail(loanApplyDto.getUserEmail());
@@ -77,14 +72,3 @@ public class LoanController {
         return userLoanService.applyForLoanClosure(email);
     }
 }
-// Loan Service - > Done, Testing remains
-// Info, LoanClosure-> Info, Apply
-// Scheme Info, LoanClosure-> Info, Apply
-
-// AGENT LOAN CONTROLLER - > Done, Testing remains
-// sanction, approve, etc. --> update loan status(user email, agent email(with verification), status to & status from)
-
-// SCHEME LOAN CONTROLLER
-// Scheme Loan - common problem of working for any loan and check for scheme running - done
-// apply prob - in conditions
-// help rahul with apply scheme - email, tenure, amount

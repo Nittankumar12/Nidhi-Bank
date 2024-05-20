@@ -12,9 +12,7 @@ import com.RWI.Nidhi.dto.Agentforgetpassword;
 import com.RWI.Nidhi.dto.LoanCalcDto;
 import com.RWI.Nidhi.dto.UserResponseDto;
 import com.RWI.Nidhi.entity.*;
-import com.RWI.Nidhi.enums.LoanStatus;
-import com.RWI.Nidhi.enums.SchemeStatus;
-import com.RWI.Nidhi.enums.Status;
+import com.RWI.Nidhi.enums.*;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
@@ -52,6 +50,8 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     JavaMailSender javaMailSender;
     @Autowired
     AgentRepo agentRepo;
+    @Autowired
+    TransactionRepo transactionRepo;
     @Autowired
     PasswordEncoder encoder;
     @Autowired
@@ -316,6 +316,18 @@ public class AgentServiceImplementation implements AgentServiceInterface {
                             sendStatusEmail(loan);
                         } else if (previousStatus == LoanStatus.APPROVED && changedStatus == LoanStatus.SANCTIONED){
                             loan.setStatus(changedStatus);
+
+                            Transactions transactions = new Transactions();
+                            transactions.setAccount(accounts);
+                            transactions.setLoan(loan);
+                            transactions.setTransactionAmount(loan.getPrincipalLoanAmount());
+                            Transactions.deductTotalBalance(loan.getPrincipalLoanAmount());
+                            transactions.setTransactionDate(new Date());
+                            transactions.setTransactionType(TransactionType.DEBITED);
+                            transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+                            transactionRepo.save(transactions);
+                            loan.getTransactionsList().add(transactions);
+
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
                         } else if (previousStatus == LoanStatus.APPROVED && changedStatus == LoanStatus.PENDING){
@@ -382,6 +394,18 @@ public class AgentServiceImplementation implements AgentServiceInterface {
                                 sendStatusEmail(scheme);
                             } else if (previousStatus == SchemeStatus.APPROVED && changedStatus == SchemeStatus.SANCTIONED) {
                                 scheme.setSStatus(changedStatus);
+
+                                Transactions transactions = new Transactions();
+                                transactions.setAccount(accounts);
+                                transactions.setScheme(scheme);
+                                transactions.setTransactionAmount(scheme.getMonthlyDepositAmount()*scheme.getTenure());
+                                Transactions.deductTotalBalance(scheme.getMonthlyDepositAmount()*scheme.getTenure());
+                                transactions.setTransactionDate(new Date());
+                                transactions.setTransactionType(TransactionType.DEBITED);
+                                transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+                                transactionRepo.save(transactions);
+                                scheme.getTransactionsList().add(transactions);
+
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
                             } else if (previousStatus == SchemeStatus.APPROVED && changedStatus == SchemeStatus.PENDING) {
