@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -29,6 +30,8 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     AccountsRepo accountsRepo;
     @Autowired
     UserPenaltyServiceImplementation penaltyService;
+    @Autowired
+    EmiCalculatorServiceImplementation emiCalculatorServiceImplementation;
     @Autowired
     UserRepo userRepo;
     @Autowired
@@ -131,10 +134,11 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     public double calculateEMI(LoanCalcDto loanCalcDto) {
         //Internal Methods for apply Loan
         double p = loanCalcDto.getPrincipalLoanAmount();
-        double r = loanCalcDto.getLoanType().getLoanInterestRate() / 100;
+        LoanType t = loanCalcDto.getLoanType();
         int n = loanCalcDto.getRePaymentTerm();
-        loanCalcDto.setMonthlyEMI(p * r * (Math.pow((1 + r), n)) / ((Math.pow((1 + r), n)) - 1));
-        return loanCalcDto.getMonthlyEMI();
+        HashMap<String, Double> map = emiCalculatorServiceImplementation.calculateEMI(p,t,n);
+        Double value = map.get("loanEmi");
+        return value;
     }
     @Override
     public ResponseEntity<?> getLoanInfo(String email) {
