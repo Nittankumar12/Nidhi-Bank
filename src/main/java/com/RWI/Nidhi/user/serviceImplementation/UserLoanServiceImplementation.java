@@ -160,6 +160,34 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         }
     }
 
+    public static boolean verifyLoanType(String test) {
+        for (LoanType loanType : LoanType.values()) {
+            if (loanType.name().equals(test)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    @Override
+    public ResponseEntity<?> getLoanInfoByLoanType(LoanType loanType,double principalAmount, int rePaymentTerm) {
+        if(verifyLoanType(loanType.toString())) {
+            LoanTypeBasedInfoDto loanInfoDto = new LoanTypeBasedInfoDto();
+            loanInfoDto.setPrincipalAmount(principalAmount);
+            loanInfoDto.setRePaymentTerm(rePaymentTerm);
+            loanInfoDto.setLoanType(loanType);
+            loanInfoDto.setInterestRate(loanType.getLoanInterestRate());
+            LoanCalcDto loanCalcDto = new LoanCalcDto();
+            loanCalcDto.setLoanType(loanType);
+            loanCalcDto.setPrincipalLoanAmount(principalAmount);
+            loanCalcDto.setRePaymentTerm(rePaymentTerm);
+            loanInfoDto.setMonthlyEMI(calculateEMI(loanCalcDto));
+            loanInfoDto.setTotalPayableAmount(calculateFirstPayableAmount(loanCalcDto));
+            return new ResponseEntity<>(loanInfoDto, HttpStatus.FOUND);
+        }
+        else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     // From here
     @Override
     public MonthlyEmiDto payEMI(String email) {
