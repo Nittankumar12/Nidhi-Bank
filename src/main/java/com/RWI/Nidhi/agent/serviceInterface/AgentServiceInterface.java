@@ -11,11 +11,11 @@ public interface AgentServiceInterface {
     ResponseEntity<?> deleteUserById(String userEmail, String agentEmail);
     ResponseEntity<?> getAllUsers(String email);
     ResponseEntity<?> findUserById(int id,String agentEmail);
-    public ResponseEntity<?> deactivateAccount(String accountNumber, String agentEmail);
-    public ResponseEntity<?> closeAccount(String accountNumber, String agentEmail);
-    ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus);
-    ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus);
-    String deleteScheme(String email);
+//    public ResponseEntity<?> deactivateAccount(String accountNumber, String agentEmail);
+//    public ResponseEntity<?> closeAccount(String accountNumber, String agentEmail);
+//    ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus);
+//    ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus);
+//    String deleteScheme(String email);
     ResponseEntity<String> agentForgetPasswordSendVerificationCode(String agentEmail) throws Exception;
     ResponseEntity<String> agentForgetPasswordVerifyVerificationCode(String agentEmail, String enteredOtp) throws Exception;
     ResponseEntity<?> updateAgentPassword(Agentforgetpassword agentforgetpassword) throws Exception;
