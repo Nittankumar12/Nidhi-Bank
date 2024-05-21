@@ -5,6 +5,7 @@ import com.RWI.Nidhi.admin.adminServiceImplementation.AdminServiceImplementation
 import com.RWI.Nidhi.dto.LoanHistoryDto;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.LoanType;
+import com.RWI.Nidhi.enums.SchemeStatus;
 import com.RWI.Nidhi.repository.AdminRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -106,6 +107,32 @@ public class AdminController {
     ResponseEntity<?> deductBalanceToAccount(double amount){
         return adminService.deductBalanceToAccount(amount);
     }
+    @PutMapping("/deactivateAccount")
+    public ResponseEntity<?> deactivateAccount(@RequestParam("accountNumber") String accountNumber, @RequestParam("agentEmail") String agentEmail) {
+        return adminService.deactivateAccount(accountNumber, agentEmail);
+    }
+
+//Shifted methods from Agent to Admin
+
+    @PutMapping("/closeAccount")
+    public ResponseEntity<?> closeAccount(@RequestParam("accountNumber") String accountNumber, @RequestParam("agentEmail") String agentEmail) throws Exception {
+        return adminService.closeAccount(accountNumber, agentEmail);
+    }
+    @PutMapping("/ChangeLoanStatus/{email}")
+    public ResponseEntity<?> ChangeLoanStatus(@RequestParam("email") String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
+        return adminService.ChangeLoanStatus(userEmail, agentEmail, changedStatus, previousStatus);
+    }
+
+    @PutMapping("/ChangeSchemeStatus/{email}")
+    public ResponseEntity<?> ChangeSchemeStatus(@RequestParam("email") String agentEmail, @RequestBody String userEmail, SchemeStatus changedStatus, SchemeStatus previousStatus) {
+        return adminService.ChangeSchemeStatus(userEmail, agentEmail, changedStatus, previousStatus);
+    }
+
+    @DeleteMapping("/deleteScheme/{email}")
+    public String deleteScheme(@PathVariable String email) {
+        return adminService.deleteScheme(email);
+    }
+
 //    @PostMapping("/login-admin")
 //    public ResponseEntity<?> authenticateUser(@RequestBody LoginReq loginReq) {
 //        Admin admin = adminRepo.findByAdminName(loginReq.getUsername());

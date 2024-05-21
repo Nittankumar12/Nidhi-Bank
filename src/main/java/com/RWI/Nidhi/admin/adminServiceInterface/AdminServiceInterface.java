@@ -4,6 +4,7 @@ import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.dto.LoanHistoryDto;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.LoanType;
+import com.RWI.Nidhi.enums.SchemeStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
@@ -28,4 +29,9 @@ public interface AdminServiceInterface {
     List<LoanHistoryDto> getLoansByLoanType(LoanType loanType);
     ResponseEntity<?> addBalanceToAccount(double amount);
     ResponseEntity<?> deductBalanceToAccount(double amount);
+    public ResponseEntity<?> deactivateAccount(String accountNumber, String agentEmail);
+    public ResponseEntity<?> closeAccount(String accountNumber, String agentEmail);
+    ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus);
+    ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus);
+    String deleteScheme(String email);
 }

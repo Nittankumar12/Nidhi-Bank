@@ -173,38 +173,38 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     }
 
 
-    @Override
-    public ResponseEntity<?> deactivateAccount(String accountNumber, String agentEmail) {
-        Accounts currentAcc = accountsRepo.findByAccountNumber(accountNumber).get();
-        if (currentAcc == null) return new ResponseEntity<>("Account number doesn't exists", HttpStatus.NOT_FOUND);
-
-        Agent agent = agentRepo.findByAgentEmail(agentEmail);
-        User user = currentAcc.getUser();
-        if (agent == null) return new ResponseEntity<>("Agent doesn't exists", HttpStatus.NOT_FOUND);
-        if (!user.getAgent().getAgentEmail().equals(agentEmail))
-            return new ResponseEntity<>("This agent is not associated with this account's owner", HttpStatus.NOT_FOUND);
-
-
-        currentAcc.setAccountStatus(Status.INACTIVE);
-        accountsRepo.save(currentAcc);
-        return new ResponseEntity<>("Account decativated!!", HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<?> closeAccount(String accountNumber, String agentEmail) {
-        Accounts currentAcc = accountsRepo.findByAccountNumber(accountNumber).get();
-        if (currentAcc == null) return new ResponseEntity<>("Account number doesn't exists", HttpStatus.NOT_FOUND);
-
-        Agent agent = agentRepo.findByAgentEmail(agentEmail);
-        User user = currentAcc.getUser();
-        if (agent == null) return new ResponseEntity<>("Agent doesn't exists", HttpStatus.NOT_FOUND);
-        if (!user.getAgent().getAgentEmail().equals(agentEmail))
-            return new ResponseEntity<>("This agent is not associated with this account's owner", HttpStatus.NOT_FOUND);
-
-        currentAcc.setAccountStatus(Status.CLOSED);
-        accountsRepo.save(currentAcc);
-        return new ResponseEntity<>("Account closed!!", HttpStatus.OK);
-    }
+//    @Override
+//    public ResponseEntity<?> deactivateAccount(String accountNumber, String agentEmail) {
+//        Accounts currentAcc = accountsRepo.findByAccountNumber(accountNumber).get();
+//        if (currentAcc == null) return new ResponseEntity<>("Account number doesn't exists", HttpStatus.NOT_FOUND);
+//
+//        Agent agent = agentRepo.findByAgentEmail(agentEmail);
+//        User user = currentAcc.getUser();
+//        if (agent == null) return new ResponseEntity<>("Agent doesn't exists", HttpStatus.NOT_FOUND);
+//        if (!user.getAgent().getAgentEmail().equals(agentEmail))
+//            return new ResponseEntity<>("This agent is not associated with this account's owner", HttpStatus.NOT_FOUND);
+//
+//
+//        currentAcc.setAccountStatus(Status.INACTIVE);
+//        accountsRepo.save(currentAcc);
+//        return new ResponseEntity<>("Account decativated!!", HttpStatus.OK);
+//    }
+//
+//    @Override
+//    public ResponseEntity<?> closeAccount(String accountNumber, String agentEmail) {
+//        Accounts currentAcc = accountsRepo.findByAccountNumber(accountNumber).get();
+//        if (currentAcc == null) return new ResponseEntity<>("Account number doesn't exists", HttpStatus.NOT_FOUND);
+//
+//        Agent agent = agentRepo.findByAgentEmail(agentEmail);
+//        User user = currentAcc.getUser();
+//        if (agent == null) return new ResponseEntity<>("Agent doesn't exists", HttpStatus.NOT_FOUND);
+//        if (!user.getAgent().getAgentEmail().equals(agentEmail))
+//            return new ResponseEntity<>("This agent is not associated with this account's owner", HttpStatus.NOT_FOUND);
+//
+//        currentAcc.setAccountStatus(Status.CLOSED);
+//        accountsRepo.save(currentAcc);
+//        return new ResponseEntity<>("Account closed!!", HttpStatus.OK);
+//    }
 
     private byte[] getSHA(String input) {
         try {
@@ -284,196 +284,199 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         }
         return new ResponseEntity<>(agentDto,HttpStatus.OK);
 
-
-    }
-    @Override
-    public ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
-        if (agentRepo.existsByAgentEmail(agentEmail)) {
-            User user = userService.getByEmail(userEmail);
-            Accounts accounts = user.getAccounts();
-            List<Loan> loanList = accounts.getLoanList();
-            if(loanList.isEmpty()){
-                return new ResponseEntity<>("No Loan exists for the given user",HttpStatus.I_AM_A_TEAPOT);
-            }
-            else {
-                for (Loan loan : loanList) {
-                    if(loan.getStatus()==previousStatus){
-                        if(previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.APPROVED){
-                            loan.setStatus(changedStatus);
-                            loan.setStartDate(LocalDate.now());
-                            loan.setEmiDate(userLoanService.calcFirstEMIDate(loan.getStartDate()));
-                            LoanCalcDto loanCalcDto = new LoanCalcDto();
-                            loanCalcDto.setLoanType(loan.getLoanType());
-                            loanCalcDto.setRePaymentTerm(loan.getRePaymentTerm());
-                            loanCalcDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
-                            loanCalcDto.setInterestRate(loan.getLoanType());
-                            loan.setMonthlyEMI(userLoanService.calculateEMI(loanCalcDto));
-                            loan.setPayableLoanAmount(userLoanService.calculateFirstPayableAmount(loanCalcDto));
-                            loanRepo.save(loan);
-                            sendStatusEmail(loan);
-                        } else if (previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.PENDING){
-                            loan.setStatus(changedStatus);
-                            loanRepo.save(loan);
-                            sendStatusEmail(loan);
-                        } else if (previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.REJECTED){
-                            loan.setStatus(changedStatus);
-                            loanRepo.save(loan);
-                            sendStatusEmail(loan);
-                        } else if (previousStatus == LoanStatus.APPROVED && changedStatus == LoanStatus.SANCTIONED){
-                            loan.setStatus(changedStatus);
-
-                            Transactions transactions = new Transactions();
-                            transactions.setAccount(accounts);
-                            transactions.setLoan(loan);
-                            transactions.setTransactionAmount(loan.getPrincipalLoanAmount());
-                            Transactions.deductTotalBalance(loan.getPrincipalLoanAmount());
-                            transactions.setTransactionDate(new Date());
-                            transactions.setTransactionType(TransactionType.DEBITED);
-                            transactions.setTransactionStatus(TransactionStatus.COMPLETED);
-                            transactionRepo.save(transactions);
-                            loan.getTransactionsList().add(transactions);
-
-                            loanRepo.save(loan);
-                            sendStatusEmail(loan);
-                        } else if (previousStatus == LoanStatus.APPROVED && changedStatus == LoanStatus.PENDING){
-                            loan.setStatus(changedStatus);
-                            loanRepo.save(loan);
-                            sendStatusEmail(loan);
-                        } else if (previousStatus == LoanStatus.SANCTIONED && changedStatus == LoanStatus.CLOSED){
-                            loan.setStatus(changedStatus);
-                            loanRepo.save(loan);
-                            sendStatusEmail(loan);
-                        } else if (previousStatus == LoanStatus.SANCTIONED && changedStatus == LoanStatus.PENDING){
-                            loan.setStatus(changedStatus);
-                            loanRepo.save(loan);
-                            sendStatusEmail(loan);
-                        } else if (previousStatus == LoanStatus.REQUESTEDFORFORECLOSURE && changedStatus == LoanStatus.FORECLOSED){
-                            loan.setStatus(changedStatus);
-                            loanRepo.save(loan);
-                            sendStatusEmail(loan);
-                        }else {
-                            return new ResponseEntity<>("Invalid Change in status",HttpStatus.I_AM_A_TEAPOT);
-                        }
-                    }else
-                        return new ResponseEntity<>("Applied Change in status doesn't match recorded status",HttpStatus.I_AM_A_TEAPOT);
-                }
-                return new ResponseEntity<>("Invalid Agent",HttpStatus.I_AM_A_TEAPOT);
-            }
-        } else
-            return new ResponseEntity<>("Invalid Agent",HttpStatus.I_AM_A_TEAPOT);
     }
 
-    private void sendStatusEmail(Loan loan) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(loan.getUser().getEmail());
-        mailMessage.setSubject("Change in Loan Status");
-        mailMessage.setText("Hello User," + loan.getUser().getUserName() + ",\n\n Your loan status has been changed to" + loan.getStatus() + "Please confirm so with your respective agent.");
-        javaMailSender.send(mailMessage);
-    }
-    public ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus){
-        if (agentRepo.existsByAgentEmail(agentEmail)) {
-            if (userRepo.existsByEmail(userEmail)) {
-                User user = userService.getByEmail(userEmail);
-                Accounts accounts = user.getAccounts();
-                if (accounts != null) {
-                    Scheme scheme = accounts.getScheme();
-                    if (scheme == null) {
-                        return new ResponseEntity<>("No Scheme exists for the given user", HttpStatus.I_AM_A_TEAPOT);
-                    } else {
-                        if (scheme.getSStatus() == previousStatus) {
-                            if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.APPROVED) {
-                                scheme.setSStatus(changedStatus);
-                                scheme.setStartDate(LocalDate.now());
-                                scheme.setInterestRate(10);
-                                scheme.setNextEMIDate(firstDateOfNextMonth(LocalDate.now()));
-                                scheme.setAgent(agentRepo.findByAgentEmail(agentEmail));
-                                schemeRepo.save(scheme);
-                                sendStatusEmail(scheme);
-                            } else if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.PENDING) {
-                                scheme.setSStatus(changedStatus);
-                                schemeRepo.save(scheme);
-                                sendStatusEmail(scheme);
-                            } else if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.REJECTED) {
-                                scheme.setSStatus(changedStatus);
-                                schemeRepo.save(scheme);
-                                sendStatusEmail(scheme);
-                            } else if (previousStatus == SchemeStatus.APPROVED && changedStatus == SchemeStatus.SANCTIONED) {
-                                scheme.setSStatus(changedStatus);
+//Shifted methods from Agent to Admin
 
-                                Transactions transactions = new Transactions();
-                                transactions.setAccount(accounts);
-                                transactions.setScheme(scheme);
-                                transactions.setTransactionAmount(scheme.getMonthlyDepositAmount()*scheme.getTenure());
-                                Transactions.deductTotalBalance(scheme.getMonthlyDepositAmount()*scheme.getTenure());
-                                transactions.setTransactionDate(new Date());
-                                transactions.setTransactionType(TransactionType.DEBITED);
-                                transactions.setTransactionStatus(TransactionStatus.COMPLETED);
-                                transactionRepo.save(transactions);
-                                scheme.getTransactionsList().add(transactions);
 
-                                schemeRepo.save(scheme);
-                                sendStatusEmail(scheme);
-                            } else if (previousStatus == SchemeStatus.APPROVED && changedStatus == SchemeStatus.PENDING) {
-                                scheme.setSStatus(changedStatus);
-                                schemeRepo.save(scheme);
-                                sendStatusEmail(scheme);
-                            } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.CLOSED) {
-                                scheme.setSStatus(changedStatus);
-                                schemeRepo.save(scheme);
-                                sendStatusEmail(scheme);
-                            } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.PENDING) {
-                                scheme.setSStatus(changedStatus);
-                                schemeRepo.save(scheme);
-                                sendStatusEmail(scheme);
-                            } else if (previousStatus == SchemeStatus.APPLIEDFORLOAN && changedStatus == SchemeStatus.APPROVEDLOAN) {
-                                scheme.setSStatus(changedStatus);
-                                schemeRepo.save(scheme);
-                                sendStatusEmail(scheme);
-                            } else {
-                                return new ResponseEntity<>("Invalid Change in status", HttpStatus.I_AM_A_TEAPOT);
-                            }
-                        } else {
-                            return new ResponseEntity<>("Applied Change in status doesn't match recorded status", HttpStatus.I_AM_A_TEAPOT);
-                        }
-                    }
-                } else {
-                    return new ResponseEntity<>("Account doesn't exist", HttpStatus.I_AM_A_TEAPOT);
-                }
-            }else {
-                return  new ResponseEntity<>("User doesn't exist", HttpStatus.I_AM_A_TEAPOT);
-            }
-        }
-        else {
-            return new ResponseEntity<>("Invalid Agent", HttpStatus.I_AM_A_TEAPOT);
-        }
-        return null;
-    }
-    private void sendStatusEmail(Scheme scheme) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(scheme.getAccount().getUser().getEmail());
-        mailMessage.setSubject("Change in Scheme Status");
-        mailMessage.setText("Hello User," + scheme.getAccount().getUser().getUserName() + ",\n\n Your Scheme Status has been changed to" + scheme.getSStatus() + "Please confirm so with your respective agent.");
-        javaMailSender.send(mailMessage);
-    }
-    private LocalDate firstDateOfNextMonth(LocalDate date) {
-        LocalDate nextMonth = date.plusMonths(1);
-        return nextMonth.withDayOfMonth(1);
-    }
-    @Override
-    public String deleteScheme(String email) {// scheme delete for when scheme has ended
-        if (userRepo.existsByEmail(email)) {
-            User user = userService.getByEmail(email);
-            Accounts accounts = user.getAccounts();
-            Scheme scheme = accounts.getScheme();
-            if (scheme.getSStatus() == SchemeStatus.CLOSED) {
-                accounts.setScheme(null);
-                accountsRepo.save(accounts);
-                schemeRepo.delete(scheme);
-                return "Record Removed";
-            }
-            return "Scheme status not closed";
-        }
-        return "User not found";
-    }
+//    @Override
+//    public ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
+//        if (agentRepo.existsByAgentEmail(agentEmail)) {
+//            User user = userService.getByEmail(userEmail);
+//            Accounts accounts = user.getAccounts();
+//            List<Loan> loanList = accounts.getLoanList();
+//            if(loanList.isEmpty()){
+//                return new ResponseEntity<>("No Loan exists for the given user",HttpStatus.I_AM_A_TEAPOT);
+//            }
+//            else {
+//                for (Loan loan : loanList) {
+//                    if(loan.getStatus()==previousStatus){
+//                        if(previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.APPROVED){
+//                            loan.setStatus(changedStatus);
+//                            loan.setStartDate(LocalDate.now());
+//                            loan.setEmiDate(userLoanService.calcFirstEMIDate(loan.getStartDate()));
+//                            LoanCalcDto loanCalcDto = new LoanCalcDto();
+//                            loanCalcDto.setLoanType(loan.getLoanType());
+//                            loanCalcDto.setRePaymentTerm(loan.getRePaymentTerm());
+//                            loanCalcDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
+//                            loanCalcDto.setInterestRate(loan.getLoanType());
+//                            loan.setMonthlyEMI(userLoanService.calculateEMI(loanCalcDto));
+//                            loan.setPayableLoanAmount(userLoanService.calculateFirstPayableAmount(loanCalcDto));
+//                            loanRepo.save(loan);
+//                            sendStatusEmail(loan);
+//                        } else if (previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.PENDING){
+//                            loan.setStatus(changedStatus);
+//                            loanRepo.save(loan);
+//                            sendStatusEmail(loan);
+//                        } else if (previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.REJECTED){
+//                            loan.setStatus(changedStatus);
+//                            loanRepo.save(loan);
+//                            sendStatusEmail(loan);
+//                        } else if (previousStatus == LoanStatus.APPROVED && changedStatus == LoanStatus.SANCTIONED){
+//                            loan.setStatus(changedStatus);
+//
+//                            Transactions transactions = new Transactions();
+//                            transactions.setAccount(accounts);
+//                            transactions.setLoan(loan);
+//                            transactions.setTransactionAmount(loan.getPrincipalLoanAmount());
+//                            Transactions.deductTotalBalance(loan.getPrincipalLoanAmount());
+//                            transactions.setTransactionDate(new Date());
+//                            transactions.setTransactionType(TransactionType.DEBITED);
+//                            transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+//                            transactionRepo.save(transactions);
+//                            loan.getTransactionsList().add(transactions);
+//
+//                            loanRepo.save(loan);
+//                            sendStatusEmail(loan);
+//                        } else if (previousStatus == LoanStatus.APPROVED && changedStatus == LoanStatus.PENDING){
+//                            loan.setStatus(changedStatus);
+//                            loanRepo.save(loan);
+//                            sendStatusEmail(loan);
+//                        } else if (previousStatus == LoanStatus.SANCTIONED && changedStatus == LoanStatus.CLOSED){
+//                            loan.setStatus(changedStatus);
+//                            loanRepo.save(loan);
+//                            sendStatusEmail(loan);
+//                        } else if (previousStatus == LoanStatus.SANCTIONED && changedStatus == LoanStatus.PENDING){
+//                            loan.setStatus(changedStatus);
+//                            loanRepo.save(loan);
+//                            sendStatusEmail(loan);
+//                        } else if (previousStatus == LoanStatus.REQUESTEDFORFORECLOSURE && changedStatus == LoanStatus.FORECLOSED){
+//                            loan.setStatus(changedStatus);
+//                            loanRepo.save(loan);
+//                            sendStatusEmail(loan);
+//                        }else {
+//                            return new ResponseEntity<>("Invalid Change in status",HttpStatus.I_AM_A_TEAPOT);
+//                        }
+//                    }else
+//                        return new ResponseEntity<>("Applied Change in status doesn't match recorded status",HttpStatus.I_AM_A_TEAPOT);
+//                }
+//                return new ResponseEntity<>("Invalid Agent",HttpStatus.I_AM_A_TEAPOT);
+//            }
+//        } else
+//            return new ResponseEntity<>("Invalid Agent",HttpStatus.I_AM_A_TEAPOT);
+//    }
+//
+//    private void sendStatusEmail(Loan loan) {
+//        SimpleMailMessage mailMessage = new SimpleMailMessage();
+//        mailMessage.setTo(loan.getUser().getEmail());
+//        mailMessage.setSubject("Change in Loan Status");
+//        mailMessage.setText("Hello User," + loan.getUser().getUserName() + ",\n\n Your loan status has been changed to" + loan.getStatus() + "Please confirm so with your respective agent.");
+//        javaMailSender.send(mailMessage);
+//    }
+//    public ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus){
+//        if (agentRepo.existsByAgentEmail(agentEmail)) {
+//            if (userRepo.existsByEmail(userEmail)) {
+//                User user = userService.getByEmail(userEmail);
+//                Accounts accounts = user.getAccounts();
+//                if (accounts != null) {
+//                    Scheme scheme = accounts.getScheme();
+//                    if (scheme == null) {
+//                        return new ResponseEntity<>("No Scheme exists for the given user", HttpStatus.I_AM_A_TEAPOT);
+//                    } else {
+//                        if (scheme.getSStatus() == previousStatus) {
+//                            if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.APPROVED) {
+//                                scheme.setSStatus(changedStatus);
+//                                scheme.setStartDate(LocalDate.now());
+//                                scheme.setInterestRate(10);
+//                                scheme.setNextEMIDate(firstDateOfNextMonth(LocalDate.now()));
+//                                scheme.setAgent(agentRepo.findByAgentEmail(agentEmail));
+//                                schemeRepo.save(scheme);
+//                                sendStatusEmail(scheme);
+//                            } else if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.PENDING) {
+//                                scheme.setSStatus(changedStatus);
+//                                schemeRepo.save(scheme);
+//                                sendStatusEmail(scheme);
+//                            } else if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.REJECTED) {
+//                                scheme.setSStatus(changedStatus);
+//                                schemeRepo.save(scheme);
+//                                sendStatusEmail(scheme);
+//                            } else if (previousStatus == SchemeStatus.APPROVED && changedStatus == SchemeStatus.SANCTIONED) {
+//                                scheme.setSStatus(changedStatus);
+//
+//                                Transactions transactions = new Transactions();
+//                                transactions.setAccount(accounts);
+//                                transactions.setScheme(scheme);
+//                                transactions.setTransactionAmount(scheme.getMonthlyDepositAmount()*scheme.getTenure());
+//                                Transactions.deductTotalBalance(scheme.getMonthlyDepositAmount()*scheme.getTenure());
+//                                transactions.setTransactionDate(new Date());
+//                                transactions.setTransactionType(TransactionType.DEBITED);
+//                                transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+//                                transactionRepo.save(transactions);
+//                                scheme.getTransactionsList().add(transactions);
+//
+//                                schemeRepo.save(scheme);
+//                                sendStatusEmail(scheme);
+//                            } else if (previousStatus == SchemeStatus.APPROVED && changedStatus == SchemeStatus.PENDING) {
+//                                scheme.setSStatus(changedStatus);
+//                                schemeRepo.save(scheme);
+//                                sendStatusEmail(scheme);
+//                            } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.CLOSED) {
+//                                scheme.setSStatus(changedStatus);
+//                                schemeRepo.save(scheme);
+//                                sendStatusEmail(scheme);
+//                            } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.PENDING) {
+//                                scheme.setSStatus(changedStatus);
+//                                schemeRepo.save(scheme);
+//                                sendStatusEmail(scheme);
+//                            } else if (previousStatus == SchemeStatus.APPLIEDFORLOAN && changedStatus == SchemeStatus.APPROVEDLOAN) {
+//                                scheme.setSStatus(changedStatus);
+//                                schemeRepo.save(scheme);
+//                                sendStatusEmail(scheme);
+//                            } else {
+//                                return new ResponseEntity<>("Invalid Change in status", HttpStatus.I_AM_A_TEAPOT);
+//                            }
+//                        } else {
+//                            return new ResponseEntity<>("Applied Change in status doesn't match recorded status", HttpStatus.I_AM_A_TEAPOT);
+//                        }
+//                    }
+//                } else {
+//                    return new ResponseEntity<>("Account doesn't exist", HttpStatus.I_AM_A_TEAPOT);
+//                }
+//            }else {
+//                return  new ResponseEntity<>("User doesn't exist", HttpStatus.I_AM_A_TEAPOT);
+//            }
+//        }
+//        else {
+//            return new ResponseEntity<>("Invalid Agent", HttpStatus.I_AM_A_TEAPOT);
+//        }
+//        return null;
+//    }
+//    private void sendStatusEmail(Scheme scheme) {
+//        SimpleMailMessage mailMessage = new SimpleMailMessage();
+//        mailMessage.setTo(scheme.getAccount().getUser().getEmail());
+//        mailMessage.setSubject("Change in Scheme Status");
+//        mailMessage.setText("Hello User," + scheme.getAccount().getUser().getUserName() + ",\n\n Your Scheme Status has been changed to" + scheme.getSStatus() + "Please confirm so with your respective agent.");
+//        javaMailSender.send(mailMessage);
+//    }
+//    private LocalDate firstDateOfNextMonth(LocalDate date) {
+//        LocalDate nextMonth = date.plusMonths(1);
+//        return nextMonth.withDayOfMonth(1);
+//    }
+//    @Override
+//    public String deleteScheme(String email) {// scheme delete for when scheme has ended
+//        if (userRepo.existsByEmail(email)) {
+//            User user = userService.getByEmail(email);
+//            Accounts accounts = user.getAccounts();
+//            Scheme scheme = accounts.getScheme();
+//            if (scheme.getSStatus() == SchemeStatus.CLOSED) {
+//                accounts.setScheme(null);
+//                accountsRepo.save(accounts);
+//                schemeRepo.delete(scheme);
+//                return "Record Removed";
+//            }
+//            return "Scheme status not closed";
+//        }
+//        return "User not found";
+//    }
 
 }
