@@ -17,13 +17,14 @@ public interface UserLoanServiceInterface {
     double calculateFirstPayableAmount(LoanCalcDto loanCalcDto);
 
     double calculateEMI(LoanCalcDto loanCalcDto);
-
     void applyLoan(LoanApplyDto loanApplyDto);
-    MonthlyEmiDto payEMI(String email);
 
+    MonthlyEmiDto payEMI(String email);
     LocalDate firstDateOfNextMonth(LocalDate date);
+
     LocalDate calcFirstEMIDate(LocalDate startDate);
     ResponseEntity<?> getLoanInfo(String email);
+    ResponseEntity<?> getLoanInfoByLoanType(LoanType loanType,double principalAmount, int RepaymentTerm);
 
     ResponseEntity<?> getLoanClosureDetails(String email);
 

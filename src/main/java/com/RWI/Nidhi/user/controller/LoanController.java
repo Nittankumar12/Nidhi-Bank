@@ -26,6 +26,10 @@ public class LoanController {
         else
             return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
     }
+    @GetMapping("/getInfoByLoanType")
+    public ResponseEntity<?> getLoanInfoByLoanType(@RequestParam LoanType loanType,@RequestParam double principalAmount,@RequestParam int rePaymentTerm){
+        return userLoanService.getLoanInfoByLoanType(loanType,principalAmount,rePaymentTerm);
+    }
     @PostMapping("/applyLoan")
     public ResponseEntity<?> applyLoan(@RequestBody LoanApplyDto loanApplyDto) {
         User user = userService.getByEmail(loanApplyDto.getUserEmail());
