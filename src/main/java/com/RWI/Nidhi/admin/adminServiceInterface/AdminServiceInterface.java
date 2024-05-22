@@ -12,6 +12,8 @@ import java.util.List;
 
 public interface AdminServiceInterface {
     ResponseEntity<?> addAgent(SignupRequest signupRequest) throws Exception;
+
+    ResponseEntity<?> addUser(SignupRequest signupRequest, String agentEmail);
     ResponseEntity<?> addAdmin(SignupRequest signUpRequest, String adminPassword);
     ResponseEntity<?> updateAgentName(String agentEmail, String agentName) throws Exception;
     ResponseEntity<?> updateAgentAddress(String agentEmail , String agentAddress) throws Exception;
@@ -31,7 +33,7 @@ public interface AdminServiceInterface {
     ResponseEntity<?> deductBalanceToAccount(double amount);
     public ResponseEntity<?> deactivateAccount(String accountNumber, String agentEmail);
     public ResponseEntity<?> closeAccount(String accountNumber, String agentEmail);
-    ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus);
+    ResponseEntity<?> changeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus);
     ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus);
     String deleteScheme(String email);
 }

@@ -7,16 +7,14 @@ import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.Security.repository.CredentialsRepo;
 import com.RWI.Nidhi.Security.repository.RoleRepository;
 import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
-import com.RWI.Nidhi.dto.AddAgentDto;
-import com.RWI.Nidhi.dto.Agentforgetpassword;
-import com.RWI.Nidhi.dto.LoanCalcDto;
-import com.RWI.Nidhi.dto.UserResponseDto;
+import com.RWI.Nidhi.dto.*;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.*;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
+import com.amazonaws.services.dynamodbv2.xspec.L;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,75 +59,8 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     @Autowired
     AdminRepo adminRepo;
     @Autowired
-    SchemeRepo schemeRepo;
-    @Autowired
     CredentialsRepo credRepo;
 
-    @Override
-    public ResponseEntity<?> addUser(SignupRequest signUpRequest, String agentEmail) {
-
-        if (agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())) {
-            return new ResponseEntity<>("Email already taken", HttpStatus.NOT_ACCEPTABLE);
-        }
-        if (adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getUsername()) || userRepo.existsByUserName(signUpRequest.getUsername())) {
-            return new ResponseEntity<>("Username already taken", HttpStatus.NOT_ACCEPTABLE);
-        }
-        if (adminRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber()) || agentRepo.existsByAgentPhoneNum(signUpRequest.getPhoneNumber()) || userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
-            return new ResponseEntity<>("Phone number already taken", HttpStatus.NOT_ACCEPTABLE);
-        }
-
-        //Getting the agent from repo by email
-        Agent agent = agentRepo.findByAgentEmail(agentEmail);
-
-        //Check if agent exists or not
-        if (agent == null) {
-            return new ResponseEntity<>("Agent doesn't exists", HttpStatus.NOT_FOUND);
-        }
-        //creation of new user
-        User newUser = new User();
-        newUser.setUserName(signUpRequest.getUsername());
-        newUser.setEmail(signUpRequest.getEmail());
-        newUser.setPhoneNumber(signUpRequest.getPhoneNumber());
-        newUser.setAgent(agent);
-        agent.getUserList().add(newUser);
-        try {
-//            String tempPassword = "user21";
-//                    otpServiceImplementation.generateOTP();
-//            String subject = newUser.getUserName();
-//            String messageToSend = "Welcome to Nidhi Bank,Your temporary system generated password is: ";
-
-            String  tempPassword = otpServiceImplementation.generateOTP();
-            String   subject = "Your temporary password";
-            String   messageToSend = "Your temporary system generated password is: ";
-            System.out.println("Sending email");
-            otpServiceImplementation.sendEmailOtp(newUser.getEmail(), subject, messageToSend, tempPassword);
-            newUser.setPassword(encoder.encode(tempPassword));
-            userRepo.save(newUser);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Email Error" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        Credentials credentials = new Credentials(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPhoneNumber(),
-                newUser.getPassword());
-
-        // Set default role as USER for user
-        Set<Role> roles = new HashSet<>();
-        Role userRole = roleRepository.findByName(ERole.ROLE_USER).get();
-        if (userRole == null) {
-            return new ResponseEntity<>("User role not found", HttpStatus.NOT_FOUND);
-        }
-//                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-        roles.add(userRole);
-        credentials.setRoles(roles);
-        newUser.setRoles(roles);
-        userRepo.save(newUser);
-        credentialsRepo.save(credentials);
-        agentRepo.save(agent);
-        UserResponseDto userResponseDto = new UserResponseDto();
-        userResponseDto.setUserName(newUser.getUserName());
-        userResponseDto.setEmail(newUser.getEmail());
-        userResponseDto.setPhoneNumber(newUser.getPhoneNumber());
-        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
-    }
 
     @Override
     public ResponseEntity<?> deleteUserById(String userEmail, String agentEmail) {
@@ -284,6 +215,33 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         }
         return new ResponseEntity<>(agentDto,HttpStatus.OK);
 
+    }
+
+    @Override
+    public List<CommissionDto> getCommissionList(String agentEmail) {
+        Agent agent = agentRepo.findByAgentEmail(agentEmail);
+        List<Commission> commissionList = agent.getCommissionList();
+        List<CommissionDto> commissionDtoList = new ArrayList<>();
+        for(Commission commission : commissionList){
+            CommissionDto commissionDto = new CommissionDto();
+            commissionDto.setCommissionRate(commission.getCommissionRate());
+            commissionDto.setCommissionAmount(commission.getCommissionAmount());
+            commissionDto.setCommissionType(commission.getCommissionType());
+            commissionDto.setCommDate(commission.getCommDate());
+            commissionDto.setUserName(commission.getUser().getUserName());
+            commissionDtoList.add(commissionDto);
+        }
+        return commissionDtoList;
+    }
+    @Override
+    public List<CommissionDto> getCommissionList(String agentEmail, CommissionType commissionType) {
+        List<CommissionDto> commissionDtoList = getCommissionList(agentEmail);
+        List<CommissionDto> commissionDtoListByType = new ArrayList<>();
+        for(CommissionDto commissionDto : commissionDtoList){
+            if(commissionDto.getCommissionType()==commissionType)
+                commissionDtoListByType.add(commissionDto);
+        }
+        return commissionDtoListByType;
     }
 
 //Shifted methods from Agent to Admin

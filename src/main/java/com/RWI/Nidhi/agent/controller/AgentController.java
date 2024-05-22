@@ -3,8 +3,10 @@ package com.RWI.Nidhi.agent.controller;
 import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceImplementation;
 import com.RWI.Nidhi.dto.Agentforgetpassword;
+import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.SchemeStatus;
+import com.RWI.Nidhi.repository.AgentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +18,10 @@ public class AgentController {
 
     @Autowired
     AgentServiceImplementation agentService;
+    @Autowired
+    AgentRepo agentRepo;
 
-    @CrossOrigin(origins = "http://localhost:5173")
-    @PostMapping("/addUser")
-    public ResponseEntity<?> addUser(@RequestBody SignupRequest signupRequest, @RequestParam("agentEmail") String agentEmail) throws Exception {
-        return agentService.addUser(signupRequest, agentEmail);
-    }
+
 
     @DeleteMapping("deleteUserById")
     public ResponseEntity<?> deleteUserById(@RequestParam("userEmail") String userEmail, @RequestParam("agentEmail") String agentEmail) throws Exception {
@@ -71,6 +71,20 @@ public class AgentController {
         }
     }
 
+    @GetMapping("/getCommissionList/{agentEmail}")
+    public ResponseEntity<?> getCommissionList(@RequestParam ("agentEmail")String agentEmail){
+        if(agentRepo.existsByAgentEmail(agentEmail))
+            return new ResponseEntity<>(agentService.getCommissionList(agentEmail),HttpStatus.FOUND);
+        else
+            return null;
+    }
+    @GetMapping("/getCommissionList/{agentEmail}/{CommissionType}")
+    public ResponseEntity<?> getCommissionListByType(@RequestParam("agentEmail") String agentEmail,@RequestParam("commissionType") CommissionType commissionType){
+        if(agentRepo.existsByAgentEmail(agentEmail))
+            return new ResponseEntity<>(agentService.getCommissionList(agentEmail,commissionType),HttpStatus.FOUND);
+        else
+            return null;
+    }
 //    @PutMapping("/ChangeLoanStatus/{email}")
 //    public ResponseEntity<?> ChangeLoanStatus(@RequestParam("email") String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
 //        return agentService.ChangeLoanStatus(userEmail, agentEmail, changedStatus, previousStatus);
