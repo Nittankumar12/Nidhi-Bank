@@ -91,7 +91,7 @@ public class AdminController {
     public ResponseEntity<?> getTransactionBetweenDates(@RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate){
         return adminService.getTransactionBetweenDates(startDate, endDate);
     }
-    @GetMapping("/loanType")
+    @GetMapping("/getLoanByType")
     public ResponseEntity<Object> getByLoanType(@RequestParam LoanType loanType) {
         List<LoanHistoryDto> loanHistoryDtos = adminService.getLoansByLoanType(loanType);
         return new ResponseEntity<>(loanHistoryDtos, HttpStatus.OK);
@@ -119,10 +119,14 @@ public class AdminController {
         return adminService.closeAccount(accountNumber, agentEmail);
     }
     @PutMapping("/ChangeLoanStatus/{email}")
-    public ResponseEntity<?> ChangeLoanStatus(@RequestParam("email") String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
-        return adminService.ChangeLoanStatus(userEmail, agentEmail, changedStatus, previousStatus);
+    public ResponseEntity<?> changeLoanStatus(@RequestParam("email") String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
+        return adminService.changeLoanStatus(userEmail, agentEmail, changedStatus, previousStatus);
     }
-
+    @CrossOrigin(origins = "http://localhost:5173")
+    @PostMapping("/addUser")
+    public ResponseEntity<?> addUser(@RequestBody SignupRequest signupRequest, @RequestParam("agentEmail") String agentEmail) throws Exception {
+        return adminService.addUser(signupRequest, agentEmail);
+    }
     @PutMapping("/ChangeSchemeStatus/{email}")
     public ResponseEntity<?> ChangeSchemeStatus(@RequestParam("email") String agentEmail, @RequestBody String userEmail, SchemeStatus changedStatus, SchemeStatus previousStatus) {
         return adminService.ChangeSchemeStatus(userEmail, agentEmail, changedStatus, previousStatus);

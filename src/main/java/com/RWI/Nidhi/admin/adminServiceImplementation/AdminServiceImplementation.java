@@ -9,10 +9,7 @@ import com.RWI.Nidhi.Security.repository.RoleRepository;
 import com.RWI.Nidhi.admin.ResponseDto.AdminViewsAgentDto;
 import com.RWI.Nidhi.admin.ResponseDto.AgentMinimalDto;
 import com.RWI.Nidhi.admin.adminServiceInterface.AdminServiceInterface;
-import com.RWI.Nidhi.dto.AddAgentDto;
-import com.RWI.Nidhi.dto.LoanCalcDto;
-import com.RWI.Nidhi.dto.LoanHistoryDto;
-import com.RWI.Nidhi.dto.TransactionsHistoryDto;
+import com.RWI.Nidhi.dto.*;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.*;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
@@ -162,6 +159,72 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         addAgentDto.setAgentPhoneNum(currAgent.getAgentPhoneNum());
         return new ResponseEntity<>(addAgentDto,HttpStatus.OK);
     }
+    @Override
+    public ResponseEntity<?> addUser(SignupRequest signUpRequest, String agentEmail) {
+
+        if (agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())) {
+            return new ResponseEntity<>("Email already taken", HttpStatus.NOT_ACCEPTABLE);
+        }
+        if (adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getUsername()) || userRepo.existsByUserName(signUpRequest.getUsername())) {
+            return new ResponseEntity<>("Username already taken", HttpStatus.NOT_ACCEPTABLE);
+        }
+        if (adminRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber()) || agentRepo.existsByAgentPhoneNum(signUpRequest.getPhoneNumber()) || userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
+            return new ResponseEntity<>("Phone number already taken", HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        //Getting the agent from repo by email
+        Agent agent = agentRepo.findByAgentEmail(agentEmail);
+
+        //Check if agent exists or not
+        if (agent == null) {
+            return new ResponseEntity<>("Agent doesn't exists", HttpStatus.NOT_FOUND);
+        }
+        //creation of new user
+        User newUser = new User();
+        newUser.setUserName(signUpRequest.getUsername());
+        newUser.setEmail(signUpRequest.getEmail());
+        newUser.setPhoneNumber(signUpRequest.getPhoneNumber());
+        newUser.setAgent(agent);
+        agent.getUserList().add(newUser);
+        try {
+//            String tempPassword = "user21";
+//                    otpServiceImplementation.generateOTP();
+//            String subject = newUser.getUserName();
+//            String messageToSend = "Welcome to Nidhi Bank,Your temporary system generated password is: ";
+
+            String  tempPassword = otpServiceImplementation.generateOTP();
+            String   subject = "Your temporary password";
+            String   messageToSend = "Your temporary system generated password is: ";
+            System.out.println("Sending email");
+            otpServiceImplementation.sendEmailOtp(newUser.getEmail(), subject, messageToSend, tempPassword);
+            newUser.setPassword(encoder.encode(tempPassword));
+            userRepo.save(newUser);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Email Error" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        Credentials credentials = new Credentials(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPhoneNumber(),
+                newUser.getPassword());
+
+        // Set default role as USER for user
+        Set<Role> roles = new HashSet<>();
+        Role userRole = roleRepository.findByName(ERole.ROLE_USER).get();
+        if (userRole == null) {
+            return new ResponseEntity<>("User role not found", HttpStatus.NOT_FOUND);
+        }
+//                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles.add(userRole);
+        credentials.setRoles(roles);
+        newUser.setRoles(roles);
+        userRepo.save(newUser);
+        credentialsRepo.save(credentials);
+        agentRepo.save(agent);
+        UserResponseDto userResponseDto = new UserResponseDto();
+        userResponseDto.setUserName(newUser.getUserName());
+        userResponseDto.setEmail(newUser.getEmail());
+        userResponseDto.setPhoneNumber(newUser.getPhoneNumber());
+        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
+    }
+
 
     @Override
     public ResponseEntity<?> updateAgentAddress(String agentEmail, String agentAddress) throws Exception {
@@ -441,7 +504,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         return new ResponseEntity<>("Account closed!!", HttpStatus.OK);
     }
     @Override
-    public ResponseEntity<?> ChangeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
+    public ResponseEntity<?> changeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
         if (agentRepo.existsByAgentEmail(agentEmail)) {
             User user = userService.getByEmail(userEmail);
             Accounts accounts = user.getAccounts();

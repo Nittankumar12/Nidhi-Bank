@@ -31,25 +31,18 @@ public class Agent {
             , inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
-
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
     private List<User> userList;
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
     private List<Loan> loanList;
-
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
     private List<FixedDeposit> fixedDepositList;
-
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
     private List<RecurringDeposit> recurringDepositList;
-
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
     private List<MIS> misList;
-
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
     private List<Scheme> schemeList;
-
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL)
     private List<Commission> commissionList;
-
 }
