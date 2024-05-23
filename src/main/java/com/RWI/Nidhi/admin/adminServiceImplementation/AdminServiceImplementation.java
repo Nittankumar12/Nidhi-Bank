@@ -14,8 +14,11 @@ import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.*;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
-import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
+import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
+import com.amazonaws.services.xray.model.Http;
+import com.amazonaws.waiters.HttpSuccessStatusAcceptor;
+import org.apache.http.protocol.ResponseServer;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,16 +46,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     @Autowired
     OtpServiceImplementation otpServiceImplementation;
     @Autowired
-    UserService userService;
-    @Autowired
-    UserLoanServiceInterface userLoanService;
-    @Autowired
-    JavaMailSender javaMailSender;
-    @Autowired
-    SchemeRepo schemeRepo;
-    @Autowired
-    AccountsRepo accountsRepo;
-    @Autowired
     RoleRepository roleRepository;
     @Autowired
     CredentialsRepo credentialsRepo;
@@ -62,6 +55,18 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     AdminRepo adminRepo;
     @Autowired
     UserRepo userRepo;
+    @Autowired
+    SchemeRepo schemeRepo;
+    @Autowired
+    UserService userService;
+    @Autowired
+    UserLoanServiceImplementation userLoanService;
+    @Autowired
+    JavaMailSender javaMailSender;
+
+
+    @Autowired
+    AccountsRepo accountsRepo;
 
     @Override
     public ResponseEntity<?> addAgent(SignupRequest signUpRequest){
@@ -77,9 +82,11 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
 
         Agent newAgent = new Agent();
+
         newAgent.setAgentName(signUpRequest.getUsername());
         newAgent.setAgentEmail(signUpRequest.getEmail());
         newAgent.setAgentPhoneNum(signUpRequest.getPhoneNumber());
+
         try {
             String tempPassword = otpServiceImplementation.generateOTP();
             String subject = "Your temporary password";
@@ -159,7 +166,18 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         addAgentDto.setAgentPhoneNum(currAgent.getAgentPhoneNum());
         return new ResponseEntity<>(addAgentDto,HttpStatus.OK);
     }
+
     @Override
+    public ResponseEntity<?> deleteUserById(String userEmail, String agentEmail) {
+        User user = userRepo.findByEmail(userEmail);
+        Agent agent = user.getAgent();
+        if (!agent.getAgentEmail().equals(agentEmail)) {
+            return new ResponseEntity<>("This user is not in current agent's list", HttpStatus.NOT_FOUND);
+        }
+        userRepo.deleteById(user.getUserId());
+        return new ResponseEntity<>("User Deleted", HttpStatus.OK);
+    }
+@Override
     public ResponseEntity<?> addUser(SignupRequest signUpRequest, String agentEmail) {
 
         if (agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())) {
@@ -224,8 +242,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         userResponseDto.setPhoneNumber(newUser.getPhoneNumber());
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
-
-
     @Override
     public ResponseEntity<?> updateAgentAddress(String agentEmail, String agentAddress) throws Exception {
         Agent currAgent = agentRepo.findByAgentEmail(agentEmail);
@@ -432,6 +448,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         return new ResponseEntity<>(newTransaction, HttpStatus.OK);
     }
 
+
     @Override
     public List<LoanHistoryDto> getLoansByLoanStatus(LoanStatus loanStatus) {
         List<Loan> loans = loanRepo.findAll().stream().filter((loan) ->loan.getStatus().equals(loanStatus)).toList();
@@ -471,6 +488,11 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
         return null;
     }
+
+
+    // METHODS FROM AGENT SERVICE
+
+
     @Override
     public ResponseEntity<?> deactivateAccount(String accountNumber, String agentEmail) {
         Accounts currentAcc = accountsRepo.findByAccountNumber(accountNumber).get();
@@ -503,6 +525,9 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         accountsRepo.save(currentAcc);
         return new ResponseEntity<>("Account closed!!", HttpStatus.OK);
     }
+
+
+
     @Override
     public ResponseEntity<?> changeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
         if (agentRepo.existsByAgentEmail(agentEmail)) {
@@ -538,7 +563,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                             sendStatusEmail(loan);
                         } else if (previousStatus == LoanStatus.APPROVED && changedStatus == LoanStatus.SANCTIONED){
                             loan.setStatus(changedStatus);
-
+                            
                             Transactions transactions = new Transactions();
                             transactions.setAccount(accounts);
                             transactions.setLoan(loan);
@@ -587,7 +612,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         mailMessage.setText("Hello User," + loan.getUser().getUserName() + ",\n\n Your loan status has been changed to" + loan.getStatus() + "Please confirm so with your respective agent.");
         javaMailSender.send(mailMessage);
     }
-    @Override
     public ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus){
         if (agentRepo.existsByAgentEmail(agentEmail)) {
             if (userRepo.existsByEmail(userEmail)) {

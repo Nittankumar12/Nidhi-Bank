@@ -1,5 +1,4 @@
 package com.RWI.Nidhi.entity;
-
 import com.RWI.Nidhi.enums.CommissionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,6 +28,4 @@ public class Commission {
     @ManyToOne
     @JoinColumn
     private Agent agent;
-
-
 }

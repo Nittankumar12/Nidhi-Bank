@@ -17,6 +17,7 @@ import java.util.List;
 @Entity
 public class Scheme {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int schemeId;
     private double monthlyDepositAmount;
     private LocalDate startDate;

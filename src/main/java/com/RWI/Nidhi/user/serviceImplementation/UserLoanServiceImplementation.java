@@ -50,7 +50,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     public void applyLoan(LoanApplyDto loanApplyDto) {// For User
             User user = userService.getByEmail(loanApplyDto.getUserEmail());
             Accounts acc = user.getAccounts();
-            Agent agent = agentRepo.findByAgentEmail(loanApplyDto.getAgentEmail());
+            Agent agent = user.getAgent();
             Loan loan = new Loan();
             loan.setLoanType(loanApplyDto.getLoanType());
             loan.setInterestRate(loanApplyDto.getLoanType().getLoanInterestRate());
@@ -156,7 +156,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                 } else
                     return new ResponseEntity<>("No active loan on your account", HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity<>(loanInfoDto,HttpStatus.FOUND);
+            return new ResponseEntity<>(loanInfoDto,HttpStatus.OK);
         }
     }
 
@@ -170,6 +170,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     }
     @Override
     public ResponseEntity<?> getLoanInfoByLoanType(LoanType loanType,double principalAmount, int rePaymentTerm) {
+
         if(verifyLoanType(loanType.toString())) {
             LoanTypeBasedInfoDto loanInfoDto = new LoanTypeBasedInfoDto();
             loanInfoDto.setPrincipalAmount(principalAmount);
@@ -182,7 +183,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             loanCalcDto.setRePaymentTerm(rePaymentTerm);
             loanInfoDto.setMonthlyEMI(calculateEMI(loanCalcDto));
             loanInfoDto.setTotalPayableAmount(calculateFirstPayableAmount(loanCalcDto));
-            return new ResponseEntity<>(loanInfoDto, HttpStatus.FOUND);
+            return new ResponseEntity<>(loanInfoDto, HttpStatus.OK);
         }
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -300,7 +301,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                 } else
                     return new ResponseEntity<>("no active loan", HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity<>(loanClosureDto, HttpStatus.FOUND);
+            return new ResponseEntity<>(loanClosureDto, HttpStatus.OK);
         }
     }
 
@@ -325,7 +326,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                     return new ResponseEntity<>("No running loan found", HttpStatus.NOT_FOUND);
                 }
             }
-            return new ResponseEntity<> ("Applied For Closure", HttpStatus.ACCEPTED);
+            return new ResponseEntity<> ("Applied For Closure", HttpStatus.OK);
         }
     }
     public LocalDate firstDateOfNextMonth(LocalDate date) {
