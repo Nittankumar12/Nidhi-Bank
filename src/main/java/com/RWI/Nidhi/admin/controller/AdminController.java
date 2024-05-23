@@ -101,12 +101,15 @@ public class AdminController {
         List<LoanHistoryDto> loanHistoryDtos =adminService.getLoansByLoanStatus(loanStatus);
         return new ResponseEntity<>(loanHistoryDtos,HttpStatus.OK);
     }
+
     ResponseEntity<?> addBalanceToAccount(double amount){
         return adminService.addBalanceToAccount(amount);
     }
+
     ResponseEntity<?> deductBalanceToAccount(double amount){
         return adminService.deductBalanceToAccount(amount);
     }
+
     @PutMapping("/deactivateAccount")
     public ResponseEntity<?> deactivateAccount(@RequestParam("accountNumber") String accountNumber, @RequestParam("agentEmail") String agentEmail) {
         return adminService.deactivateAccount(accountNumber, agentEmail);
@@ -137,6 +140,10 @@ public class AdminController {
         return adminService.deleteScheme(email);
     }
 
+    @DeleteMapping("deleteUserById")
+    public ResponseEntity<?> deleteUserById(@RequestParam("userEmail") String userEmail, @RequestParam("agentEmail") String agentEmail) throws Exception {
+        return adminService.deleteUserById(userEmail, agentEmail);
+    }
 //    @PostMapping("/login-admin")
 //    public ResponseEntity<?> authenticateUser(@RequestBody LoginReq loginReq) {
 //        Admin admin = adminRepo.findByAdminName(loginReq.getUsername());

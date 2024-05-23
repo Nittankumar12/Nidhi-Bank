@@ -22,12 +22,6 @@ public class AgentController {
     AgentRepo agentRepo;
 
 
-
-    @DeleteMapping("deleteUserById")
-    public ResponseEntity<?> deleteUserById(@RequestParam("userEmail") String userEmail, @RequestParam("agentEmail") String agentEmail) throws Exception {
-        return agentService.deleteUserById(userEmail, agentEmail);
-    }
-
     @GetMapping("/getAllUsers")
     public ResponseEntity<?> getAllUsers(@RequestParam("agentEmail") String agentEmail) {
         return new ResponseEntity<>(agentService.getAllUsers(agentEmail), HttpStatus.OK);
@@ -74,16 +68,16 @@ public class AgentController {
     @GetMapping("/getCommissionList/{agentEmail}")
     public ResponseEntity<?> getCommissionList(@RequestParam ("agentEmail")String agentEmail){
         if(agentRepo.existsByAgentEmail(agentEmail))
-            return new ResponseEntity<>(agentService.getCommissionList(agentEmail),HttpStatus.FOUND);
+            return new ResponseEntity<>(agentService.getCommissionList(agentEmail),HttpStatus.OK);
         else
-            return null;
+            return new ResponseEntity<>("No Commissions Found", HttpStatus.NOT_FOUND);
     }
     @GetMapping("/getCommissionList/{agentEmail}/{CommissionType}")
     public ResponseEntity<?> getCommissionListByType(@RequestParam("agentEmail") String agentEmail,@RequestParam("commissionType") CommissionType commissionType){
         if(agentRepo.existsByAgentEmail(agentEmail))
-            return new ResponseEntity<>(agentService.getCommissionList(agentEmail,commissionType),HttpStatus.FOUND);
+            return new ResponseEntity<>(agentService.getCommissionList(agentEmail,commissionType),HttpStatus.OK);
         else
-            return null;
+            return new ResponseEntity<>("No Commission type found", HttpStatus.NOT_FOUND);
     }
 //    @PutMapping("/ChangeLoanStatus/{email}")
 //    public ResponseEntity<?> ChangeLoanStatus(@RequestParam("email") String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus) {

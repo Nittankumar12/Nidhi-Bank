@@ -61,17 +61,17 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     @Autowired
     CredentialsRepo credRepo;
 
-
-    @Override
-    public ResponseEntity<?> deleteUserById(String userEmail, String agentEmail) {
-        User user = userRepo.findByEmail(userEmail);
-        Agent agent = user.getAgent();
-        if (!agent.getAgentEmail().equals(agentEmail)) {
-            return new ResponseEntity<>("This user is not in current agent's list", HttpStatus.NOT_FOUND);
-        }
-        userRepo.deleteById(user.getUserId());
-        return new ResponseEntity<>("User Deleted", HttpStatus.OK);
-    }
+//
+//    @Override
+//    public ResponseEntity<?> deleteUserById(String userEmail, String agentEmail) {
+//        User user = userRepo.findByEmail(userEmail);
+//        Agent agent = user.getAgent();
+//        if (!agent.getAgentEmail().equals(agentEmail)) {
+//            return new ResponseEntity<>("This user is not in current agent's list", HttpStatus.NOT_FOUND);
+//        }
+//        userRepo.deleteById(user.getUserId());
+//        return new ResponseEntity<>("User Deleted", HttpStatus.OK);
+//    }
 
     @Override
     public ResponseEntity<?> getAllUsers(String email) {

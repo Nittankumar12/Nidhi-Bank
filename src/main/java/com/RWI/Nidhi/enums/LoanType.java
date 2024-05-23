@@ -18,6 +18,7 @@ public enum LoanType {
     Personal(2),
     ProductLoan(2),
     Scheme(2);
+
     private double loanInterestRate;
     LoanType(double loanInterestRate) {
         this.loanInterestRate = loanInterestRate;

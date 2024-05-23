@@ -70,8 +70,9 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
                 scheme.setMonthlyDepositAmount(schemeApplyDTO.getSchemeAmount() / schemeApplyDTO.getTenure());
                 scheme.setSStatus(SchemeStatus.APPLIED);
                 scheme.setAccount(accounts);
+                scheme.setAgent(user.getAgent());
                 schemeRepo.save(scheme);
-                return new ResponseEntity<>(scheme, HttpStatus.ACCEPTED);
+                return new ResponseEntity<>(getSchemeInfo(schemeApplyDTO.getEmail()), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("Account not created", HttpStatus.NOT_FOUND);
             }
@@ -97,7 +98,7 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
                 schemeInfoDto.setSStatus(scheme.getSStatus());
                 schemeInfoDto.setAccounts(accounts);
                 schemeInfoDto.setUser(user);
-                return new ResponseEntity<>(schemeInfoDto, HttpStatus.FOUND);
+                return new ResponseEntity<>(schemeInfoDto, HttpStatus.OK);
             }else {
                 return new ResponseEntity<>("Scheme not found",HttpStatus.NOT_FOUND);
             }
@@ -131,7 +132,7 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
                 scheme.getTransactionsList().add(transactions);
 
                 schemeRepo.save(scheme);
-                return new ResponseEntity<>("Monthly Deposit successfull", HttpStatus.ACCEPTED);
+                return new ResponseEntity<>("Monthly Deposit successfull", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("No Current Sanctioned Scheme", HttpStatus.NOT_FOUND);
             }

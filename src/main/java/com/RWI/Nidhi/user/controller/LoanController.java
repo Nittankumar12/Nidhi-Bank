@@ -20,11 +20,11 @@ public class LoanController {
     @Autowired
     UserLoanServiceInterface userLoanService;
     @GetMapping("/maxLoan/{email}")
-    public ResponseEntity<Double> maxLoan(@PathVariable("email") String email) {
+    public ResponseEntity<?> maxLoan(@PathVariable("email") String email) {
         if (userLoanService.checkForExistingLoan(email) == Boolean.TRUE)
-            return new ResponseEntity<>(userLoanService.maxApplicableLoan(email), HttpStatus.FOUND);
+            return new ResponseEntity<>(userLoanService.maxApplicableLoan(email), HttpStatus.OK);
         else
-            return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+            return new ResponseEntity<>("Another Loan active",HttpStatus.BAD_REQUEST);
     }
     @GetMapping("/getInfoByLoanType")
     public ResponseEntity<?> getLoanInfoByLoanType(@RequestParam LoanType loanType,@RequestParam double principalAmount,@RequestParam int rePaymentTerm){
@@ -32,20 +32,14 @@ public class LoanController {
     }
     @PostMapping("/applyLoan")
     public ResponseEntity<?> applyLoan(@RequestBody LoanApplyDto loanApplyDto) {
-        User user = userService.getByEmail(loanApplyDto.getUserEmail());
-        Agent agent = user.getAgent();
-        if (!agent.getAgentEmail().equals(loanApplyDto.getAgentEmail())) {
-            return new ResponseEntity<>("This user is not in current agent's list", HttpStatus.NOT_FOUND);
-        } else {
             if (userLoanService.checkForExistingLoan(loanApplyDto.getUserEmail()) == Boolean.TRUE) {
                 if (userLoanService.checkForLoanBound(loanApplyDto.getUserEmail(), loanApplyDto.getPrincipalLoanAmount()) == Boolean.TRUE) {
                     userLoanService.applyLoan(loanApplyDto);
-                    return new ResponseEntity<>(userLoanService.getLoanInfo(loanApplyDto.getUserEmail()), HttpStatus.ACCEPTED);
+                    return new ResponseEntity<>(userLoanService.getLoanInfo(loanApplyDto.getUserEmail()), HttpStatus.OK);
                 } else
                     return new ResponseEntity<>("Loan Amount Request exceed allowed amount", HttpStatus.BAD_REQUEST);
             } else
-                return new ResponseEntity<>("You have another active loan", HttpStatus.I_AM_A_TEAPOT);
-        }
+                return new ResponseEntity<>("You have another active loan", HttpStatus.NOT_ACCEPTABLE);
     }
 
 
@@ -59,7 +53,7 @@ public class LoanController {
         if (userLoanService.checkForExistingLoan(email) != Boolean.FALSE) {
             return new ResponseEntity<>("No Loan currently recorded", HttpStatus.BAD_REQUEST);
         } else
-            return new ResponseEntity<>(userLoanService.payEMI(email), HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(userLoanService.payEMI(email), HttpStatus.OK);
     }
     @GetMapping("/findInterest/")
     public ResponseEntity<?> findRateByLoanType(@RequestParam LoanType loanType){

@@ -19,6 +19,8 @@ public interface AdminServiceInterface {
     ResponseEntity<?> updateAgentAddress(String agentEmail , String agentAddress) throws Exception;
     ResponseEntity<?> updateAgentEmail(String agentOldEmail, String agentNewEmail) throws Exception;
     ResponseEntity<?> updateAgentPhoneNum(String agentEmail, String phoneNum) throws Exception;
+    ResponseEntity<?> deleteUserById(String userEmail, String agentEmail);
+
     ResponseEntity<?> deleteAgentById(int id) throws Exception;
     ResponseEntity<?> getAllAgents();
     ResponseEntity<?> getAgentById(int id) throws Exception;
