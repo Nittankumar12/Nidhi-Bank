@@ -1,7 +1,4 @@
 package com.RWI.Nidhi.user.serviceInterface;
-
-import com.RWI.Nidhi.dto.LoanClosureDto;
-import com.RWI.Nidhi.dto.LoanInfoDto;
 import com.RWI.Nidhi.dto.MonthlyEmiDto;
 import com.RWI.Nidhi.dto.SchLoanCalcDto;
 import org.springframework.http.ResponseEntity;

@@ -19,13 +19,13 @@ import com.RWI.Nidhi.enums.TransactionStatus;
 import com.RWI.Nidhi.enums.TransactionType;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
+import com.RWI.Nidhi.user.serviceImplementation.UserSchemeLoanServiceImplementation;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -51,6 +51,8 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     PasswordEncoder encoder;
     @Autowired
     AdminRepo adminRepo;
+    @Autowired
+    UserSchemeLoanServiceImplementation userSchemeLoanService;
     @Autowired
     UserRepo userRepo;
 
@@ -396,4 +398,5 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
         return null;
     }
+
 }

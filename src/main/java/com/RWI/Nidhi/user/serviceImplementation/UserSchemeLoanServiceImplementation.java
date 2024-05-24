@@ -1,13 +1,11 @@
 package com.RWI.Nidhi.user.serviceImplementation;
-
 import com.RWI.Nidhi.dto.*;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.LoanType;
 import com.RWI.Nidhi.enums.SchemeStatus;
-import com.RWI.Nidhi.repository.CommissionRepository;
-import com.RWI.Nidhi.repository.LoanRepo;
+import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserSchemeLoanServiceInterface;
@@ -20,12 +18,20 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
 @Service
 public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServiceInterface {
     @Autowired
     LoanRepo loanRepo;
+    @Autowired
+    EmiCalculatorServiceImplementation emiCalculatorServiceImplementation;
+    @Autowired
+    AccountsRepo accountsRepo;
+    @Autowired
+    AgentRepo agentRepo;
+    @Autowired
+    UserRepo userRepo;
     @Autowired
     CommissionRepository commissionRepo;
     @Autowired
@@ -36,7 +42,6 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     AccountsServiceInterface accountsService;
     @Autowired
     SchemeServiceImplementation schemeService;
-
     @Override
     public ResponseEntity<?> schemeLoan(String email) {
         User user = userService.getByEmail(email);
@@ -49,59 +54,81 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
             return new ResponseEntity<>(schemeLoan,HttpStatus.FOUND);
         }
     }
-
     @Override
     public ResponseEntity<?> applySchemeLoan(String email) {
         User user = userService.getByEmail(email);
-        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE)  return null;
         Accounts acc = user.getAccounts();
-        Scheme scheme = acc.getScheme();
-        if (scheme == null)
-            return new ResponseEntity<>("No scheme running", HttpStatus.I_AM_A_TEAPOT);
-        else {
-            double schemeLoan = scheme.getMonthlyDepositAmount() * scheme.getTenure();
-            SchLoanCalcDto schLoanCalcDto = new SchLoanCalcDto();
-            schLoanCalcDto.setRePaymentTerm((int) ChronoUnit.DAYS.between(scheme.getStartDate(), LocalDate.now()));
-            schLoanCalcDto.setPrincipalLoanAmount(schemeLoan - scheme.getTotalDepositAmount());
-            schLoanCalcDto.setInterestRate(LoanType.Scheme.getLoanInterestRate());
+        Agent agent = user.getAgent();
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) {
+            return new ResponseEntity<>("Account not opened", HttpStatus.BAD_REQUEST);
+        } else {
+            Scheme scheme = acc.getScheme();
+            if (scheme == null) {
+                return new ResponseEntity<>("No scheme running", HttpStatus.I_AM_A_TEAPOT);
+            } else {
+                double schemeLoan = scheme.getMonthlyDepositAmount() * scheme.getTenure();
+                SchLoanCalcDto schLoanCalcDto = new SchLoanCalcDto();
+                schLoanCalcDto.setRePaymentTerm((scheme.getTenure()- ((int)ChronoUnit.DAYS.between(scheme.getStartDate(), LocalDate.now()))));
+                schLoanCalcDto.setPrincipalLoanAmount(schemeLoan - scheme.getTotalDepositAmount());
+                schLoanCalcDto.setInterestRate(LoanType.Scheme.getLoanInterestRate());
 
-            Loan loan = new Loan();
-            loan.setLoanType(LoanType.Scheme);
-            loan.setInterestRate(LoanType.Scheme.getLoanInterestRate());
-            loan.setRePaymentTerm(schLoanCalcDto.getRePaymentTerm());
-            loan.setPrincipalLoanAmount(schemeLoan);
-            loan.setStartDate(LocalDate.now());
-            loan.setEmiDate(calcFirstEMIDate(loan.getStartDate()));
-            //Payable
-            loan.setPayableLoanAmount(calculateFirstPayableSchLoanAmount(schLoanCalcDto));
-            //MonthlyEMI
-            //Commission
-            Commission commission = new Commission();
-            commission.setAgent(user.getAgent());
-            commission.setUser(user);
-            commission.setCommissionType((CommissionType.valueOf("SchemeLoan")));
-            commission.setCommissionRate(CommissionType.valueOf( "SchemeLoan").getCommissionRate());
-            commission.setCommissionAmount(accountsService.amountCalc(CommissionType.valueOf( "SchemeLoan").getCommissionRate(),loan.getPrincipalLoanAmount()));
-            commission.setCommDate(LocalDate.now());
-            commissionRepo.save(commission);
+                Loan loan = new Loan();
+                loan.setLoanType(LoanType.Scheme);
+                loan.setInterestRate(LoanType.Scheme.getLoanInterestRate());
+                loan.setRePaymentTerm((scheme.getTenure()- ((int)ChronoUnit.DAYS.between(scheme.getStartDate(), LocalDate.now()))));
+                loan.setPrincipalLoanAmount(schemeLoan);
+                schLoanCalcDto.setPrincipalLoanAmount(schemeLoan - scheme.getTotalDepositAmount());
 
-            loan.setMonthlyEMI(calculateSchLoanEMI(schLoanCalcDto));
-            loan.setStatus(LoanStatus.APPLIED);
-            loan.setAccount(acc);
-            List<Loan> loanList = new ArrayList<>();
-            loanList.add(loan);
-            acc.setLoanList(loanList);// save loan in acc
-            loanRepo.save(loan);
-            return new ResponseEntity<>("Scheme Loan has been applied for", HttpStatus.I_AM_A_TEAPOT);
+                //Commission
+                Commission commission = new Commission();
+                commission.setAgent(agent);
+                commission.setUser(user);
+                commission.setCommissionType((CommissionType.SchemeLoan));
+                commission.setCommissionRate(CommissionType.SchemeLoan.getCommissionRate());
+                commission.setCommissionAmount(accountsService.amountCalc(CommissionType.SchemeLoan.getCommissionRate(), loan.getPrincipalLoanAmount()));
+                commission.setCommDate(LocalDate.now());
+                commissionRepo.save(commission);
+
+                //Status
+                loan.setStatus(LoanStatus.APPLIED);
+                loan.setAccount(acc);// save acc in loan
+                loan.setAgent(agent);
+                loan.setUser(user);
+                acc.getLoanList().add(loan);
+                user.setAccounts(acc);
+                loanRepo.save(loan);//save loan in loan
+                accountsRepo.save(acc);
+                userRepo.save(user);
+                agent.getLoanList().add(loan);
+                agentRepo.save(agent);
+                LoanInfoDto loanInfoDto = new LoanInfoDto();
+                loanInfoDto.setLoanType(loan.getLoanType());
+                loanInfoDto.setPayableLoanAmount(loan.getPayableLoanAmount());
+                loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
+                loanInfoDto.setInterestRate(loan.getInterestRate());
+                loanInfoDto.setStatus(loan.getStatus());
+                loanInfoDto.setMonthlyEMI(loan.getMonthlyEMI());
+                loanInfoDto.setRePaymentTerm(loan.getRePaymentTerm());
+                loanInfoDto.setStartDate(loan.getStartDate());
+                return new ResponseEntity<>(loanInfoDto,HttpStatus.OK);
+            }
         }
     }
-
+    @Override
     public double calculateFirstPayableSchLoanAmount(SchLoanCalcDto schLoanCalcDto) {
-        return userLoanService.calculateFirstPayableAmount(new LoanCalcDto(schLoanCalcDto));
+        double p = schLoanCalcDto.getPrincipalLoanAmount();
+        LoanType t = schLoanCalcDto.getLoanType();
+        int n = schLoanCalcDto.getRePaymentTerm();
+        HashMap<String, Double> map = emiCalculatorServiceImplementation.calculateEMI(p,t,n);
+        return map.get("totalPayment");
     }
-
+    @Override
     public double calculateSchLoanEMI(SchLoanCalcDto schLoanCalcDto) {
-        return userLoanService.calculateEMI(new LoanCalcDto(schLoanCalcDto));
+        double p = schLoanCalcDto.getPrincipalLoanAmount();
+        LoanType t = schLoanCalcDto.getLoanType();
+        int n = schLoanCalcDto.getRePaymentTerm();
+        HashMap<String, Double> map = emiCalculatorServiceImplementation.calculateEMI(p,t,n);
+        return map.get("loanEmi");
     }
     @Override
     public ResponseEntity<?> getLoanInfo(String email) {
@@ -114,7 +141,6 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
         else
             return null;
     }
-
     @Override
     public MonthlyEmiDto payEMI(String email) {
         User user = userService.getByEmail(email);
@@ -127,7 +153,6 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
             return null;
         }
     }
-
     @Override
     public ResponseEntity<?> getLoanClosureDetails(String email) {
         if(schemeService.CheckForSchemeRunning(email))
@@ -139,14 +164,11 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     public Boolean checkForExistingLoan(String email) {
         return userLoanService.checkForExistingLoan(email);
     }
-
     @Override
     public LocalDate firstDateOfNextMonth(LocalDate date) {
         LocalDate nextMonth = date.plusMonths(1);
         return nextMonth.withDayOfMonth(1);
     }
-
-
     @Override
     public ResponseEntity<?> applyForLoanClosure(String email) {
         User user = userService.getByEmail(email);
@@ -160,7 +182,7 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
                 return new ResponseEntity<>("no Loan record found", HttpStatus.NOT_FOUND);
             else {
                 for (Loan loan : loanList) {
-                    if (checkForExistingLoan(email) == Boolean.FALSE || loan.getLoanType() == LoanType.Scheme) {
+                    if (checkForExistingLoan(email) == Boolean.FALSE && loan.getLoanType() == LoanType.Scheme) {
                         if (loan.getStatus() == LoanStatus.APPROVED || loan.getStatus() == LoanStatus.SANCTIONED) {
                             double monthlyEMI = loan.getMonthlyEMI();
                             loan.setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
@@ -176,10 +198,8 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
         }
         return new ResponseEntity<>("Applied For Closure", HttpStatus.ACCEPTED);
     }
-
     @Override
     public LocalDate calcFirstEMIDate(LocalDate startDate) {
         return firstDateOfNextMonth(startDate);
     }
-
 }

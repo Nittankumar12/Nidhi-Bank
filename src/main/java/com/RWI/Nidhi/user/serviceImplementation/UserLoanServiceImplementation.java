@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -52,17 +51,18 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     }
 
     @Override
-    public void applyLoan(LoanApplyDto loanApplyDto) {// For User
-            User user = userService.getByEmail(loanApplyDto.getUserEmail());
-            Accounts acc = user.getAccounts();
-            Agent agent = user.getAgent();
-
+    public LoanInfoDto applyLoan(LoanApplyDto loanApplyDto) {
+        User user = userService.getByEmail(loanApplyDto.getUserEmail());
+        Accounts acc = user.getAccounts();
+        Agent agent = user.getAgent();
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) {
+            return null;
+        } else {
             Loan loan = new Loan();
             loan.setLoanType(loanApplyDto.getLoanType());
             loan.setInterestRate(loanApplyDto.getLoanType().getLoanInterestRate());
             loan.setRePaymentTerm(loanApplyDto.getRePaymentTerm());
             loan.setPrincipalLoanAmount(loanApplyDto.getPrincipalLoanAmount());
-
 
 
             //Commission
@@ -71,26 +71,33 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             commission.setUser(user);
             commission.setCommissionType((CommissionType.valueOf(loanApplyDto.getLoanType() + "Loan")));
             commission.setCommissionRate(CommissionType.valueOf(loanApplyDto.getLoanType() + "Loan").getCommissionRate());
-            commission.setCommissionAmount(accountsService.amountCalc(CommissionType.valueOf(loanApplyDto.getLoanType() + "Loan").getCommissionRate(),loan.getPrincipalLoanAmount()));
+            commission.setCommissionAmount(accountsService.amountCalc(CommissionType.valueOf(loanApplyDto.getLoanType() + "Loan").getCommissionRate(), loan.getPrincipalLoanAmount()));
             commission.setCommDate(LocalDate.now());
             commissionRepo.save(commission);
 
-
-            //Status
             loan.setStatus(LoanStatus.APPLIED);
-            loan.setAccount(acc);// save acc in loan
+            loan.setAccount(acc);
             loan.setAgent(agent);
             loan.setUser(user);
-            List<Loan> loanList = new ArrayList<>();
-            loanList.add(loan);
-            acc.setLoanList(loanList);// save loan in acc
+            acc.getLoanList().add(loan);
             user.setAccounts(acc);
-            loanRepository.save(loan);//save loan in loan
+            loanRepository.save(loan);
             accountsRepo.save(acc);
             userRepo.save(user);
             agent.getLoanList().add(loan);
             agentRepo.save(agent);
+            LoanInfoDto loanInfoDto = new LoanInfoDto();
+            loanInfoDto.setLoanType(loan.getLoanType());
+            loanInfoDto.setPayableLoanAmount(loan.getPayableLoanAmount());
+            loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
+            loanInfoDto.setInterestRate(loan.getInterestRate());
+            loanInfoDto.setStatus(loan.getStatus());
+            loanInfoDto.setMonthlyEMI(loan.getMonthlyEMI());
+            loanInfoDto.setRePaymentTerm(loan.getRePaymentTerm());
+            loanInfoDto.setStartDate(loan.getStartDate());
+            return loanInfoDto;
         }
+    }
 
     @Override
     public LocalDate calcFirstEMIDate(LocalDate startDate) {
@@ -136,7 +143,6 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     }
 
     public double calculateFirstPayableAmount(LoanCalcDto loanCalcDto) {
-        //Internal Methods for apply Loan, only to be used when initially
         double p = loanCalcDto.getPrincipalLoanAmount();
         LoanType t = loanCalcDto.getLoanType();
         int n = loanCalcDto.getRePaymentTerm();
@@ -146,7 +152,6 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
 
     @Override
     public double calculateEMI(LoanCalcDto loanCalcDto) {
-        //Internal Methods for apply Loan
         double p = loanCalcDto.getPrincipalLoanAmount();
         LoanType t = loanCalcDto.getLoanType();
         int n = loanCalcDto.getRePaymentTerm();
@@ -209,8 +214,6 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
-    // From here
     @Override
     public MonthlyEmiDto payEMI(String email) {
         User user = userService.getByEmail(email);
@@ -226,8 +229,8 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                     payableLoanAmount = temp - loan.getMonthlyEMI();
                     loan.setPayableLoanAmount(payableLoanAmount);
                     loan.setEmiDate(firstDateOfNextMonth(LocalDate.now()));
-                    //transaction part
 
+                    //transaction part
                     Transactions transactions = new Transactions();
                     transactions.setAccount(acc);
                     transactions.setLoan(loan);
@@ -239,7 +242,6 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                     transactionRepo.save(transactions);
                     loan.getTransactionsList().add(transactions);
 
-                    //transaction part
                     LocalDate endDate = ChronoUnit.DAYS.addTo(loan.getStartDate(), loan.getRePaymentTerm());
                     int rePaymentTermLeft = (int) ChronoUnit.DAYS.between(endDate, LocalDate.now());
                     loanRepository.save(loan);
@@ -257,7 +259,6 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             }
         }
         return null;
-        // In return - EMI paid, EMI month, Months left, amount left, next payment date
     }
 
     private MonthlyEmiDto payEMIWithFine(String email) {
@@ -286,14 +287,14 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                 transactions.setTransactionStatus(TransactionStatus.COMPLETED);
                 transactionRepo.save(transactions);
                 loan.getTransactionsList().add(transactions);
-                loan.setCurrentFine(0);//set currentFine to 0
+                loan.setCurrentFine(0);
                 loanRepository.save(loan);
 
                 LocalDate endDate = ChronoUnit.DAYS.addTo(loan.getStartDate(), loan.getRePaymentTerm());
                 int rePaymentTermLeft = (int) ChronoUnit.DAYS.between(endDate, LocalDate.now());
 
                 monthlyEmiDto.setPayableLoanAmount(payableLoanAmount);
-                monthlyEmiDto.setMonthlyEMI(loan.getMonthlyEMI() + loan.getCurrentFine());// monthly emi is inc by currentFine
+                monthlyEmiDto.setMonthlyEMI(loan.getMonthlyEMI() + loan.getCurrentFine());
                 monthlyEmiDto.setRePaymentTermLeft(rePaymentTermLeft);
                 monthlyEmiDto.setPaymentDate(LocalDate.now());
                 monthlyEmiDto.setNextEMIDate(firstDateOfNextMonth(LocalDate.now()));
