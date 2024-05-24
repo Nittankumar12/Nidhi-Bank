@@ -1,9 +1,6 @@
 package com.RWI.Nidhi.agent.serviceImplementation;
 
 import com.RWI.Nidhi.Security.models.Credentials;
-import com.RWI.Nidhi.Security.models.ERole;
-import com.RWI.Nidhi.Security.models.Role;
-import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.Security.repository.CredentialsRepo;
 import com.RWI.Nidhi.Security.repository.RoleRepository;
 import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
@@ -14,11 +11,9 @@ import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
-import com.amazonaws.services.dynamodbv2.xspec.L;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -218,7 +212,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     }
 
     @Override
-    public List<CommissionDto> getCommissionList(String agentEmail) {
+    public List<CommissionDto> getCommissionListByType(String agentEmail) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
         List<Commission> commissionList = agent.getCommissionList();
         List<CommissionDto> commissionDtoList = new ArrayList<>();
@@ -234,8 +228,8 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         return commissionDtoList;
     }
     @Override
-    public List<CommissionDto> getCommissionList(String agentEmail, CommissionType commissionType) {
-        List<CommissionDto> commissionDtoList = getCommissionList(agentEmail);
+    public List<CommissionDto> getCommissionListByType(String agentEmail, CommissionType commissionType) {
+        List<CommissionDto> commissionDtoList = getCommissionListByType(agentEmail);
         List<CommissionDto> commissionDtoListByType = new ArrayList<>();
         for(CommissionDto commissionDto : commissionDtoList){
             if(commissionDto.getCommissionType()==commissionType)

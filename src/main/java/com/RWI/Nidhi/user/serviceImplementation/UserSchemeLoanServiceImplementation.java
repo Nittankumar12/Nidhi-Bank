@@ -1,13 +1,13 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.*;
-import com.RWI.Nidhi.entity.Accounts;
-import com.RWI.Nidhi.entity.Loan;
-import com.RWI.Nidhi.entity.Scheme;
-import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.entity.*;
+import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.LoanType;
+import com.RWI.Nidhi.repository.CommissionRepository;
 import com.RWI.Nidhi.repository.LoanRepo;
+import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserSchemeLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
@@ -26,9 +26,13 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     @Autowired
     LoanRepo loanRepo;
     @Autowired
+    CommissionRepository commissionRepo;
+    @Autowired
     UserService userService;
     @Autowired
     UserLoanServiceInterface userLoanService;
+    @Autowired
+    AccountsServiceInterface accountsService;
     @Autowired
     SchemeServiceImplementation schemeService;
 
@@ -69,6 +73,16 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
             //Payable
             loan.setPayableLoanAmount(calculateFirstPayableSchLoanAmount(schLoanCalcDto));
             //MonthlyEMI
+            //Commission
+            Commission commission = new Commission();
+            commission.setAgent(user.getAgent());
+            commission.setUser(user);
+            commission.setCommissionType((CommissionType.valueOf("SchemeLoan")));
+            commission.setCommissionRate(CommissionType.valueOf( "SchemeLoan").getCommissionRate());
+            commission.setCommissionAmount(accountsService.amountCalc(CommissionType.valueOf( "SchemeLoan").getCommissionRate(),loan.getPrincipalLoanAmount()));
+            commission.setCommDate(LocalDate.now());
+            commissionRepo.save(commission);
+
             loan.setMonthlyEMI(calculateSchLoanEMI(schLoanCalcDto));
             loan.setStatus(LoanStatus.APPLIED);
             loan.setAccount(acc);

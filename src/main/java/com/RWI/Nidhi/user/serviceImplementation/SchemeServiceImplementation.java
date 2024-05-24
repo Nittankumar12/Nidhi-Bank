@@ -2,17 +2,13 @@ package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.SchemeApplyDTO;
 import com.RWI.Nidhi.dto.SchemeInfoDto;
-import com.RWI.Nidhi.entity.Accounts;
-import com.RWI.Nidhi.entity.Scheme;
-import com.RWI.Nidhi.entity.Transactions;
-import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.entity.*;
+import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.enums.SchemeStatus;
 import com.RWI.Nidhi.enums.TransactionStatus;
 import com.RWI.Nidhi.enums.TransactionType;
-import com.RWI.Nidhi.repository.TransactionRepo;
-import com.RWI.Nidhi.repository.UserRepo;
+import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.SchemeServiceInterface;
-import com.RWI.Nidhi.repository.SchemeRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +28,12 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
     TransactionRepo transactionRepo;
     @Autowired
     UserRepo userRepo;
+    @Autowired
+    AccountsServiceImplementation accountsService;
+    @Autowired
+    AgentRepo agentRepo;
+    @Autowired
+    CommissionRepository commissionRepo;
     @Autowired
     UserSchemeLoanServiceImplementation userSchemeLoanService;
 
@@ -69,6 +71,19 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
                 scheme.setTenure(schemeApplyDTO.getTenure());
                 scheme.setMonthlyDepositAmount(schemeApplyDTO.getSchemeAmount() / schemeApplyDTO.getTenure());
                 scheme.setSStatus(SchemeStatus.APPLIED);
+
+                //Commission
+                Commission commission = new Commission();
+                commission.setAgent(user.getAgent());
+                commission.setUser(user);
+                commission.setCommissionType((CommissionType.Scheme));
+                commission.setCommissionRate(CommissionType.Scheme.getCommissionRate());
+                commission.setCommissionAmount(accountsService.amountCalc(CommissionType.FD.getCommissionRate(),scheme.getMonthlyDepositAmount()*scheme.getTenure()));
+                commission.setCommDate(LocalDate.now());
+                commissionRepo.save(commission);
+                userRepo.save(user);
+                agentRepo.save(user.getAgent());
+
                 scheme.setAccount(accounts);
                 scheme.setAgent(user.getAgent());
                 schemeRepo.save(scheme);

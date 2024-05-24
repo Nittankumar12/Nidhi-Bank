@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -21,7 +22,7 @@ public class Commission {
     private double commissionRate;
     @Enumerated(EnumType.STRING)
     private CommissionType commissionType;//Commission value - laon, mis, etc.
-    private Date commDate;
+    private LocalDate commDate;
     @ManyToOne
     @JoinColumn
     User user;

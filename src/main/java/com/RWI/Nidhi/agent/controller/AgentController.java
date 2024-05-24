@@ -1,11 +1,8 @@
 package com.RWI.Nidhi.agent.controller;
 
-import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceImplementation;
 import com.RWI.Nidhi.dto.Agentforgetpassword;
 import com.RWI.Nidhi.enums.CommissionType;
-import com.RWI.Nidhi.enums.LoanStatus;
-import com.RWI.Nidhi.enums.SchemeStatus;
 import com.RWI.Nidhi.repository.AgentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -68,14 +65,14 @@ public class AgentController {
     @GetMapping("/getCommissionList/{agentEmail}")
     public ResponseEntity<?> getCommissionList(@RequestParam ("agentEmail")String agentEmail){
         if(agentRepo.existsByAgentEmail(agentEmail))
-            return new ResponseEntity<>(agentService.getCommissionList(agentEmail),HttpStatus.OK);
+            return new ResponseEntity<>(agentService.getCommissionListByType(agentEmail),HttpStatus.OK);
         else
             return new ResponseEntity<>("No Commissions Found", HttpStatus.NOT_FOUND);
     }
     @GetMapping("/getCommissionList/{agentEmail}/{CommissionType}")
     public ResponseEntity<?> getCommissionListByType(@RequestParam("agentEmail") String agentEmail,@RequestParam("commissionType") CommissionType commissionType){
         if(agentRepo.existsByAgentEmail(agentEmail))
-            return new ResponseEntity<>(agentService.getCommissionList(agentEmail,commissionType),HttpStatus.OK);
+            return new ResponseEntity<>(agentService.getCommissionListByType(agentEmail,commissionType),HttpStatus.OK);
         else
             return new ResponseEntity<>("No Commission type found", HttpStatus.NOT_FOUND);
     }

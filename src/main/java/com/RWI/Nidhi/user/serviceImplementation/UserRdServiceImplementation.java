@@ -4,10 +4,12 @@ import com.RWI.Nidhi.dto.RdDto;
 import com.RWI.Nidhi.dto.RdRequestDto;
 import com.RWI.Nidhi.dto.RdResponseDto;
 import com.RWI.Nidhi.entity.*;
+import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.enums.TransactionStatus;
 import com.RWI.Nidhi.enums.TransactionType;
 import com.RWI.Nidhi.repository.*;
+import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserRdServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     @Autowired
     private RecurringDepositRepo rdRepo;
     @Autowired
+    CommissionRepository commissionRepo;
+    @Autowired
     private AgentRepo agentRepo;
     @Autowired
     private UserRepo userRepo;
@@ -36,6 +40,8 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     private AccountsRepo accountRepo;
     @Autowired
     private TransactionRepo transactionRepo;
+    @Autowired
+    AccountsServiceInterface accountsService;
 
     @Override
     public RdResponseDto createRd(String agentEmail, String email, RdDto rdDto) {
@@ -70,6 +76,18 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             transactionRepo.save(transactions);
             accounts.getTransactionsList().add(transactions);
             accountRepo.save(accounts);
+
+            //Commission
+            Commission commission = new Commission();
+            commission.setAgent(agent);
+            commission.setUser(user);
+            commission.setCommissionType((CommissionType.RD));
+            commission.setCommissionRate(CommissionType.RD.getCommissionRate());
+            commission.setCommissionAmount(accountsService.amountCalc(CommissionType.RD.getCommissionRate(),rd.getMaturityAmount()));
+            commission.setCommDate(LocalDate.now());
+            commissionRepo.save(commission);
+            userRepo.save(user);
+            agentRepo.save(agent);
 
             rd.getTransactionsList().add(transactions);
             rdRepo.save(rd);
