@@ -121,8 +121,8 @@ public class AdminController {
     public ResponseEntity<?> closeAccount(@RequestParam("accountNumber") String accountNumber, @RequestParam("agentEmail") String agentEmail) throws Exception {
         return adminService.closeAccount(accountNumber, agentEmail);
     }
-    @PutMapping("/ChangeLoanStatus/{email}")
-    public ResponseEntity<?> changeLoanStatus(@RequestParam("email") String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
+    @PutMapping("/ChangeLoanStatus")
+    public ResponseEntity<?> changeLoanStatus(@RequestParam("agentEmail") String agentEmail, @RequestParam("userEmail") String userEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
         return adminService.changeLoanStatus(userEmail, agentEmail, changedStatus, previousStatus);
     }
     @CrossOrigin(origins = "http://localhost:5173")

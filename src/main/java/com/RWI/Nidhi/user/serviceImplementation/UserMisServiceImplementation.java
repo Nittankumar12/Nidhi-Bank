@@ -41,8 +41,10 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
 
     @Override
     public MisResponseDto createMis(String agentEmail, String email, MisDto misDto) {
+
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
         User user = userRepo.findByEmail(email);
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) return null;
         Accounts accounts = new Accounts();
         MIS newMis = new MIS();
         if (agent != null && user != null) {

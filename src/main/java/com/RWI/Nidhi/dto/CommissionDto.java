@@ -5,6 +5,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 @Data
 public class CommissionDto {
@@ -12,5 +13,5 @@ public class CommissionDto {
     private double commissionRate;
     private String userName;
     private CommissionType commissionType;//Commission value - laon, mis, etc.
-    private Date commDate;
+    private LocalDate commDate;
 }

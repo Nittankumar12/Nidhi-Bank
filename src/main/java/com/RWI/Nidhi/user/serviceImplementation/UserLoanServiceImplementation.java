@@ -56,11 +56,14 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             User user = userService.getByEmail(loanApplyDto.getUserEmail());
             Accounts acc = user.getAccounts();
             Agent agent = user.getAgent();
+
             Loan loan = new Loan();
             loan.setLoanType(loanApplyDto.getLoanType());
             loan.setInterestRate(loanApplyDto.getLoanType().getLoanInterestRate());
             loan.setRePaymentTerm(loanApplyDto.getRePaymentTerm());
             loan.setPrincipalLoanAmount(loanApplyDto.getPrincipalLoanAmount());
+
+
 
             //Commission
             Commission commission = new Commission();
@@ -76,6 +79,8 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             //Status
             loan.setStatus(LoanStatus.APPLIED);
             loan.setAccount(acc);// save acc in loan
+            loan.setAgent(agent);
+            loan.setUser(user);
             List<Loan> loanList = new ArrayList<>();
             loanList.add(loan);
             acc.setLoanList(loanList);// save loan in acc
@@ -209,6 +214,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     @Override
     public MonthlyEmiDto payEMI(String email) {
         User user = userService.getByEmail(email);
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE)  return null;
         Accounts acc = user.getAccounts();
         MonthlyEmiDto monthlyEmiDto = new MonthlyEmiDto();
         List<Loan> loanList = acc.getLoanList();

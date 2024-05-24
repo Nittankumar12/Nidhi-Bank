@@ -215,6 +215,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     public List<CommissionDto> getCommissionListByType(String agentEmail) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
         List<Commission> commissionList = agent.getCommissionList();
+        if(commissionList.size() == 0) return null;
         List<CommissionDto> commissionDtoList = new ArrayList<>();
         for(Commission commission : commissionList){
             CommissionDto commissionDto = new CommissionDto();
@@ -230,7 +231,9 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     @Override
     public List<CommissionDto> getCommissionListByType(String agentEmail, CommissionType commissionType) {
         List<CommissionDto> commissionDtoList = getCommissionListByType(agentEmail);
+        if(commissionDtoList == null) return null;
         List<CommissionDto> commissionDtoListByType = new ArrayList<>();
+
         for(CommissionDto commissionDto : commissionDtoList){
             if(commissionDto.getCommissionType()==commissionType)
                 commissionDtoListByType.add(commissionDto);

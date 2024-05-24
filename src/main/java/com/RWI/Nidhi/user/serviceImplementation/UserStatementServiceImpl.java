@@ -25,12 +25,15 @@ public class UserStatementServiceImpl implements UserStatementService {
     private RecurringDepositRepo rdRepo;
     @Autowired
     private MisRepo misRepo;
+    @Autowired
+    AccountsServiceImplementation accountsService;
 
 
     @Override
     public List<FdRequestDto> getFixedDepositDetailsByEmail(String email) {
 //        User user = userRepo.findById(userId).orElseThrow(()->new EntityNotFoundException("User not found with ID: " + userId));
         User user = userRepo.findByEmail(email);
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE)  return null;
         List<FixedDeposit> fixedDepositList = user.getAccounts().getFdList();
         List<FdRequestDto> fdRequestDtoList = new ArrayList<FdRequestDto>();
         for (FixedDeposit fixedDeposit : fixedDepositList) {
@@ -49,6 +52,7 @@ public class UserStatementServiceImpl implements UserStatementService {
     @Override
     public List<RdRequestDto> getRecurringDepositDetailsByEmail(String email) {
         User user = userRepo.findByEmail(email);
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE)  return null;
         List<RecurringDeposit> recurringDepositList = user.getAccounts().getRecurringDepositList();
         List<RdRequestDto> rdRequestDtoList = new ArrayList<RdRequestDto>();
         for (RecurringDeposit recurringDeposit : recurringDepositList) {
@@ -66,6 +70,7 @@ public class UserStatementServiceImpl implements UserStatementService {
     @Override
     public List<MisRequestDto> getMisDetailsByEmail(String email) {
         User user = userRepo.findByEmail(email);
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE)  return null;
         List<MIS> misList = user.getAccounts().getMisList();
         List<MisRequestDto> misRequestDtoList = new ArrayList<MisRequestDto>();
         for (MIS mis : misList) {
@@ -81,32 +86,31 @@ public class UserStatementServiceImpl implements UserStatementService {
     }
 
     @Override
-    public List<SchemeDto> getSchemeDetailsByEmail(String email) {
+    public SchemeDto getSchemeDetailsByEmail(String email) {
         User user = userRepo.findByEmail(email);
-        List<Scheme> misList = (List<Scheme>) user.getAccounts().getScheme();
-        List<SchemeDto> schemeDtoList = new ArrayList<SchemeDto>();
-        for (Scheme scheme : misList) {
-            SchemeDto tempSchemeResponse = new SchemeDto();
-            tempSchemeResponse.setSchemeId(scheme.getSchemeId());
-            tempSchemeResponse.setMonthlyDepositAmount(scheme.getMonthlyDepositAmount());
-            tempSchemeResponse.setTenure(scheme.getTenure());
-            tempSchemeResponse.setInterestRate(scheme.getInterestRate());
-            tempSchemeResponse.setSStatus(scheme.getSStatus());
-
-            schemeDtoList.add(tempSchemeResponse);
-        }
-        return schemeDtoList;
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE)  return null;
+        Scheme scheme = user.getAccounts().getScheme();
+        if(scheme == null ) return null;
+        SchemeDto tempSchemeResponse = new SchemeDto();
+        tempSchemeResponse.setSchemeId(scheme.getSchemeId());
+        tempSchemeResponse.setMonthlyDepositAmount(scheme.getMonthlyDepositAmount());
+        tempSchemeResponse.setTenure(scheme.getTenure());
+        tempSchemeResponse.setInterestRate(scheme.getInterestRate());
+        tempSchemeResponse.setSStatus(scheme.getSStatus());
+        return tempSchemeResponse;
     }
 
     @Override
     public List<Transactions> getTransactionsDetailsByEmail(String email) {
         User user = userRepo.findByEmail(email);
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE)  return null;
         return user.getAccounts().getTransactionsList();
     }
 
     @Override
     public List<LoanHistoryDto> getLoanDetailsByEmail(String email) {
         User user = userRepo.findByEmail(email);
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE)  return null;
         List<Loan> loanList = user.getAccounts().getLoanList();
         List<LoanHistoryDto> loanDtoList = new ArrayList<LoanHistoryDto>();
         for (Loan loan : loanList) {

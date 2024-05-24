@@ -17,6 +17,8 @@ public class AccountController {
 	@Autowired
 	private AccountsServiceInterface accountsServiceInterface;
 
+
+
 	// End point to open a new account
 	@GetMapping("/open-account")
 	public ResponseEntity<AccountResponseDTO> openAccount(@RequestParam String email) {

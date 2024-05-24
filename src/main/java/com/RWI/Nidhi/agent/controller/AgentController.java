@@ -2,12 +2,15 @@ package com.RWI.Nidhi.agent.controller;
 
 import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceImplementation;
 import com.RWI.Nidhi.dto.Agentforgetpassword;
+import com.RWI.Nidhi.dto.CommissionDto;
 import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.repository.AgentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/agent")
@@ -64,17 +67,22 @@ public class AgentController {
 
     @GetMapping("/getCommissionList/{agentEmail}")
     public ResponseEntity<?> getCommissionList(@RequestParam ("agentEmail")String agentEmail){
-        if(agentRepo.existsByAgentEmail(agentEmail))
-            return new ResponseEntity<>(agentService.getCommissionListByType(agentEmail),HttpStatus.OK);
+        if(agentRepo.existsByAgentEmail(agentEmail)){
+            List<CommissionDto> commissionDtoList = agentService.getCommissionListByType(agentEmail);
+            if(commissionDtoList == null) return new ResponseEntity<>("No Commissions Found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(commissionDtoList,HttpStatus.OK);
+        }
         else
-            return new ResponseEntity<>("No Commissions Found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("No Agent Found", HttpStatus.NOT_FOUND);
     }
     @GetMapping("/getCommissionList/{agentEmail}/{CommissionType}")
     public ResponseEntity<?> getCommissionListByType(@RequestParam("agentEmail") String agentEmail,@RequestParam("commissionType") CommissionType commissionType){
-        if(agentRepo.existsByAgentEmail(agentEmail))
-            return new ResponseEntity<>(agentService.getCommissionListByType(agentEmail,commissionType),HttpStatus.OK);
-        else
-            return new ResponseEntity<>("No Commission type found", HttpStatus.NOT_FOUND);
+        if(agentRepo.existsByAgentEmail(agentEmail)) {
+            List<CommissionDto> commissionDtoList = agentService.getCommissionListByType(agentEmail, commissionType);
+            if(commissionDtoList==null) return  new ResponseEntity<>("No Commissions Found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(commissionDtoList, HttpStatus.OK);
+        }else
+            return new ResponseEntity<>("No Agent found", HttpStatus.NOT_FOUND);
     }
 //    @PutMapping("/ChangeLoanStatus/{email}")
 //    public ResponseEntity<?> ChangeLoanStatus(@RequestParam("email") String agentEmail, @RequestBody String userEmail, LoanStatus changedStatus, LoanStatus previousStatus) {

@@ -20,6 +20,7 @@ public class FdController {
     @PostMapping("/createFd")
     public ResponseEntity<Object> createFd(@RequestParam String agentEmail, @RequestParam String email, @RequestBody FdDto fdDto) throws Exception {
         FdResponseDto fd = service.createFd(agentEmail, email, fdDto);
+        if(fd == null) return new ResponseEntity<>("Either user account closed or error while creating fd", HttpStatus.NOT_ACCEPTABLE);
         return new ResponseEntity<>(fd, HttpStatus.OK);
     }
 

@@ -5,6 +5,7 @@ import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.LoanType;
+import com.RWI.Nidhi.enums.SchemeStatus;
 import com.RWI.Nidhi.repository.CommissionRepository;
 import com.RWI.Nidhi.repository.LoanRepo;
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
@@ -52,6 +53,7 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     @Override
     public ResponseEntity<?> applySchemeLoan(String email) {
         User user = userService.getByEmail(email);
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE)  return null;
         Accounts acc = user.getAccounts();
         Scheme scheme = acc.getScheme();
         if (scheme == null)
@@ -118,7 +120,7 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
         User user = userService.getByEmail(email);
         Accounts accounts = user.getAccounts();
         Scheme scheme = accounts.getScheme();
-        if (scheme == null) {
+        if (scheme != null && scheme.getSStatus()== SchemeStatus.APPLIEDFORLOAN) {
             return userLoanService.payEMI(email);
         }
         else {

@@ -44,65 +44,68 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     public FdResponseDto createFd(String agentEmail, String email, FdDto fdDto) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
         User user = userRepo.findByEmail(email);
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) {
+            return null;
+        } else {
+            FixedDeposit fd = new FixedDeposit();
+            if (agent != null && user != null) {
+                fd.setAmount(fdDto.getAmount());
+                fd.setDepositDate(LocalDate.now());
+                fd.setTenure(fdDto.getTenure());
+                fd.setNomineeName(fdDto.getNomineeName());
+                fd.setMaturityDate(LocalDate.now().plusYears(fdDto.getTenure()));
+                fd.setCompoundingFrequency(fdDto.getFdCompoundingFrequency().getCompoundingFreq());
+                fd.setInterestRate(fdDto.getFdCompoundingFrequency().getFdInterestRate());
+                fd.setPenalty(0);
+                int tenureInDays = getCompleteDaysCount(fd.getDepositDate(), fd.getMaturityDate());
+                fd.setMaturityAmount(calculateFdAmount(fd.getAmount(), fd.getInterestRate(), fd.getCompoundingFrequency(), tenureInDays));
+                fd.setFdStatus(Status.ACTIVE);
 
-        FixedDeposit fd = new FixedDeposit();
-        if (agent != null && user != null) {
-            fd.setAmount(fdDto.getAmount());
-            fd.setDepositDate(LocalDate.now());
-            fd.setTenure(fdDto.getTenure());
-            fd.setNomineeName(fdDto.getNomineeName());
-            fd.setMaturityDate(LocalDate.now().plusYears(fdDto.getTenure()));
-            fd.setCompoundingFrequency(fdDto.getFdCompoundingFrequency().getCompoundingFreq());
-            fd.setInterestRate(fdDto.getFdCompoundingFrequency().getFdInterestRate());
-            fd.setPenalty(0);
-            int tenureInDays = getCompleteDaysCount(fd.getDepositDate(), fd.getMaturityDate());
-            fd.setMaturityAmount(calculateFdAmount(fd.getAmount(), fd.getInterestRate(), fd.getCompoundingFrequency(), tenureInDays));
-            fd.setFdStatus(Status.ACTIVE);
+                fd.setAgent(agent);
+                fd.setAccount(user.getAccounts());
 
-            fd.setAgent(agent);
-            fd.setAccount(user.getAccounts());
+                //Commission
+                Commission commission = new Commission();
+                commission.setAgent(agent);
+                commission.setUser(user);
+                commission.setCommissionType((CommissionType.FD));
+                commission.setCommissionRate(CommissionType.FD.getCommissionRate());
+                commission.setCommissionAmount(accountsService.amountCalc(CommissionType.FD.getCommissionRate(), fd.getAmount()));
+                commission.setCommDate(LocalDate.now());
+                commissionRepo.save(commission);
+                userRepo.save(user);
+                agentRepo.save(agent);
 
-            //Commission
-            Commission commission = new Commission();
-            commission.setAgent(agent);
-            commission.setUser(user);
-            commission.setCommissionType((CommissionType.FD));
-            commission.setCommissionRate(CommissionType.FD.getCommissionRate());
-            commission.setCommissionAmount(accountsService.amountCalc(CommissionType.FD.getCommissionRate(),fd.getAmount()));
-            commission.setCommDate(LocalDate.now());
-            commissionRepo.save(commission);
-            userRepo.save(user);
-            agentRepo.save(agent);
+                Transactions transactions = new Transactions();
+                transactions.setAccount(user.getAccounts());
+                transactions.setTransactionAmount(fd.getAmount());
+                Transactions.addTotalBalance(fd.getAmount());
+                transactions.setTransactionDate(new Date());
+                transactions.setTransactionType(TransactionType.CREDITED);
+                transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+                transactions.setFd(fd);
 
-            Transactions transactions = new Transactions();
-            transactions.setAccount(user.getAccounts());
-            transactions.setTransactionAmount(fd.getAmount());
-            Transactions.addTotalBalance(fd.getAmount());
-            transactions.setTransactionDate(new Date());
-            transactions.setTransactionType(TransactionType.CREDITED);
-            transactions.setTransactionStatus(TransactionStatus.COMPLETED);
-            transactions.setFd(fd);
+                transactionRepo.save(transactions);
+                fd.getTransactionsList().add(transactions);
+                fdRepo.save(fd);
 
-            transactionRepo.save(transactions);
-            fd.getTransactionsList().add(transactions);
-            fdRepo.save(fd);
+                FdResponseDto fdResponseDto = new FdResponseDto();
+                fdResponseDto.setUserName(fd.getAccount().getUser().getUserName());
+                fdResponseDto.setNomineeName(fd.getNomineeName());
+                fdResponseDto.setInterestRate(fd.getInterestRate());
+                fdResponseDto.setAmount(fd.getAmount());
+                fdResponseDto.setTenure(fd.getTenure());
+                fdResponseDto.setDepositDate(fd.getDepositDate());
+                fdResponseDto.setCompoundingFrequency(fd.getCompoundingFrequency());
+                fdResponseDto.setMaturityAmount(fd.getMaturityAmount());
+                fdResponseDto.setMaturityDate(fd.getMaturityDate());
+                fdResponseDto.setFdStatus(fd.getFdStatus());
+                fdResponseDto.setAgentName(fd.getAgent().getAgentName());
 
-            FdResponseDto fdResponseDto = new FdResponseDto();
-            fdResponseDto.setUserName(fd.getAccount().getUser().getUserName());
-            fdResponseDto.setNomineeName(fd.getNomineeName());
-            fdResponseDto.setInterestRate(fd.getInterestRate());
-            fdResponseDto.setAmount(fd.getAmount());
-            fdResponseDto.setTenure(fd.getTenure());
-            fdResponseDto.setDepositDate(fd.getDepositDate());
-            fdResponseDto.setCompoundingFrequency(fd.getCompoundingFrequency());
-            fdResponseDto.setMaturityAmount(fd.getMaturityAmount());
-            fdResponseDto.setMaturityDate(fd.getMaturityDate());
-            fdResponseDto.setFdStatus(fd.getFdStatus());
-            fdResponseDto.setAgentName(fd.getAgent().getAgentName());
-
-            return fdResponseDto;
+                return fdResponseDto;
+            }
+            return null;
         }
-        return null;
     }
 
 
