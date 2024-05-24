@@ -1,7 +1,4 @@
 package com.RWI.Nidhi.user.controller;
-
-import com.RWI.Nidhi.dto.LoanClosureDto;
-import com.RWI.Nidhi.dto.LoanInfoDto;
 import com.RWI.Nidhi.dto.MonthlyEmiDto;
 import com.RWI.Nidhi.user.serviceInterface.UserSchemeLoanServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +23,7 @@ public class UserSchemeLoanController {
     @PostMapping("/applySchLoan/{email}")
     public ResponseEntity<?> applyLoan(@PathVariable String email) {
         if (userSchemeLoanService.checkForExistingLoan(email) == Boolean.TRUE) {
+
             return userSchemeLoanService.applySchemeLoan(email);
         } else
             return new ResponseEntity<>("You have another active loan", HttpStatus.BAD_REQUEST);
@@ -50,13 +48,13 @@ public class UserSchemeLoanController {
         return new ResponseEntity<>(monthlyEmiDto, HttpStatus.OK);
     }
 
-    @GetMapping("/getloanClosureDetails/{email}")
+    @GetMapping("/getLoanClosureDetails/{email}")
     ResponseEntity<?> getLoanClosureDetails(String email) {
         return userSchemeLoanService.getLoanClosureDetails(email);
     }
 
-    @PutMapping("/applyloanClosureDetails/{email}")
-    ResponseEntity<?> applyloanClosureDetails(String email) {
+    @PutMapping("/applyLoanClosureDetails/{email}")
+    ResponseEntity<?> applyLoanClosureDetails(String email) {
         return userSchemeLoanService.applyForLoanClosure(email);
     }
 
