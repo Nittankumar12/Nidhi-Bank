@@ -3,14 +3,13 @@ package com.RWI.Nidhi.user.serviceImplementation;
 import com.RWI.Nidhi.dto.FdDto;
 import com.RWI.Nidhi.dto.FdRequestDto;
 import com.RWI.Nidhi.dto.FdResponseDto;
-import com.RWI.Nidhi.entity.Agent;
-import com.RWI.Nidhi.entity.FixedDeposit;
-import com.RWI.Nidhi.entity.Transactions;
-import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.entity.*;
+import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.enums.TransactionStatus;
 import com.RWI.Nidhi.enums.TransactionType;
 import com.RWI.Nidhi.repository.*;
+import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserFdServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +28,8 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     @Autowired
     FixedDepositRepo fdRepo;
     @Autowired
+    CommissionRepository commissionRepo;
+    @Autowired
     private AgentRepo agentRepo;
     @Autowired
     private UserRepo userRepo;
@@ -36,6 +37,8 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     private AccountsRepo accountRepo;
     @Autowired
     private TransactionRepo transactionRepo;
+    @Autowired
+    AccountsServiceInterface accountsService;
 
     @Override
     public FdResponseDto createFd(String agentEmail, String email, FdDto fdDto) {
@@ -58,6 +61,18 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
 
             fd.setAgent(agent);
             fd.setAccount(user.getAccounts());
+
+            //Commission
+            Commission commission = new Commission();
+            commission.setAgent(agent);
+            commission.setUser(user);
+            commission.setCommissionType((CommissionType.FD));
+            commission.setCommissionRate(CommissionType.FD.getCommissionRate());
+            commission.setCommissionAmount(accountsService.amountCalc(CommissionType.FD.getCommissionRate(),fd.getAmount()));
+            commission.setCommDate(LocalDate.now());
+            commissionRepo.save(commission);
+            userRepo.save(user);
+            agentRepo.save(agent);
 
             Transactions transactions = new Transactions();
             transactions.setAccount(user.getAccounts());

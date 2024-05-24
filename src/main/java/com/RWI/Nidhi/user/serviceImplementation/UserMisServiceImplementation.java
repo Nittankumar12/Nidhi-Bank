@@ -4,10 +4,12 @@ import com.RWI.Nidhi.dto.MisDto;
 import com.RWI.Nidhi.dto.MisRequestDto;
 import com.RWI.Nidhi.dto.MisResponseDto;
 import com.RWI.Nidhi.entity.*;
+import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.enums.TransactionStatus;
 import com.RWI.Nidhi.enums.TransactionType;
 import com.RWI.Nidhi.repository.*;
+import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserMisServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,10 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
     private TransactionRepo transactionRepo;
     @Autowired
     private AccountsRepo accountsRepo;
+    @Autowired
+    AccountsServiceInterface accountsService;
+    @Autowired
+    CommissionRepository commissionRepo;
 
     @Override
     public MisResponseDto createMis(String agentEmail, String email, MisDto misDto) {
@@ -63,6 +69,17 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
             transactionRepo.save(transactions);
             accounts.getTransactionsList().add(transactions);
             accountsRepo.save(accounts);
+
+            Commission commission = new Commission();
+            commission.setAgent(agent);
+            commission.setUser(user);
+            commission.setCommissionType(CommissionType.MIS);
+            commission.setCommissionRate(CommissionType.MIS.getCommissionRate());
+            commission.setCommissionAmount(accountsService.amountCalc(CommissionType.MIS.getCommissionRate(),newMis.getTotalDepositedAmount()));
+            commission.setCommDate(LocalDate.now());
+            commissionRepo.save(commission);
+            userRepo.save(user);
+            agentRepo.save(agent);
 
 
             misRepo.save(newMis);

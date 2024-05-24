@@ -11,12 +11,12 @@ public enum LoanType {
     Gold(2),
     Vehicle(2),
     Home(2),
-    BusinessLoan(2),
-    PropertyLoan(2),
+    Business(2),
+    Property(2),
     Appliances(2),
-    AgricultureLoan(2),
+    Agriculture(2),
     Personal(2),
-    ProductLoan(2),
+    Product(2),
     Scheme(2);
 
     private double loanInterestRate;

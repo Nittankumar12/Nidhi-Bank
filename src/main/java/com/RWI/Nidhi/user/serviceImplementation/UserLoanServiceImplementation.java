@@ -4,6 +4,7 @@ import com.RWI.Nidhi.dto.*;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.*;
 import com.RWI.Nidhi.repository.*;
+import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +24,15 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     @Autowired
     LoanRepo loanRepository;
     @Autowired
+    CommissionRepository commissionRepo;
+    @Autowired
     AgentRepo agentRepo;
     @Autowired
     UserService userService;
     @Autowired
     TransactionRepo transactionRepo;
+    @Autowired
+    AccountsServiceInterface accountsService;
     @Autowired
     AccountsRepo accountsRepo;
     @Autowired
@@ -56,6 +61,17 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             loan.setInterestRate(loanApplyDto.getLoanType().getLoanInterestRate());
             loan.setRePaymentTerm(loanApplyDto.getRePaymentTerm());
             loan.setPrincipalLoanAmount(loanApplyDto.getPrincipalLoanAmount());
+
+            //Commission
+            Commission commission = new Commission();
+            commission.setAgent(agent);
+            commission.setUser(user);
+            commission.setCommissionType((CommissionType.valueOf(loanApplyDto.getLoanType() + "Loan")));
+            commission.setCommissionRate(CommissionType.valueOf(loanApplyDto.getLoanType() + "Loan").getCommissionRate());
+            commission.setCommissionAmount(accountsService.amountCalc(CommissionType.valueOf(loanApplyDto.getLoanType() + "Loan").getCommissionRate(),loan.getPrincipalLoanAmount()));
+            commission.setCommDate(LocalDate.now());
+            commissionRepo.save(commission);
+
 
             //Status
             loan.setStatus(LoanStatus.APPLIED);

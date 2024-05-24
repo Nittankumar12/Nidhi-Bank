@@ -9,6 +9,7 @@ import com.RWI.Nidhi.enums.Status;
 public interface AccountsServiceInterface {
 
 	AccountResponseDTO openAccount(String email);
+	double amountCalc(double commissionRate, double amount);
 
 	Status checkAccountStatus(String accountNumber);
 

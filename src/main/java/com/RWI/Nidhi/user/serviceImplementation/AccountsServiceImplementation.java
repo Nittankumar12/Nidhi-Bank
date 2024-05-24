@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Random;
 
+import com.RWI.Nidhi.entity.Commission;
+import com.RWI.Nidhi.enums.CommissionType;
+import com.RWI.Nidhi.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +19,6 @@ import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.exception.AccountIdNotFoundException;
 import com.RWI.Nidhi.exception.AccountNotFoundException;
-import com.RWI.Nidhi.repository.AccountsRepo;
-import com.RWI.Nidhi.repository.BankRepo;
-import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 
 @Service
@@ -26,7 +26,10 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 
 	@Autowired
 	private AccountsRepo accountsRepo;
-
+	@Autowired
+	CommissionRepository commissionRepo;
+	@Autowired
+	AgentRepo agentRepo;
 	@Autowired
 	private BankRepo bankRepo;
 
@@ -67,6 +70,18 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 			// Associate the account with the user
 			User user = optionalUser;
 			newAccount.setUser(user);
+
+			//Commission
+			Commission commission = new Commission();
+			commission.setAgent(user.getAgent());
+			commission.setUser(user);
+			commission.setCommissionType((CommissionType.AccountOpen));
+			commission.setCommissionRate(0);
+			commission.setCommDate(LocalDate.now());
+			commission.setCommissionAmount(500.0);
+			commissionRepo.save(commission);
+			userRepo.save(user);
+			agentRepo.save(user.getAgent());
 			accountsRepo.save(newAccount);
 
 			// Create and return AccountResponseDTO
@@ -75,6 +90,11 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 			// Handle the case where the user is not found
 			throw new RuntimeException("User with email " + email + " not found");
 		}
+	}
+	@Override
+	public double amountCalc(double commissionRate, double amount){
+		double v = amount * commissionRate / 100;
+		return v;
 	}
 
 	private AccountResponseDTO createAccountResponseDTO(Accounts account) {
