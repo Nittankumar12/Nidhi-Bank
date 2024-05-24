@@ -15,6 +15,7 @@ import com.RWI.Nidhi.enums.*;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
+import com.RWI.Nidhi.user.serviceImplementation.UserSchemeLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import com.amazonaws.services.xray.model.Http;
 import com.amazonaws.waiters.HttpSuccessStatusAcceptor;
@@ -53,6 +54,8 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     PasswordEncoder encoder;
     @Autowired
     AdminRepo adminRepo;
+    @Autowired
+    UserSchemeLoanServiceImplementation userSchemeLoanService;
     @Autowired
     UserRepo userRepo;
     @Autowired
@@ -575,13 +578,21 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                             loan.setStatus(changedStatus);
                             loan.setStartDate(LocalDate.now());
                             loan.setEmiDate(userLoanService.calcFirstEMIDate(loan.getStartDate()));
-                            LoanCalcDto loanCalcDto = new LoanCalcDto();
-                            loanCalcDto.setLoanType(loan.getLoanType());
-                            loanCalcDto.setRePaymentTerm(loan.getRePaymentTerm());
-                            loanCalcDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
-                            loanCalcDto.setInterestRate(loan.getLoanType());
-                            loan.setMonthlyEMI(userLoanService.calculateEMI(loanCalcDto));
-                            loan.setPayableLoanAmount(userLoanService.calculateFirstPayableAmount(loanCalcDto));
+                            if(loan.getLoanType()==LoanType.Scheme){
+                                SchLoanCalcDto loanCalcDto = new SchLoanCalcDto();
+                                loanCalcDto.setRePaymentTerm(loan.getRePaymentTerm());
+                                loanCalcDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
+                                loan.setMonthlyEMI(userSchemeLoanService.calculateSchLoanEMI(loanCalcDto));
+                                loan.setPayableLoanAmount(userSchemeLoanService.calculateFirstPayableSchLoanAmount(loanCalcDto));
+                            }else {
+                                LoanCalcDto loanCalcDto = new LoanCalcDto();
+                                loanCalcDto.setLoanType(loan.getLoanType());
+                                loanCalcDto.setRePaymentTerm(loan.getRePaymentTerm());
+                                loanCalcDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
+                                loanCalcDto.setInterestRate(loan.getLoanType());
+                                loan.setMonthlyEMI(userLoanService.calculateEMI(loanCalcDto));
+                                loan.setPayableLoanAmount(userLoanService.calculateFirstPayableAmount(loanCalcDto));
+                            }
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
                         } else if (previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.PENDING){
@@ -657,7 +668,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                             if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.APPROVED) {
                                 scheme.setSStatus(changedStatus);
                                 scheme.setStartDate(LocalDate.now());
-                                scheme.setInterestRate(10);
+                                scheme.setInterestRate(2);
                                 scheme.setNextEMIDate(firstDateOfNextMonth(LocalDate.now()));
                                 scheme.setAgent(agentRepo.findByAgentEmail(agentEmail));
                                 schemeRepo.save(scheme);

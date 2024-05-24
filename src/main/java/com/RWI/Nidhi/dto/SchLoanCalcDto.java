@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class SchLoanCalcDto {
     private final LoanType loanType = LoanType.Scheme;
-    private double interestRate = LoanType.Scheme.getLoanInterestRate();
+    private final double interestRate = LoanType.Scheme.getLoanInterestRate();
     private int rePaymentTerm;
     private double principalLoanAmount;
     private double payableLoanAmount;
