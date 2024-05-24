@@ -4,6 +4,7 @@ import com.RWI.Nidhi.dto.LoanApplyDto;
 import com.RWI.Nidhi.entity.Agent;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanType;
+import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class LoanController {
     }
     @PostMapping("/applyLoan")
     public ResponseEntity<?> applyLoan(@RequestBody LoanApplyDto loanApplyDto) {
+        if(userService.getByEmail(loanApplyDto.getUserEmail()).getAccounts().getAccountStatus().equals(Status.FORECLOSED) || userService.getByEmail(loanApplyDto.getUserEmail()).getAccounts().getAccountStatus().equals(Status.CLOSED) ){
+            return null;
+        }else {
             if (userLoanService.checkForExistingLoan(loanApplyDto.getUserEmail()) == Boolean.TRUE) {
                 if (userLoanService.checkForLoanBound(loanApplyDto.getUserEmail(), loanApplyDto.getPrincipalLoanAmount()) == Boolean.TRUE) {
                     userLoanService.applyLoan(loanApplyDto);
@@ -41,6 +45,7 @@ public class LoanController {
             } else
                 return new ResponseEntity<>("You have another active loan", HttpStatus.NOT_ACCEPTABLE);
     }
+        }
 
 
     @GetMapping("/getLoanInfo/{email}")

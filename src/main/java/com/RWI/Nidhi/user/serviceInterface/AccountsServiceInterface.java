@@ -12,7 +12,7 @@ public interface AccountsServiceInterface {
 	double amountCalc(double commissionRate, double amount);
 
 	Status checkAccountStatus(String accountNumber);
-
+	Boolean CheckAccStatus(String userEmail);
 
 	double checkAccountBalanceByNumber(String accountNumber);
 

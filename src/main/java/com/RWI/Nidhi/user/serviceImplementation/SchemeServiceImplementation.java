@@ -65,6 +65,7 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
     public ResponseEntity<?> addScheme(SchemeApplyDTO schemeApplyDTO) {
         if (userRepo.existsByEmail(schemeApplyDTO.getEmail())) {
             User user = userService.getByEmail(schemeApplyDTO.getEmail());
+            if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE)  return new ResponseEntity<>("user account is closed or inactive", HttpStatus.NOT_ACCEPTABLE);
             Accounts accounts = user.getAccounts();
             if (accounts != null) {
                 Scheme scheme = new Scheme();

@@ -47,6 +47,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     public RdResponseDto createRd(String agentEmail, String email, RdDto rdDto) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
         User user = userRepo.findByEmail(email);
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) return null;
         Accounts accounts = new Accounts();
         RecurringDeposit rd = new RecurringDeposit();
         if (agent != null && user != null) {
@@ -59,6 +60,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             rd.setTotalAmountDeposited(calculateTotalAmount(rdDto.getMonthlyDepositAmount(), rdDto.getTenure()));
             rd.setMaturityDate(LocalDate.now().plusYears(rdDto.getTenure()));
             int tenureInDays = getCompleteDaysCount(rd.getStartDate(), rd.getMaturityDate());
+
             rd.setPenalty(0);
             rd.setMaturityAmount(calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getInterestRate(), rd.getMaturityDate()));
             rd.setRdStatus(Status.ACTIVE);

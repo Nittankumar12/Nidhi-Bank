@@ -18,10 +18,11 @@ public class MisController {
     UserMisServiceImplementation misService;
 
     @PostMapping("/createMis")
-    public ResponseEntity<MisResponseDto> createMis(@RequestParam String agentEmail, @RequestParam String email, @RequestBody MisDto misDto) {
+    public ResponseEntity<?> createMis(@RequestParam String agentEmail, @RequestParam String email, @RequestBody MisDto misDto) {
         System.out.println(misDto.getMisTenure().getInterestRate());
         System.out.println(misDto.getMisTenure().getTenure());
         MisResponseDto misResponseDto = misService.createMis(agentEmail, email, misDto);
+        if(misResponseDto == null) return new ResponseEntity<>("either account closed or error while creating mis", HttpStatus.NOT_ACCEPTABLE);
         return new ResponseEntity<>(misResponseDto, HttpStatus.OK);
     }
 

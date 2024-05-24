@@ -12,7 +12,7 @@ public interface UserStatementService {
 
     List<MisRequestDto> getMisDetailsByEmail(String email);
 
-    List<SchemeDto> getSchemeDetailsByEmail(String email);
+    SchemeDto getSchemeDetailsByEmail(String email);
 
     List<Transactions> getTransactionsDetailsByEmail(String email);
 

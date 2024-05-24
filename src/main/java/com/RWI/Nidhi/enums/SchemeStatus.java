@@ -11,5 +11,6 @@ public enum SchemeStatus {
     APPROVEDLOAN,
     PENDING,
     REJECTED,
-    CLOSED
+    CLOSED,
+    FORECLOSED
 }

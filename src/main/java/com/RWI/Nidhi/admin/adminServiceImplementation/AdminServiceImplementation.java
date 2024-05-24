@@ -63,7 +63,12 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     UserLoanServiceImplementation userLoanService;
     @Autowired
     JavaMailSender javaMailSender;
-
+    @Autowired
+    MisRepo misRepo;
+    @Autowired
+    RecurringDepositRepo recurringDepositRepo;
+    @Autowired
+    FixedDepositRepo fixedDepositRepo;
 
     @Autowired
     AccountsRepo accountsRepo;
@@ -174,7 +179,33 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         if (!agent.getAgentEmail().equals(agentEmail)) {
             return new ResponseEntity<>("This user is not in current agent's list", HttpStatus.NOT_FOUND);
         }
-        userRepo.deleteById(user.getUserId());
+        user.getAccounts().setAccountStatus(Status.CLOSED);
+        List<FixedDeposit> fixedDepositList = user.getAccounts().getFdList();
+        for(FixedDeposit fixedDeposit: fixedDepositList){
+            fixedDeposit.setFdStatus(Status.FORECLOSED);
+            fixedDepositRepo.save(fixedDeposit);
+        }
+        List<RecurringDeposit> recurringDepositList = user.getAccounts().getRecurringDepositList();
+        for(RecurringDeposit fixedDeposit: recurringDepositList){
+            fixedDeposit.setRdStatus(Status.FORECLOSED);
+            recurringDepositRepo.save(fixedDeposit);
+        }
+        List<MIS>  misList = user.getAccounts().getMisList();
+        for(MIS fixedDeposit: misList){
+            fixedDeposit.setStatus(Status.FORECLOSED);
+            misRepo.save(fixedDeposit);
+        }
+        List<Loan>  loanList = user.getAccounts().getLoanList();
+        for(Loan fixedDeposit: loanList){
+            fixedDeposit.setStatus(LoanStatus.FORECLOSED);
+            loanRepo.save(fixedDeposit);
+        }
+        Scheme scheme = user.getAccounts().getScheme();
+        scheme.setSStatus(SchemeStatus.FORECLOSED);
+        schemeRepo.save(scheme);
+
+        userRepo.save(user);
+
         return new ResponseEntity<>("User Deleted", HttpStatus.OK);
     }
 @Override

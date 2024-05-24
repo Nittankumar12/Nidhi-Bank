@@ -42,8 +42,12 @@ public class UserSchemeLoanController {
     }
 
     @PutMapping("/payEMI/{email}")
-    ResponseEntity<MonthlyEmiDto> payEMI(String email) {
-        return new ResponseEntity<>(userSchemeLoanService.payEMI(email), HttpStatus.ACCEPTED);
+    ResponseEntity<?> payEMI(String email) {
+        MonthlyEmiDto monthlyEmiDto = userSchemeLoanService.payEMI(email);
+        if(monthlyEmiDto == null){
+            return new ResponseEntity<>("either scheme is null or user is inactive", HttpStatus.NOT_ACCEPTABLE);
+        }
+        return new ResponseEntity<>(monthlyEmiDto, HttpStatus.OK);
     }
 
     @GetMapping("/getloanClosureDetails/{email}")

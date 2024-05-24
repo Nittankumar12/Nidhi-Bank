@@ -106,6 +106,14 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 		dto.setUserEmail(account.getUser().getEmail());
 		return dto;
 	}
+	@Override
+	public Boolean CheckAccStatus(String userEmail){
+		User user = userRepo.findByEmail(userEmail);
+		Accounts accounts = user.getAccounts();
+		if(accounts.getAccountStatus() == Status.CLOSED || accounts.getAccountStatus() == Status.FORECLOSED || accounts.getAccountStatus() == Status.INACTIVE)
+			return Boolean.FALSE;
+		return Boolean.TRUE;
+	}
 
 	@Override
 	public Status checkAccountStatus(String accountNumber) {
