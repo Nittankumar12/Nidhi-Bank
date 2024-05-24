@@ -2,8 +2,6 @@ package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.dto.UserResponseDto;
-import com.RWI.Nidhi.entity.User;
-import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceImplementation.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

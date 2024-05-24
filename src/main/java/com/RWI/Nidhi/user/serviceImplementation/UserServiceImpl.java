@@ -1,7 +1,5 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
-import com.RWI.Nidhi.Security.models.Credentials;
-import com.RWI.Nidhi.Security.repository.CredentialsRepo;
 import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.dto.UserResponseDto;
 import com.RWI.Nidhi.entity.User;
@@ -15,12 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.attribute.UserPrincipalNotFoundException;
-import java.security.MessageDigest;
-import java.util.Optional;
-
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -33,8 +25,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     AgentRepo agentRepo;
-    @Autowired
-    private CredentialsRepo credRepo;
 
     @Override
     public User getByEmail(String email) {
@@ -75,23 +65,14 @@ public class UserServiceImpl implements UserService {
 //    }
 
     @Override
-    public UserResponseDto updateUserName(String email, String userName) {
+    public UserResponseDto updateUserName(String email, String userName){
 
         User user = userRepo.findByEmail(email);
-
         if(user == null || user.getUserName().equals(userName) || agentRepo.existsByAgentName(userName) || userRepo.existsByUserName(userName)){
             return null;
         }
-        Optional<Credentials> credObj=credRepo.findByEmail(email);
-        if(credObj.isPresent()) {
-            credObj.get().setUsername(userName);
-
-            credRepo.save(credObj.get());
-            userRepo.save(user);
-        }
-
             user.setUserName(userName);
-
+            userRepo.save(user);
             UserResponseDto userResponseDto = new UserResponseDto();
             userResponseDto.setUserName(user.getUserName());
             userResponseDto.setEmail(user.getEmail());
@@ -104,13 +85,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepo.findByEmail(email);
         if(user == null || user.getEmail().equals(userEmail) || agentRepo.existsByAgentEmail(userEmail) || userRepo.existsByPhoneNumber(userEmail)){
             return null;
-        }
-        Optional<Credentials> credObj=credRepo.findByEmail(email);
-        if(credObj.isPresent()) {
-            credObj.get().setEmail(userEmail);
-
-            credRepo.save(credObj.get());
-            userRepo.save(user);
         }
         user.setEmail(userEmail);
         userRepo.save(user);
@@ -127,13 +101,6 @@ public class UserServiceImpl implements UserService {
         if(user == null || user.getPhoneNumber().equals(phoneNum) ||agentRepo.existsByAgentPhoneNum(phoneNum) || userRepo.existsByPhoneNumber(phoneNum)){
             return null;
         }
-         Optional<Credentials> credObj=credRepo.findByEmail(email);
-         if(credObj.isPresent()) {
-             credObj.get().setPhoneNumber(phoneNum);
-
-             credRepo.save(credObj.get());
-             userRepo.save(user);
-         }
         user.setPhoneNumber(phoneNum);
         userRepo.save(user);
         UserResponseDto userResponseDto = new UserResponseDto();
