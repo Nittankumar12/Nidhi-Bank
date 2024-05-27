@@ -48,7 +48,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
         User user = userRepo.findByEmail(email);
         if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) return null;
-        Accounts accounts = new Accounts();
+//        Accounts accounts = new Accounts();
         RecurringDeposit rd = new RecurringDeposit();
         if (agent != null && user != null) {
             rd.setMonthlyDepositAmount(rdDto.getMonthlyDepositAmount());
@@ -66,6 +66,8 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             rd.setRdStatus(Status.ACTIVE);
             rd.setAgent(agent);
             rd.setAccount(user.getAccounts());
+            rd.setTransactionsList(new ArrayList<>());
+            rdRepo.save(rd);
 
             Transactions transactions = new Transactions();
             transactions.setTransactionDate(new Date());
@@ -76,8 +78,8 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             transactions.setRd(rd);
             Transactions.addTotalBalance(rdDto.getMonthlyDepositAmount());
             transactionRepo.save(transactions);
-            accounts.getTransactionsList().add(transactions);
-            accountRepo.save(accounts);
+//            accounts.getTransactionsList().add(transactions);
+//            accountRepo.save(accounts);
 
             //Commission
             Commission commission = new Commission();

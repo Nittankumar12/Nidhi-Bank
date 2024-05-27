@@ -5,6 +5,7 @@ import com.RWI.Nidhi.admin.adminServiceImplementation.AdminServiceImplementation
 import com.RWI.Nidhi.dto.LoanHistoryDto;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.LoanType;
+import com.RWI.Nidhi.enums.SchemeStatus;
 import com.RWI.Nidhi.repository.AdminRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -90,7 +91,7 @@ public class AdminController {
     public ResponseEntity<?> getTransactionBetweenDates(@RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate){
         return adminService.getTransactionBetweenDates(startDate, endDate);
     }
-    @GetMapping("/loanType")
+    @GetMapping("/getLoanByType")
     public ResponseEntity<Object> getByLoanType(@RequestParam LoanType loanType) {
         List<LoanHistoryDto> loanHistoryDtos = adminService.getLoansByLoanType(loanType);
         return new ResponseEntity<>(loanHistoryDtos, HttpStatus.OK);
@@ -100,11 +101,48 @@ public class AdminController {
         List<LoanHistoryDto> loanHistoryDtos =adminService.getLoansByLoanStatus(loanStatus);
         return new ResponseEntity<>(loanHistoryDtos,HttpStatus.OK);
     }
+
     ResponseEntity<?> addBalanceToAccount(double amount){
         return adminService.addBalanceToAccount(amount);
     }
+
     ResponseEntity<?> deductBalanceToAccount(double amount){
         return adminService.deductBalanceToAccount(amount);
+    }
+
+    @PutMapping("/deactivateAccount")
+    public ResponseEntity<?> deactivateAccount(@RequestParam("accountNumber") String accountNumber, @RequestParam("agentEmail") String agentEmail) {
+        return adminService.deactivateAccount(accountNumber, agentEmail);
+    }
+
+//Shifted methods from Agent to Admin
+
+    @PutMapping("/closeAccount")
+    public ResponseEntity<?> closeAccount(@RequestParam("accountNumber") String accountNumber, @RequestParam("agentEmail") String agentEmail) throws Exception {
+        return adminService.closeAccount(accountNumber, agentEmail);
+    }
+    @PutMapping("/ChangeLoanStatus")
+    public ResponseEntity<?> changeLoanStatus(@RequestParam("agentEmail") String agentEmail, @RequestParam("userEmail") String userEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
+        return adminService.changeLoanStatus(userEmail, agentEmail, changedStatus, previousStatus);
+    }
+    @CrossOrigin(origins = "http://localhost:5173")
+    @PostMapping("/addUser")
+    public ResponseEntity<?> addUser(@RequestBody SignupRequest signupRequest, @RequestParam("agentRefferalCode") String agentRefferalCode) throws Exception {
+        return adminService.addUser(signupRequest, agentRefferalCode);
+    }
+    @PutMapping("/ChangeSchemeStatus/{email}")
+    public ResponseEntity<?> ChangeSchemeStatus(@RequestParam("email") String agentEmail, @RequestBody String userEmail, SchemeStatus changedStatus, SchemeStatus previousStatus) {
+        return adminService.ChangeSchemeStatus(userEmail, agentEmail, changedStatus, previousStatus);
+    }
+
+    @DeleteMapping("/deleteScheme/{email}")
+    public String deleteScheme(@PathVariable String email) {
+        return adminService.deleteScheme(email);
+    }
+
+    @DeleteMapping("deleteUserById")
+    public ResponseEntity<?> deleteUserById(@RequestParam("userEmail") String userEmail, @RequestParam("agentEmail") String agentEmail) throws Exception {
+        return adminService.deleteUserById(userEmail, agentEmail);
     }
 //    @PostMapping("/login-admin")
 //    public ResponseEntity<?> authenticateUser(@RequestBody LoginReq loginReq) {

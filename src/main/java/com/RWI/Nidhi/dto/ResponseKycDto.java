@@ -2,12 +2,9 @@ package com.RWI.Nidhi.dto;
 
 //import com.nidhi.kyc.KYC.Enum.Education;
 //import com.nidhi.kyc.KYC.Enum.Gender;
-
 import com.RWI.Nidhi.enums.Education;
 import com.RWI.Nidhi.enums.Gender;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 

@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 
 @Service
@@ -87,6 +88,7 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
 
                 scheme.setAccount(accounts);
                 scheme.setAgent(user.getAgent());
+                scheme.setTransactionsList(new ArrayList<>());
                 schemeRepo.save(scheme);
                 return new ResponseEntity<>(getSchemeInfo(schemeApplyDTO.getEmail()), HttpStatus.OK);
             } else {

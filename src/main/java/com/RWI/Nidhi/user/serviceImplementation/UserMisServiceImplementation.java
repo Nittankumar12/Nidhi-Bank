@@ -45,7 +45,7 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
         User user = userRepo.findByEmail(email);
         if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) return null;
-        Accounts accounts = new Accounts();
+//        Accounts accounts = new Accounts();
         MIS newMis = new MIS();
         if (agent != null && user != null) {
             newMis.setTotalDepositedAmount(misDto.getTotalDepositedAmount());
@@ -59,6 +59,8 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
 
             newMis.setAgent(agent);
             newMis.setAccount(user.getAccounts());
+            newMis.setTransactionsList(new ArrayList<>());
+            misRepo.save(newMis);
 
             Transactions transactions = new Transactions();
             transactions.setTransactionDate(new Date());
@@ -69,8 +71,8 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
             transactions.setMis(newMis);
             Transactions.addTotalBalance(misDto.getTotalDepositedAmount());
             transactionRepo.save(transactions);
-            accounts.getTransactionsList().add(transactions);
-            accountsRepo.save(accounts);
+//            accounts.getTransactionsList().add(transactions);
+//            accountsRepo.save(accounts);
 
             Commission commission = new Commission();
             commission.setAgent(agent);
