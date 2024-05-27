@@ -20,6 +20,7 @@ import com.RWI.Nidhi.enums.TransactionType;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceImplementation.UserSchemeLoanServiceImplementation;
+import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -55,10 +56,25 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     UserSchemeLoanServiceImplementation userSchemeLoanService;
     @Autowired
     UserRepo userRepo;
+    @Autowired
+    SchemeRepo schemeRepo;
+    @Autowired
+    UserService userService;
+    @Autowired
+    UserLoanServiceImplementation userLoanService;
+    @Autowired
+    JavaMailSender javaMailSender;
+    @Autowired
+    MisRepo misRepo;
+    @Autowired
+    RecurringDepositRepo recurringDepositRepo;
+    @Autowired
+    FixedDepositRepo fixedDepositRepo;
+    @Autowired
+    AccountsRepo accountsRepo;
 
     @Override
     public ResponseEntity<?> addAgent(SignupRequest signUpRequest){
-
          if(agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())){
             return new ResponseEntity<>("Email Already taken", HttpStatus.NOT_ACCEPTABLE);
         }
