@@ -1,7 +1,11 @@
 package com.RWI.Nidhi.otpSendAndVerify;
 
-import java.util.Random;
-
+import com.RWI.Nidhi.configuration.TwilioConfig;
+import com.RWI.Nidhi.exception.OTPExpireException;
+import com.RWI.Nidhi.exception.OtpNotSendException;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,13 +13,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import com.RWI.Nidhi.exception.OTPExpireException;
-import com.RWI.Nidhi.exception.OtpNotSendException;
-import com.RWI.Nidhi.configuration.TwilioConfig;
-
-import com.twilio.Twilio;
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
+import java.util.Random;
 
 @Service
 public class OtpServiceImplementation implements OtpServiceInterface {

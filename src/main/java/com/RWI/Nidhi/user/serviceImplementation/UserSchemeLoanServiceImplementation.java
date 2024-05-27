@@ -70,7 +70,6 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
                 SchLoanCalcDto schLoanCalcDto = new SchLoanCalcDto();
                 schLoanCalcDto.setRePaymentTerm((scheme.getTenure()- ((int)ChronoUnit.DAYS.between(scheme.getStartDate(), LocalDate.now()))));
                 schLoanCalcDto.setPrincipalLoanAmount(schemeLoan - scheme.getTotalDepositAmount());
-                schLoanCalcDto.setInterestRate(LoanType.Scheme.getLoanInterestRate());
 
                 Loan loan = new Loan();
                 loan.setLoanType(LoanType.Scheme);

@@ -2,13 +2,14 @@ package com.RWI.Nidhi.user.controller;
 
 //import com.nidhi.kyc.KYC.Dto.IdentityDocsDto;
 //import com.nidhi.kyc.KYC.Service.IdentityDocsService;
+
 import com.RWI.Nidhi.user.serviceInterface.IdentityDocsService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -47,28 +48,6 @@ public class identityDocsController {
                                                                    profilePhoto)));
 
     }
-
-    @GetMapping("/front/image-url/{id}")
-    public ResponseEntity<String> getImageUrl(@PathVariable Integer id) {
-        String string = identityDocsService.getDownloadUrlForFront(id);
-        return new ResponseEntity<>(string, HttpStatus.OK);
-    }
-
-
-    @GetMapping("/back/image-url/{docId}")
-    public ResponseEntity<String> getAdharImageBack(@PathVariable Integer id) {
-        String string = identityDocsService.getDownloadUrlForBack(id);
-        return new ResponseEntity<>(string, HttpStatus.OK);
-    }
-
-    @GetMapping("/ProfilePhoto/image-url/{docId}")
-    public ResponseEntity<String> getProfilePhoto(@PathVariable Integer id) {
-        String string = identityDocsService.getProfilePhoto(id);
-        return new ResponseEntity<>(string, HttpStatus.OK);
-    }
-
-
-
 
 }
 
