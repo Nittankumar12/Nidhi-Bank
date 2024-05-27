@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 public class AddressProofServiceImp implements AddressProofService {
 
@@ -50,16 +49,5 @@ public class AddressProofServiceImp implements AddressProofService {
             e.printStackTrace();
             return "Failed to upload";
         }
-
-
-
     }
-
-    @Override
-    public List<AddressProof> getAllAddress() {
-        return addressRepo.findAll();
-    }
-
-
-
 }
