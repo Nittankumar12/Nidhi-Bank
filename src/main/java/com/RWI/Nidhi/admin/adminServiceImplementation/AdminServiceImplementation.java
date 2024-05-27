@@ -17,9 +17,6 @@ import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceImplementation.UserSchemeLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
-import com.amazonaws.services.xray.model.Http;
-import com.amazonaws.waiters.HttpSuccessStatusAcceptor;
-import org.apache.http.protocol.ResponseServer;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -72,13 +69,11 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     RecurringDepositRepo recurringDepositRepo;
     @Autowired
     FixedDepositRepo fixedDepositRepo;
-
     @Autowired
     AccountsRepo accountsRepo;
 
     @Override
     public ResponseEntity<?> addAgent(SignupRequest signUpRequest){
-
          if(agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())){
             return new ResponseEntity<>("Email Already taken", HttpStatus.NOT_ACCEPTABLE);
         }
@@ -90,7 +85,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
 
         Agent newAgent = new Agent();
-
         newAgent.setAgentName(signUpRequest.getUsername());
         newAgent.setAgentEmail(signUpRequest.getEmail());
         newAgent.setAgentPhoneNum(signUpRequest.getPhoneNumber());
