@@ -4,6 +4,7 @@ package com.RWI.Nidhi.entity;
 import com.RWI.Nidhi.enums.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jdk.jfr.Category;
 import lombok.Data;
 import org.springframework.validation.annotation.Validated;
 

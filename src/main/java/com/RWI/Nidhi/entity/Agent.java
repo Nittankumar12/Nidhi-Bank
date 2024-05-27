@@ -25,6 +25,7 @@ public class Agent {
     private String agentAddress;
     private String agentEmail;
     private String agentPassword;
+    private String refferalCode;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(  name = "agent_roles",
             joinColumns = @JoinColumn(name = "agent_id")

@@ -63,6 +63,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
 
                 fd.setAgent(agent);
                 fd.setAccount(user.getAccounts());
+                fd.setTransactionsList(new ArrayList<>());
 
                 //Commission
                 Commission commission = new Commission();
@@ -75,6 +76,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
                 commissionRepo.save(commission);
                 userRepo.save(user);
                 agentRepo.save(agent);
+                fdRepo.save(fd);
 
                 Transactions transactions = new Transactions();
                 transactions.setAccount(user.getAccounts());
@@ -86,6 +88,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
                 transactions.setFd(fd);
 
                 transactionRepo.save(transactions);
+//                if(fd.getTransactionsList() == null) fd.setTransactionsList(new ArrayList<>());
                 fd.getTransactionsList().add(transactions);
                 fdRepo.save(fd);
 

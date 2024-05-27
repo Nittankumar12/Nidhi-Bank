@@ -2,6 +2,10 @@ package com.RWI.Nidhi.dto;
 
 //import com.nidhi.kyc.KYC.Enum.*;
 import com.RWI.Nidhi.enums.*;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
+import jdk.jfr.Category;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

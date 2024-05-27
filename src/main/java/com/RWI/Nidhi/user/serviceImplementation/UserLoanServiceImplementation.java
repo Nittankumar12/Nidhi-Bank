@@ -87,6 +87,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             agent.getLoanList().add(loan);
             agentRepo.save(agent);
             LoanInfoDto loanInfoDto = new LoanInfoDto();
+            loanInfoDto.setUserEmail(user.getEmail());
             loanInfoDto.setLoanType(loan.getLoanType());
             loanInfoDto.setPayableLoanAmount(loan.getPayableLoanAmount());
             loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
@@ -174,7 +175,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                     loanInfoDto.setStatus(loan.getStatus());
                     loanInfoDto.setInterestRate(loan.getInterestRate());
                     loanInfoDto.setPayableLoanAmount(loan.getPayableLoanAmount());
-                    loanInfoDto.setEmail(email);
+                    loanInfoDto.setUserEmail(email);
                     loanInfoDto.setMonthlyEMI(loan.getMonthlyEMI());
                     loanInfoDto.setFine(loan.getCurrentFine());
                     loanInfoDto.setStartDate(loan.getStartDate());

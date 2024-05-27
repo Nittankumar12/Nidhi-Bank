@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
 
@@ -68,6 +69,7 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 			newAccount.setAccountStatus(Status.ACTIVE);
 			newAccount.setPin(generateRandomAccountPIN()); // Set the account PIN
 			// Associate the account with the user
+			newAccount.setTransactionsList(new ArrayList<>());
 			User user = optionalUser;
 			newAccount.setUser(user);
 
