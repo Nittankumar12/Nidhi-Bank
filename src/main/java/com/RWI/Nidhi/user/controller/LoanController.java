@@ -2,10 +2,7 @@ package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.LoanApplyDto;
 import com.RWI.Nidhi.dto.LoanInfoDto;
-import com.RWI.Nidhi.entity.Agent;
-import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.LoanType;
-import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +20,7 @@ public class LoanController {
     UserLoanServiceInterface userLoanService;
     @GetMapping("/maxLoan/{email}")
     public ResponseEntity<?> maxLoan(@PathVariable("email") String email) {
-        if (userLoanService.checkForExistingLoan(email) == Boolean.TRUE)
+        if (userLoanService.isLoanNotOpen(email) == Boolean.TRUE)
             return new ResponseEntity<>(userLoanService.maxApplicableLoan(email), HttpStatus.OK);
         else
             return new ResponseEntity<>("Another Loan active",HttpStatus.BAD_REQUEST);
@@ -34,7 +31,7 @@ public class LoanController {
     }
     @PostMapping("/applyLoan")
     public ResponseEntity<?> applyLoan(@RequestBody LoanApplyDto loanApplyDto) {
-            if (userLoanService.checkForExistingLoan(loanApplyDto.getUserEmail()) == Boolean.TRUE) {
+            if (userLoanService.isLoanNotOpen(loanApplyDto.getUserEmail()) == Boolean.TRUE) {
                 if (userLoanService.checkForLoanBound(loanApplyDto.getUserEmail(), loanApplyDto.getPrincipalLoanAmount()) == Boolean.TRUE) {
                     LoanInfoDto loanInfoDto = userLoanService.applyLoan(loanApplyDto);
                     if(loanInfoDto == null)
@@ -54,7 +51,7 @@ public class LoanController {
 
     @PutMapping("/payEMI/{email}")
     ResponseEntity<?> payEMI(@PathVariable String email) {
-        if (userLoanService.checkForExistingLoan(email) != Boolean.FALSE) {
+        if (userLoanService.isLoanNotOpen(email) != Boolean.FALSE) {
             return new ResponseEntity<>("No Loan currently recorded", HttpStatus.BAD_REQUEST);
         } else
             return new ResponseEntity<>(userLoanService.payEMI(email), HttpStatus.OK);

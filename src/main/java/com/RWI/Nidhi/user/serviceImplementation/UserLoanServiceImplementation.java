@@ -116,7 +116,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     }
 
     @Override
-    public Boolean checkForExistingLoan(String email) {
+    public Boolean isLoanNotOpen(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
         Boolean b = Boolean.FALSE;
@@ -125,7 +125,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             return Boolean.TRUE;
         }
         for (Loan loan : loanList) {
-            if (loan.getStatus() == LoanStatus.CLOSED || loan.getStatus() == LoanStatus.FORECLOSED || loan.getStatus() == LoanStatus.REJECTED) {
+            if (loan.getStatus().equals(LoanStatus.CLOSED) || loan.getStatus().equals(LoanStatus.FORECLOSED) || loan.getStatus().equals(LoanStatus.REJECTED)) {
                 b = Boolean.TRUE;
             } else {
                 b = Boolean.FALSE;
@@ -169,7 +169,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             return new ResponseEntity<>("No loan found", HttpStatus.NOT_FOUND);
         else {
             for (Loan loan : loanList) {
-                if (checkForExistingLoan(email) == Boolean.FALSE) {
+                if (isLoanNotOpen(email) == Boolean.FALSE) {
                     loanInfoDto.setLoanType(loan.getLoanType());
                     loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
                     loanInfoDto.setStatus(loan.getStatus());
@@ -223,7 +223,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         MonthlyEmiDto monthlyEmiDto = new MonthlyEmiDto();
         List<Loan> loanList = acc.getLoanList();
         for (Loan loan : loanList) {
-            if(loan.getStatus()==LoanStatus.SANCTIONED) {
+            if(loan.getStatus().equals(LoanStatus.SANCTIONED)) {
                 if (penaltyService.noOfMonthsEmiMissed(loan.getLoanId()) == 0) {
                     double payableLoanAmount = loan.getPayableLoanAmount();
                     double temp = payableLoanAmount;
@@ -312,7 +312,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             return new ResponseEntity<>("no Loan found", HttpStatus.NOT_FOUND);
         else {
             for (Loan loan : loanList) {
-                if (checkForExistingLoan(email) == Boolean.FALSE) {
+                if (isLoanNotOpen(email) == Boolean.FALSE) {
                     double monthlyEMI = loan.getMonthlyEMI();
                     loanClosureDto.setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
                     loanClosureDto.setLoanType(loan.getLoanType());
@@ -337,8 +337,8 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             return new ResponseEntity<>("no Loan record found", HttpStatus.NOT_FOUND);
         else {
             for (Loan loan : loanList) {
-                if (checkForExistingLoan(email) == Boolean.FALSE) {
-                    if (loan.getStatus() == LoanStatus.APPROVED || loan.getStatus() == LoanStatus.SANCTIONED) {
+                if (isLoanNotOpen(email) == Boolean.FALSE) {
+                    if (loan.getStatus().equals(LoanStatus.APPROVED) || loan.getStatus().equals(LoanStatus.SANCTIONED)) {
                         double monthlyEMI = loan.getMonthlyEMI();
                         loan.setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
                         loan.setCurrentFine(monthlyEMI / 100);

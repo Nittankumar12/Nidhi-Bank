@@ -130,7 +130,7 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
             User user = userService.getByEmail(email);
             Accounts accounts = user.getAccounts();
             Scheme scheme = accounts.getScheme();
-            if (scheme.getSStatus() == SchemeStatus.SANCTIONED) {
+            if (scheme.getSStatus().equals(SchemeStatus.SANCTIONED)) {
                 double total = scheme.getTotalDepositAmount();
                 double monthly = scheme.getMonthlyDepositAmount();
                 double rate = scheme.getInterestRate();
