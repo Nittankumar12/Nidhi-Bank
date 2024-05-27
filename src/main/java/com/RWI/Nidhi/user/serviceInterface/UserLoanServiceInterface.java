@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 public interface UserLoanServiceInterface {
     double maxApplicableLoan(String email);
-    Boolean checkForExistingLoan(String email);
+    Boolean isLoanNotOpen(String email);
     Boolean checkForLoanBound(String email, double principalLoanAmount);
     double calculateFirstPayableAmount(LoanCalcDto loanCalcDto);
     double calculateEMI(LoanCalcDto loanCalcDto);

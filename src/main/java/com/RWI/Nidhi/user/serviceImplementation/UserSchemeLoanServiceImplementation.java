@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 @Service
@@ -145,7 +144,7 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
         User user = userService.getByEmail(email);
         Accounts accounts = user.getAccounts();
         Scheme scheme = accounts.getScheme();
-        if (scheme != null && scheme.getSStatus()== SchemeStatus.APPLIEDFORLOAN) {
+        if (scheme != null && scheme.getSStatus().equals(SchemeStatus.APPLIEDFORLOAN)) {
             return userLoanService.payEMI(email);
         }
         else {
@@ -161,7 +160,7 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     }
     @Override
     public Boolean checkForExistingLoan(String email) {
-        return userLoanService.checkForExistingLoan(email);
+        return userLoanService.isLoanNotOpen(email);
     }
     @Override
     public LocalDate firstDateOfNextMonth(LocalDate date) {
@@ -182,7 +181,7 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
             else {
                 for (Loan loan : loanList) {
                     if (checkForExistingLoan(email) == Boolean.FALSE && loan.getLoanType() == LoanType.Scheme) {
-                        if (loan.getStatus() == LoanStatus.APPROVED || loan.getStatus() == LoanStatus.SANCTIONED) {
+                        if (loan.getStatus().equals(LoanStatus.APPROVED) || loan.getStatus().equals(LoanStatus.SANCTIONED)) {
                             double monthlyEMI = loan.getMonthlyEMI();
                             loan.setStatus(LoanStatus.REQUESTEDFORFORECLOSURE);
                             loan.setCurrentFine(monthlyEMI / 100);

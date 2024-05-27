@@ -567,12 +567,12 @@ public class AdminServiceImplementation implements AdminServiceInterface {
             else {
                 for (Loan loan : loanList) {
                     if(loan.getStatus().equals(previousStatus)){
-                        if(previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.APPROVED){
+                        if(previousStatus.equals(LoanStatus.APPLIED) && changedStatus.equals(LoanStatus.APPROVED)){
                             loan.setStatus(changedStatus);
                             loan.setStartDate(LocalDate.now());
                             loan.setTransactionsList(new ArrayList<>());
                             loan.setEmiDate(userLoanService.calcFirstEMIDate(loan.getStartDate()));
-                            if(loan.getLoanType()==LoanType.Scheme){
+                            if(loan.getLoanType().equals(LoanType.Scheme)){
                                 SchLoanCalcDto loanCalcDto = new SchLoanCalcDto();
                                 loanCalcDto.setRePaymentTerm(loan.getRePaymentTerm());
                                 loanCalcDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
@@ -589,15 +589,15 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                             }
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                        } else if (previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.PENDING){
+                        } else if (previousStatus.equals(LoanStatus.APPLIED) && changedStatus.equals(LoanStatus.PENDING)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                        } else if (previousStatus == LoanStatus.APPLIED && changedStatus == LoanStatus.REJECTED){
+                        } else if (previousStatus.equals(LoanStatus.APPLIED) && changedStatus.equals(LoanStatus.REJECTED)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                        } else if (previousStatus == LoanStatus.APPROVED && changedStatus == LoanStatus.SANCTIONED){
+                        } else if (previousStatus.equals(LoanStatus.APPROVED) && changedStatus.equals(LoanStatus.SANCTIONED)){
                             loan.setStatus(changedStatus);
                             
                             Transactions transactions = new Transactions();
@@ -613,19 +613,39 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                        } else if (previousStatus == LoanStatus.APPROVED && changedStatus == LoanStatus.PENDING){
+                        } else if (previousStatus.equals(LoanStatus.APPROVED) && changedStatus.equals(LoanStatus.PENDING)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                        } else if (previousStatus == LoanStatus.SANCTIONED && changedStatus == LoanStatus.CLOSED){
+                        } else if (previousStatus.equals(LoanStatus.APPROVED) && changedStatus.equals(LoanStatus.REJECTED)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                        } else if (previousStatus == LoanStatus.SANCTIONED && changedStatus == LoanStatus.PENDING){
+                        } else if (previousStatus.equals(LoanStatus.SANCTIONED) && changedStatus.equals(LoanStatus.CLOSED)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                        } else if (previousStatus == LoanStatus.REQUESTEDFORFORECLOSURE && changedStatus == LoanStatus.FORECLOSED){
+                        } else if (previousStatus.equals(LoanStatus.SANCTIONED) && changedStatus.equals(LoanStatus.PENDING)){
+                            loan.setStatus(changedStatus);
+                            loanRepo.save(loan);
+                            sendStatusEmail(loan);
+                        } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.APPROVED)){
+                            loan.setStatus(changedStatus);
+                            loanRepo.save(loan);
+                            sendStatusEmail(loan);
+                        } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.SANCTIONED)){
+                            loan.setStatus(changedStatus);
+                            loanRepo.save(loan);
+                            sendStatusEmail(loan);
+                        } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.REJECTED)){
+                            loan.setStatus(changedStatus);
+                            loanRepo.save(loan);
+                            sendStatusEmail(loan);
+                        } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.CLOSED)){
+                            loan.setStatus(changedStatus);
+                            loanRepo.save(loan);
+                            sendStatusEmail(loan);
+                        } else if (previousStatus.equals(LoanStatus.REQUESTEDFORFORECLOSURE) && changedStatus.equals(LoanStatus.FORECLOSED)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
@@ -659,7 +679,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                         return new ResponseEntity<>("No Scheme exists for the given user", HttpStatus.I_AM_A_TEAPOT);
                     } else {
                         if (scheme.getSStatus().equals(previousStatus)) {
-                            if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.APPROVED) {
+                            if (previousStatus.equals(SchemeStatus.APPLIED) && changedStatus.equals(SchemeStatus.APPROVED)) {
                                 scheme.setSStatus(changedStatus);
                                 scheme.setStartDate(LocalDate.now());
                                 scheme.setInterestRate(2);
@@ -667,17 +687,16 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                                 scheme.setAgent(agentRepo.findByAgentEmail(agentEmail));
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                            } else if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.PENDING) {
+                            } else if (previousStatus.equals(SchemeStatus.APPLIED) && changedStatus.equals(SchemeStatus.PENDING)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                            } else if (previousStatus == SchemeStatus.APPLIED && changedStatus == SchemeStatus.REJECTED) {
+                            } else if (previousStatus.equals(SchemeStatus.APPLIED) && changedStatus.equals(SchemeStatus.REJECTED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                            } else if (previousStatus == SchemeStatus.APPROVED && changedStatus == SchemeStatus.SANCTIONED) {
+                            } else if (previousStatus.equals(SchemeStatus.APPROVED) && changedStatus.equals(SchemeStatus.SANCTIONED)) {
                                 scheme.setSStatus(changedStatus);
-
                                 Transactions transactions = new Transactions();
                                 transactions.setAccount(accounts);
                                 transactions.setScheme(scheme);
@@ -688,22 +707,53 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                                 transactions.setTransactionStatus(TransactionStatus.COMPLETED);
                                 transactionRepo.save(transactions);
                                 scheme.getTransactionsList().add(transactions);
-
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                            } else if (previousStatus == SchemeStatus.APPROVED && changedStatus == SchemeStatus.PENDING) {
+                            } else if (previousStatus.equals(SchemeStatus.APPROVED) && changedStatus.equals(SchemeStatus.PENDING)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                            } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.CLOSED) {
+                            } else if (previousStatus.equals(SchemeStatus.APPROVED) && changedStatus.equals(SchemeStatus.REJECTED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                            } else if (previousStatus == SchemeStatus.SANCTIONED && changedStatus == SchemeStatus.PENDING) {
+                            } else if (previousStatus.equals(SchemeStatus.SANCTIONED) && changedStatus.equals(SchemeStatus.CLOSED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                            } else if (previousStatus == SchemeStatus.APPLIEDFORLOAN && changedStatus == SchemeStatus.APPROVEDLOAN) {
+                            } else if (previousStatus.equals(SchemeStatus.SANCTIONED) && changedStatus.equals(SchemeStatus.PENDING)) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus.equals(SchemeStatus.SANCTIONED) && changedStatus.equals(SchemeStatus.APPLIEDFORLOAN)) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus.equals(SchemeStatus.APPLIEDFORLOAN) && changedStatus.equals(SchemeStatus.APPROVEDLOAN)) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.APPROVED)) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.SANCTIONED)) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.APPLIEDFORLOAN)) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.APPROVEDLOAN)) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.REJECTED)) {
+                                scheme.setSStatus(changedStatus);
+                                schemeRepo.save(scheme);
+                                sendStatusEmail(scheme);
+                            } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.CLOSED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
@@ -743,7 +793,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
             User user = userService.getByEmail(email);
             Accounts accounts = user.getAccounts();
             Scheme scheme = accounts.getScheme();
-            if (scheme.getSStatus() == SchemeStatus.CLOSED) {
+            if (scheme.getSStatus().equals(SchemeStatus.CLOSED)) {
                 accounts.setScheme(null);
                 accountsRepo.save(accounts);
                 schemeRepo.delete(scheme);
