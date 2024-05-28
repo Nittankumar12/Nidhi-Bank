@@ -1,7 +1,9 @@
 package com.RWI.Nidhi.admin.adminServiceInterface;
 
 import com.RWI.Nidhi.Security.payload.request.SignupRequest;
+import com.RWI.Nidhi.dto.KycDetailsDto;
 import com.RWI.Nidhi.dto.LoanHistoryDto;
+import com.RWI.Nidhi.enums.KycStatus;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.LoanType;
 import com.RWI.Nidhi.enums.SchemeStatus;
@@ -38,4 +40,6 @@ public interface AdminServiceInterface {
     ResponseEntity<?> changeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus);
     ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus);
     String deleteScheme(String email);
+    ResponseEntity<?> ChangeKycStatus(String userEmail, KycStatus newStatus);
+    ResponseEntity<?> getKycDetails(String userEmail);
 }

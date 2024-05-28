@@ -2,7 +2,9 @@ package com.RWI.Nidhi.admin.controller;
 
 import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.admin.adminServiceImplementation.AdminServiceImplementation;
+import com.RWI.Nidhi.dto.KycDetailsDto;
 import com.RWI.Nidhi.dto.LoanHistoryDto;
+import com.RWI.Nidhi.enums.KycStatus;
 import com.RWI.Nidhi.enums.LoanStatus;
 import com.RWI.Nidhi.enums.LoanType;
 import com.RWI.Nidhi.enums.SchemeStatus;
@@ -144,6 +146,15 @@ public class AdminController {
     public ResponseEntity<?> deleteUserById(@RequestParam("userEmail") String userEmail, @RequestParam("agentEmail") String agentEmail) throws Exception {
         return adminService.deleteUserById(userEmail, agentEmail);
     }
+    @PutMapping("/ChangeKycStatus/{userEmail}")
+    public ResponseEntity<?> ChangeSchemeStatus(@RequestParam("userEmail") String userEmail, @RequestBody KycStatus newStatus) {
+        return adminService.ChangeKycStatus(userEmail,newStatus);
+    }
+    @GetMapping("/getKycDetails/{userEmail}")
+    public ResponseEntity<?> getKycDetails(String userEmail){
+        return adminService.getKycDetails(userEmail);
+    }
+
 //    @PostMapping("/login-admin")
 //    public ResponseEntity<?> authenticateUser(@RequestBody LoginReq loginReq) {
 //        Admin admin = adminRepo.findByAdminName(loginReq.getUsername());

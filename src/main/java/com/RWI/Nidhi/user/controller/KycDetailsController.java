@@ -26,9 +26,9 @@ public class KycDetailsController {
         return new ResponseEntity<>(savedKycDetailsDTO, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{kycId}")
-    public ResponseEntity<Object> getDetails(@RequestParam Long kycId) {
-        KycDetails kycDetails = kycDetailsService.getDetailsById(kycId);
+    @GetMapping("/details/{userEmail}")
+    public ResponseEntity<Object> getDetails(@RequestParam String userEmail) {
+        KycDetails kycDetails = kycDetailsService.getDetailsByUserEmail(userEmail);
         return new ResponseEntity<>(kycDetails, HttpStatus.OK);
     }
 

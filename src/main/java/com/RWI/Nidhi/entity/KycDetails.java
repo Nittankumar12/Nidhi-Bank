@@ -16,7 +16,7 @@ import java.util.Date;
 public class KycDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long kycId;
+    private Long kycId;
     private String firstName;
     private String lastName;
     private String fatherName;
@@ -33,6 +33,8 @@ public class KycDetails {
     private Religion religion;
     @Enumerated(EnumType.STRING)
     private Nationality nationality;
+    @Enumerated(EnumType.STRING)
+    private KycStatus kycStatus;
     @Enumerated(value =EnumType.STRING)
     private Categories categories;
     private Long alternatePhnNo;
@@ -44,6 +46,9 @@ public class KycDetails {
     private Occupation occupation;
     private Integer monthlyIncome;
     private Integer numberOfFamilyMembers;
+    @OneToOne
+    @JoinColumn
+    private User user;
 }
 
 

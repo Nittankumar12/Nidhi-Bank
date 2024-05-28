@@ -68,8 +68,9 @@ public class KycDetailsDto {
         private Integer monthlyIncome;
 
         private Integer numberOfFamilyMembers;
+        private KycStatus kycStatus;
 
-    }
+}
 
 
 
