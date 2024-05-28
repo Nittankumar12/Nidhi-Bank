@@ -3,7 +3,9 @@ package com.RWI.Nidhi.user.serviceImplementation;
 import com.RWI.Nidhi.dto.KycDetailsDto;
 import com.RWI.Nidhi.dto.ResponseKycDto;
 import com.RWI.Nidhi.entity.KycDetails;
+import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.repository.KycDetailsRepo;
+import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceInterface.KycDetailsService;
 
 
@@ -19,7 +21,8 @@ public class KycDetailsServiceImp implements KycDetailsService {
 
     @Autowired
     private KycDetailsRepo kycDetailsRepo;
-
+    @Autowired
+    UserRepo userRepo;
 
     @Override
     public KycDetailsDto saveKycDetails(KycDetailsDto kycDetailsDTO) {
@@ -77,7 +80,12 @@ public class KycDetailsServiceImp implements KycDetailsService {
     }
 
     @Override
-    public KycDetails getDetailsById(Long kycId) {
-        return kycDetailsRepo.findById(kycId).orElseThrow(() -> new RuntimeException("Id not found:"));
+    public KycDetails getDetailsByUserEmail(String userEmail) {
+        if (userRepo.existsByEmail(userEmail)) {
+            User user = userRepo.findByEmail(userEmail);
+            long kycId = user.getKyc().getKycId();
+            return kycDetailsRepo.findById(kycId).orElseThrow(() -> new RuntimeException("Id not found:"));
+        }
+        else return null;
     }
 }

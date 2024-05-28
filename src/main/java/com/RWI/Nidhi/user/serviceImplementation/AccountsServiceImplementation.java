@@ -112,7 +112,7 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 	public Boolean CheckAccStatus(String userEmail){
 		User user = userRepo.findByEmail(userEmail);
 		Accounts accounts = user.getAccounts();
-		if(accounts.getAccountStatus() == Status.CLOSED || accounts.getAccountStatus() == Status.FORECLOSED || accounts.getAccountStatus() == Status.INACTIVE)
+		if(accounts.getAccountStatus().equals(Status.ACTIVE)==Boolean.FALSE)
 			return Boolean.FALSE;
 		return Boolean.TRUE;
 	}

@@ -20,5 +20,6 @@ public interface KycDetailsService {
 
     List<KycDetails> getAll();
 
-    KycDetails getDetailsById(Long kycId);
+
+    KycDetails getDetailsByUserEmail(String userEmail);
 }

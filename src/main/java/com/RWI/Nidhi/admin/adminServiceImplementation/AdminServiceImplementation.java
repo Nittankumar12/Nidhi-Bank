@@ -14,6 +14,7 @@ import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.*;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
+import com.RWI.Nidhi.user.serviceImplementation.KycDetailsServiceImp;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceImplementation.UserSchemeLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
@@ -39,6 +40,10 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     AgentRepo agentRepo;
     @Autowired
     LoanRepo loanRepo;
+    @Autowired
+    KycDetailsServiceImp kycDetailsService;
+    @Autowired
+    KycDetailsRepo kycDetailsRepo;
     @Autowired
     TransactionRepo transactionRepo;
     @Autowired
@@ -812,5 +817,88 @@ public class AdminServiceImplementation implements AdminServiceInterface {
             referralCode.append(ALPHABET.charAt(index));
         }
         return referralCode.toString();
+    }
+    @Override
+    public ResponseEntity<?> getKycDetails(String userEmail){
+        if (userRepo.existsByEmail(userEmail)) {
+            User user = userService.getByEmail(userEmail);
+            Accounts accounts = user.getAccounts();
+            if (accounts != null) {
+                KycDetails kycDetails = user.getKycDetails();
+                if (kycDetails == null) {
+                    return new ResponseEntity<>("No Kyc exists for the given user", HttpStatus.I_AM_A_TEAPOT);
+                } else {
+                    KycDetails kycDetailss = kycDetailsService.getDetailsByUserEmail(userEmail);
+                    KycDetailsDto kycDetailsDto = new KycDetailsDto();
+                    kycDetailsDto.setEmail(kycDetailss.getEmail());
+                    kycDetailsDto.setCategories(kycDetailss.getCategories());
+                    kycDetailsDto.setEducation(kycDetailss.getEducation());
+                    kycDetailsDto.setGender(kycDetailss.getGender());
+                    kycDetailsDto.setDateOfBirth(kycDetailss.getDateOfBirth());
+                    kycDetailsDto.setFatherName(kycDetailss.getFatherName());
+                    kycDetailsDto.setFatherLastName(kycDetailss.getFatherLastName());
+                    kycDetailsDto.setFirstName(kycDetailss.getFirstName());
+                    kycDetailsDto.setNationality(kycDetailss.getNationality());
+                    kycDetailsDto.setEmail(kycDetailss.getEmail());
+                    kycDetailsDto.setLastName(kycDetailss.getLastName());
+                    kycDetailsDto.setPhnNo(kycDetailss.getPhnNo());
+                    kycDetailsDto.setReligion(kycDetailss.getReligion());
+                    kycDetailsDto.setAlternatePhnNo(kycDetailss.getAlternatePhnNo());
+                    kycDetailsDto.setNomineeFirstName(kycDetailss.getNomineeFirstName());
+                    kycDetailsDto.setNomineeLastName(kycDetailss.getNomineeLastName());
+                    kycDetailsDto.setNomineeContactNumber(kycDetailss.getNomineeContactNumber());
+                    kycDetailsDto.setRelationWithNominee(kycDetailss.getRelationWithNominee());
+                    kycDetailsDto.setOccupation(kycDetailss.getOccupation());
+                    kycDetailsDto.setMonthlyIncome(kycDetailss.getMonthlyIncome());
+                    kycDetailsDto.setNumberOfFamilyMembers(kycDetailss.getNumberOfFamilyMembers());
+                    kycDetailsDto.setKycStatus(kycDetailss.getKycStatus());
+                    return new ResponseEntity<>(kycDetailsDto,HttpStatus.OK);
+                }
+            } else {
+                return new ResponseEntity<>("Account doesn't exist", HttpStatus.I_AM_A_TEAPOT);
+            }
+        }else {
+            return  new ResponseEntity<>("User doesn't exist", HttpStatus.I_AM_A_TEAPOT);
+        }
+    }
+    @Override
+    public ResponseEntity<?> ChangeKycStatus(String userEmail, KycStatus newStatus) {
+        if (userRepo.existsByEmail(userEmail)) {
+            User user = userService.getByEmail(userEmail);
+            Accounts accounts = user.getAccounts();
+            if (accounts != null) {
+                KycDetails kycDetails = user.getKycDetails();
+                if (kycDetails == null) {
+                    return new ResponseEntity<>("No Kyc exists for the given user", HttpStatus.I_AM_A_TEAPOT);
+                } else {
+                    if (newStatus.equals(KycStatus.Pending)) {
+                        return new ResponseEntity<>("Invalid change in status", HttpStatus.NOT_ACCEPTABLE);
+                    } else if (newStatus.equals(KycStatus.Approved) && accounts.getAccountStatus().equals(Status.KycInactive)) {
+                        kycDetails.setKycStatus(newStatus);
+                        accounts.setAccountStatus(Status.ACTIVE);
+                        kycDetailsRepo.save(kycDetails);
+                        sendStatusEmail(kycDetails);
+                    } else if (newStatus.equals(KycStatus.Rejected)) {
+                        kycDetails.setKycStatus(newStatus);
+                        kycDetailsRepo.save(kycDetails);
+                        sendStatusEmail(kycDetails);
+                    }else {
+                     return new ResponseEntity<>("Problem Occured",HttpStatus.BAD_REQUEST);
+                    }
+                }
+            } else {
+                return new ResponseEntity<>("Account doesn't exist", HttpStatus.I_AM_A_TEAPOT);
+            }
+        }else {
+            return  new ResponseEntity<>("User doesn't exist", HttpStatus.I_AM_A_TEAPOT);
+        }
+        return null;
+    }
+    private void sendStatusEmail(KycDetails kycDetails) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(kycDetails.getUser().getEmail());
+        mailMessage.setSubject("Change in your Kyc Status");
+        mailMessage.setText("Hello User," + kycDetails.getUser().getUserName() + ",\n\n Your Kyc Status has been changed to" + kycDetails.getKycStatus() + "Please confirm so with your respective agent.");
+        javaMailSender.send(mailMessage);
     }
 }
