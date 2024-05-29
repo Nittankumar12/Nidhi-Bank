@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +55,9 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     public LoanInfoDto applyLoan(LoanApplyDto loanApplyDto) {
         User user = userService.getByEmail(loanApplyDto.getUserEmail());
         Accounts acc = user.getAccounts();
+        if(acc.getLoanList()==null)acc.setLoanList(new ArrayList<>());
         Agent agent = user.getAgent();
+        if(agent.getLoanList()==null)acc.setLoanList(new ArrayList<>());
         if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) {
             return null;
         } else {
@@ -63,7 +66,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             loan.setInterestRate(loanApplyDto.getLoanType().getLoanInterestRate());
             loan.setRePaymentTerm(loanApplyDto.getRePaymentTerm());
             loan.setPrincipalLoanAmount(loanApplyDto.getPrincipalLoanAmount());
-
+            loan.setStatus(LoanStatus.APPLIED);
 
             //Commission
             Commission commission = new Commission();
@@ -75,7 +78,6 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             commission.setCommDate(LocalDate.now());
             commissionRepo.save(commission);
 
-            loan.setStatus(LoanStatus.APPLIED);
             loan.setAccount(acc);
             loan.setAgent(agent);
             loan.setUser(user);
