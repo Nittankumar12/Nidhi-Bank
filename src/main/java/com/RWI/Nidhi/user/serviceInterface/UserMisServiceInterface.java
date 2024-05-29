@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface UserMisServiceInterface {
 
-    MisResponseDto createMis(String agentEmail, String email, MisDto misDto);
+    MisResponseDto createMis(String email, MisDto misDto);
 
     Double closeMis(int misId) throws Exception;
 

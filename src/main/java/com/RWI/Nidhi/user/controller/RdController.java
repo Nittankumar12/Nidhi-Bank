@@ -19,7 +19,7 @@ public class RdController {
 
     @PostMapping("/createRd")
     public ResponseEntity<?> createRd(@RequestParam String agentEmail, @RequestParam String userEmail, @RequestBody RdDto rdDto) throws Exception {
-        RdResponseDto rd = service.createRd(agentEmail, userEmail, rdDto);
+        RdResponseDto rd = service.createRd(userEmail, rdDto);
         if(rd == null) return new ResponseEntity<>("Account closed or error in creating the Rd", HttpStatus.NOT_ACCEPTABLE);
         return new ResponseEntity<>(rd, HttpStatus.OK);
     }

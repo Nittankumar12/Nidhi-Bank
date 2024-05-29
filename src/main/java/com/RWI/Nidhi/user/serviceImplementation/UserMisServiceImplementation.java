@@ -40,14 +40,14 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
     CommissionRepository commissionRepo;
 
     @Override
-    public MisResponseDto createMis(String agentEmail, String email, MisDto misDto) {
-
-        Agent agent = agentRepo.findByAgentEmail(agentEmail);
+    public MisResponseDto createMis(String email, MisDto misDto) {
         User user = userRepo.findByEmail(email);
         if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) return null;
 //        Accounts accounts = new Accounts();
         MIS newMis = new MIS();
-        if (agent != null && user != null) {
+        if (user != null) {
+            if(user.getAccounts().getMisList()==null)user.getAccounts().setMisList(new ArrayList<>());
+            if(user.getAgent().getMisList()==null)user.getAgent().setMisList(new ArrayList<>());
             newMis.setTotalDepositedAmount(misDto.getTotalDepositedAmount());
             newMis.setStartDate(LocalDate.now());
             newMis.setTenure(misDto.getMisTenure().getTenure());
@@ -57,7 +57,7 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
             newMis.setMonthlyIncome(calculateMisMonthlyIncome(newMis.getTotalDepositedAmount(), newMis.getInterestRate()));
             newMis.setStatus(Status.ACTIVE);
 
-            newMis.setAgent(agent);
+            newMis.setAgent(user.getAgent());
             newMis.setAccount(user.getAccounts());
             newMis.setTransactionsList(new ArrayList<>());
             misRepo.save(newMis);
@@ -75,7 +75,7 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
 //            accountsRepo.save(accounts);
 
             Commission commission = new Commission();
-            commission.setAgent(agent);
+            commission.setAgent(user.getAgent());
             commission.setUser(user);
             commission.setCommissionType(CommissionType.MIS);
             commission.setCommissionRate(CommissionType.MIS.getCommissionRate());
@@ -83,8 +83,8 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
             commission.setCommDate(LocalDate.now());
             commissionRepo.save(commission);
             userRepo.save(user);
-            agentRepo.save(agent);
-
+            agentRepo.save(user.getAgent());
+            accountsRepo.save(user.getAccounts());
 
             misRepo.save(newMis);
 

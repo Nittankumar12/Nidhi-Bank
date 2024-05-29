@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface UserRdServiceInterface {
 
-    RdResponseDto createRd(String agentEmail, String email, RdDto rdDto);
+    RdResponseDto createRd(String email, RdDto rdDto);
 
     RecurringDeposit closeRd(int rdId) throws Exception;
 

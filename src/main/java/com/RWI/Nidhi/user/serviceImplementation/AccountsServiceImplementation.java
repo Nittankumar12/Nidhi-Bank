@@ -5,18 +5,18 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
 
-import com.RWI.Nidhi.entity.Commission;
+import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.CommissionType;
+import com.RWI.Nidhi.enums.KycStatus;
 import com.RWI.Nidhi.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.RWI.Nidhi.dto.AccountResponseDTO;
 import com.RWI.Nidhi.dto.BankRequestDTO;
 
-import com.RWI.Nidhi.entity.Accounts;
-import com.RWI.Nidhi.entity.BankDetails;
-import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.exception.AccountIdNotFoundException;
 import com.RWI.Nidhi.exception.AccountNotFoundException;
@@ -31,6 +31,8 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 	CommissionRepository commissionRepo;
 	@Autowired
 	AgentRepo agentRepo;
+	@Autowired
+	KycDetailsRepo kycDetailsRepo;
 	@Autowired
 	private BankRepo bankRepo;
 
@@ -54,7 +56,11 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 	}
 
 	@Override
-	public AccountResponseDTO openAccount(String email) {
+	public ResponseEntity<?> openAccount(String email) {
+		KycDetails kycDetails = kycDetailsRepo.findByEmail(email);
+		if(kycDetails == null) return new ResponseEntity<>("Kyc Details for this not found", HttpStatus.NOT_FOUND);
+		if(!kycDetails.getKycStatus().equals(KycStatus.Approved)) return new ResponseEntity<>("Kyc for current user is not approved yet" , HttpStatus.NOT_ACCEPTABLE);
+
 		// Find the user by email
 		User optionalUser = userRepo.findByEmail(email);
 		if (optionalUser != null) {
@@ -87,7 +93,7 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 			accountsRepo.save(newAccount);
 
 			// Create and return AccountResponseDTO
-			return createAccountResponseDTO(newAccount);
+			return new ResponseEntity<>(createAccountResponseDTO(newAccount),HttpStatus.OK);
 		} else {
 			// Handle the case where the user is not found
 			throw new RuntimeException("User with email " + email + " not found");

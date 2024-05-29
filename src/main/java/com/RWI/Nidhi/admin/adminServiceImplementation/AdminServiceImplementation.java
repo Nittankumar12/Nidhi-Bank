@@ -14,7 +14,6 @@ import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.*;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
-import com.RWI.Nidhi.user.serviceImplementation.AccountsServiceImplementation;
 import com.RWI.Nidhi.user.serviceImplementation.KycDetailsServiceImp;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceImplementation.UserSchemeLoanServiceImplementation;
@@ -42,13 +41,9 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     @Autowired
     LoanRepo loanRepo;
     @Autowired
-    AccountsServiceImplementation accountsService;
-    @Autowired
     KycDetailsServiceImp kycDetailsService;
     @Autowired
     KycDetailsRepo kycDetailsRepo;
-    @Autowired
-    KycDetailsServiceImp kycDetailsServiceImp;
     @Autowired
     TransactionRepo transactionRepo;
     @Autowired
@@ -221,12 +216,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     }
 @Override
     public ResponseEntity<?> addUser(@NotNull SignupRequest signUpRequest) {
-        KycDetails kycDetails = kycDetailsRepo.findByEmail(signUpRequest.getEmail());
-        if(kycDetails == null) return new ResponseEntity<>("Kyc Details for this not found", HttpStatus.NOT_FOUND);
-        if(!kycDetails.getKycStatus().equals(KycStatus.Approved)) return new ResponseEntity<>("Kyc for current user is not approved yet" , HttpStatus.NOT_ACCEPTABLE);
-
-        Agent agent = agentRepo.findByRefferalCode(kycDetails.getRefferalCode());
-        if(agent == null) return new ResponseEntity<>("Invalid Refferal Code",HttpStatus.NOT_FOUND);
 
         if (agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())) {
             return new ResponseEntity<>("Email already taken", HttpStatus.NOT_ACCEPTABLE);
@@ -243,9 +232,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         newUser.setUserName(signUpRequest.getUsername());
         newUser.setEmail(signUpRequest.getEmail());
         newUser.setPhoneNumber(signUpRequest.getPhoneNumber());
-        newUser.setAgent(agent);
-        newUser.setRefferalCode(kycDetails.getRefferalCode());
-        agent.getUserList().add(newUser);
         try {
 //            String tempPassword = "user21";
 //                    otpServiceImplementation.generateOTP();
@@ -277,14 +263,10 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         newUser.setRoles(roles);
         userRepo.save(newUser);
         credentialsRepo.save(credentials);
-        agentRepo.save(agent);
         UserResponseDto userResponseDto = new UserResponseDto();
         userResponseDto.setUserName(newUser.getUserName());
         userResponseDto.setEmail(newUser.getEmail());
         userResponseDto.setPhoneNumber(newUser.getPhoneNumber());
-        accountsService.openAccount(newUser.getEmail());
-        kycDetails.setUser(newUser);
-        kycDetailsRepo.save(kycDetails);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
     @Override
@@ -862,40 +844,35 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     public ResponseEntity<?> getKycDetails(String userEmail){
         if (userRepo.existsByEmail(userEmail)) {
             User user = userService.getByEmail(userEmail);
-            Accounts accounts = user.getAccounts();
-            if (accounts != null) {
-                KycDetails kycDetails = user.getKycDetails();
-                if (kycDetails == null) {
-                    return new ResponseEntity<>("No Kyc exists for the given user", HttpStatus.I_AM_A_TEAPOT);
-                } else {
-                    KycDetails kycDetailss = kycDetailsService.getDetailsByUserEmail(userEmail);
-                    KycDetailsDto kycDetailsDto = new KycDetailsDto();
-                    kycDetailsDto.setEmail(kycDetailss.getEmail());
-                    kycDetailsDto.setCategories(kycDetailss.getCategories());
-                    kycDetailsDto.setEducation(kycDetailss.getEducation());
-                    kycDetailsDto.setGender(kycDetailss.getGender());
-                    kycDetailsDto.setDateOfBirth(kycDetailss.getDateOfBirth());
-                    kycDetailsDto.setFatherName(kycDetailss.getFatherName());
-                    kycDetailsDto.setFatherLastName(kycDetailss.getFatherLastName());
-                    kycDetailsDto.setFirstName(kycDetailss.getFirstName());
-                    kycDetailsDto.setNationality(kycDetailss.getNationality());
-                    kycDetailsDto.setEmail(kycDetailss.getEmail());
-                    kycDetailsDto.setLastName(kycDetailss.getLastName());
-                    kycDetailsDto.setPhnNo(kycDetailss.getPhnNo());
-                    kycDetailsDto.setReligion(kycDetailss.getReligion());
-                    kycDetailsDto.setAlternatePhnNo(kycDetailss.getAlternatePhnNo());
-                    kycDetailsDto.setNomineeFirstName(kycDetailss.getNomineeFirstName());
-                    kycDetailsDto.setNomineeLastName(kycDetailss.getNomineeLastName());
-                    kycDetailsDto.setNomineeContactNumber(kycDetailss.getNomineeContactNumber());
-                    kycDetailsDto.setRelationWithNominee(kycDetailss.getRelationWithNominee());
-                    kycDetailsDto.setOccupation(kycDetailss.getOccupation());
-                    kycDetailsDto.setMonthlyIncome(kycDetailss.getMonthlyIncome());
-                    kycDetailsDto.setNumberOfFamilyMembers(kycDetailss.getNumberOfFamilyMembers());
-                    kycDetailsDto.setKycStatus(kycDetailss.getKycStatus());
-                    return new ResponseEntity<>(kycDetailsDto,HttpStatus.OK);
-                }
+            KycDetails kycDetails = user.getKycDetails();
+            if (kycDetails == null) {
+                return new ResponseEntity<>("No Kyc exists for the given user", HttpStatus.I_AM_A_TEAPOT);
             } else {
-                return new ResponseEntity<>("Account doesn't exist", HttpStatus.I_AM_A_TEAPOT);
+                KycDetails kycDetailss = kycDetailsService.getDetailsByUserEmail(userEmail);
+                KycDetailsDto kycDetailsDto = new KycDetailsDto();
+                kycDetailsDto.setEmail(kycDetailss.getEmail());
+                kycDetailsDto.setCategories(kycDetailss.getCategories());
+                kycDetailsDto.setEducation(kycDetailss.getEducation());
+                kycDetailsDto.setGender(kycDetailss.getGender());
+                kycDetailsDto.setDateOfBirth(kycDetailss.getDateOfBirth());
+                kycDetailsDto.setFatherName(kycDetailss.getFatherName());
+                kycDetailsDto.setFatherLastName(kycDetailss.getFatherLastName());
+                kycDetailsDto.setFirstName(kycDetailss.getFirstName());
+                kycDetailsDto.setNationality(kycDetailss.getNationality());
+                kycDetailsDto.setEmail(kycDetailss.getEmail());
+                kycDetailsDto.setLastName(kycDetailss.getLastName());
+                kycDetailsDto.setPhnNo(kycDetailss.getPhnNo());
+                kycDetailsDto.setReligion(kycDetailss.getReligion());
+                kycDetailsDto.setAlternatePhnNo(kycDetailss.getAlternatePhnNo());
+                kycDetailsDto.setNomineeFirstName(kycDetailss.getNomineeFirstName());
+                kycDetailsDto.setNomineeLastName(kycDetailss.getNomineeLastName());
+                kycDetailsDto.setNomineeContactNumber(kycDetailss.getNomineeContactNumber());
+                kycDetailsDto.setRelationWithNominee(kycDetailss.getRelationWithNominee());
+                kycDetailsDto.setOccupation(kycDetailss.getOccupation());
+                kycDetailsDto.setMonthlyIncome(kycDetailss.getMonthlyIncome());
+                kycDetailsDto.setNumberOfFamilyMembers(kycDetailss.getNumberOfFamilyMembers());
+                kycDetailsDto.setKycStatus(kycDetailss.getKycStatus());
+                return new ResponseEntity<>(kycDetailsDto,HttpStatus.OK);
             }
         }else {
             return  new ResponseEntity<>("User doesn't exist", HttpStatus.I_AM_A_TEAPOT);
@@ -904,15 +881,24 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     @Override
     public ResponseEntity<?> ChangeKycStatus(String userEmail, KycStatus newStatus) {
         KycDetails kycDetails = kycDetailsRepo.findByEmail(userEmail);
+        User user = userRepo.findByEmail(userEmail);
+        Agent agent = agentRepo.findByRefferalCode(kycDetails.getRefferalCode());
         if (kycDetails == null) {
             return new ResponseEntity<>("No Kyc exists for the given user", HttpStatus.NOT_FOUND);
         } else {
+            if(agent == null) return new ResponseEntity<>("Invalid Referral Code",HttpStatus.NOT_FOUND);
             if (newStatus.equals(KycStatus.Pending)) {
                 return new ResponseEntity<>("Invalid change in status", HttpStatus.NOT_ACCEPTABLE);
             } else if (newStatus.equals(KycStatus.Approved)) {
                 kycDetails.setKycStatus(newStatus);
                 kycDetailsRepo.save(kycDetails);
                 sendStatusEmail(kycDetails);
+                user.setAgent(agent);
+                user.setRefferalCode(kycDetails.getRefferalCode());
+                userRepo.save(user);
+                if(agent.getUserList().isEmpty())agent.setUserList(new ArrayList<>());
+                agent.getUserList().add(user);
+                agentRepo.save(agent);
                 return new ResponseEntity<>(("Status updated to "+newStatus), HttpStatus.OK);
             } else if (newStatus.equals(KycStatus.Rejected)) {
                 kycDetails.setKycStatus(newStatus);
@@ -920,7 +906,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                 sendStatusEmail(kycDetails);
                 return new ResponseEntity<>(("Status updated to "+newStatus), HttpStatus.OK);
             }else {
-             return new ResponseEntity<>("Problem Occured",HttpStatus.BAD_REQUEST);
+             return new ResponseEntity<>("Problem Occurred",HttpStatus.BAD_REQUEST);
             }
         }
     }
