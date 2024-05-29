@@ -24,6 +24,8 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
     @Autowired
     SchemeRepo schemeRepo;
     @Autowired
+    AccountsRepo accountsRepo;
+    @Autowired
     UserService userService;
     @Autowired
     TransactionRepo transactionRepo;
@@ -68,6 +70,7 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
             User user = userService.getByEmail(schemeApplyDTO.getEmail());
             if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE)  return new ResponseEntity<>("user account is closed or inactive", HttpStatus.NOT_ACCEPTABLE);
             Accounts accounts = user.getAccounts();
+            if(user.getAgent().getSchemeList()==null)user.getAgent().setSchemeList(new ArrayList<>());
             if (accounts != null) {
                 Scheme scheme = new Scheme();
                 scheme.setTenure(schemeApplyDTO.getTenure());
@@ -150,6 +153,7 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
                 scheme.getTransactionsList().add(transactions);
 
                 schemeRepo.save(scheme);
+
                 return new ResponseEntity<>("Monthly Deposit successfull", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("No Current Sanctioned Scheme", HttpStatus.NOT_FOUND);

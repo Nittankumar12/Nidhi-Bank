@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 @Service
@@ -57,7 +58,9 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     public ResponseEntity<?> applySchemeLoan(String email) {
         User user = userService.getByEmail(email);
         Accounts acc = user.getAccounts();
+        if(acc.getLoanList()==null)acc.setLoanList(new ArrayList<>());
         Agent agent = user.getAgent();
+        if(agent.getLoanList()==null)acc.setLoanList(new ArrayList<>());
         if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) {
             return new ResponseEntity<>("Account not opened", HttpStatus.BAD_REQUEST);
         } else {

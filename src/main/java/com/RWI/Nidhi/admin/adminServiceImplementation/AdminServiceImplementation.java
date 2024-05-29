@@ -607,14 +607,17 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                             }
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
+                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                         } else if (previousStatus.equals(LoanStatus.APPLIED) && changedStatus.equals(LoanStatus.PENDING)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
+                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                         } else if (previousStatus.equals(LoanStatus.APPLIED) && changedStatus.equals(LoanStatus.REJECTED)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
+                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                         } else if (previousStatus.equals(LoanStatus.APPROVED) && changedStatus.equals(LoanStatus.SANCTIONED)){
                             loan.setStatus(changedStatus);
                             
@@ -628,45 +631,54 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                             transactions.setTransactionStatus(TransactionStatus.COMPLETED);
                             transactionRepo.save(transactions);
                             loan.getTransactionsList().add(transactions);
-
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
+                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                         } else if (previousStatus.equals(LoanStatus.APPROVED) && changedStatus.equals(LoanStatus.PENDING)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
+                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                         } else if (previousStatus.equals(LoanStatus.APPROVED) && changedStatus.equals(LoanStatus.REJECTED)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
+                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                         } else if (previousStatus.equals(LoanStatus.SANCTIONED) && changedStatus.equals(LoanStatus.CLOSED)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
+                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                         } else if (previousStatus.equals(LoanStatus.SANCTIONED) && changedStatus.equals(LoanStatus.PENDING)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
+                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                         } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.APPROVED)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
+                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                         } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.SANCTIONED)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
+                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                         } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.REJECTED)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
+                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                         } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.CLOSED)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
+                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                         } else if (previousStatus.equals(LoanStatus.REQUESTEDFORFORECLOSURE) && changedStatus.equals(LoanStatus.FORECLOSED)){
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
+                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                         }else {
                             return new ResponseEntity<>("Invalid Change in status",HttpStatus.I_AM_A_TEAPOT);
                         }
@@ -705,14 +717,17 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                                 scheme.setAgent(agentRepo.findByAgentEmail(agentEmail));
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.APPLIED) && changedStatus.equals(SchemeStatus.PENDING)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.APPLIED) && changedStatus.equals(SchemeStatus.REJECTED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.APPROVED) && changedStatus.equals(SchemeStatus.SANCTIONED)) {
                                 scheme.setSStatus(changedStatus);
                                 Transactions transactions = new Transactions();
@@ -727,54 +742,67 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                                 scheme.getTransactionsList().add(transactions);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.APPROVED) && changedStatus.equals(SchemeStatus.PENDING)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.APPROVED) && changedStatus.equals(SchemeStatus.REJECTED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.SANCTIONED) && changedStatus.equals(SchemeStatus.CLOSED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.SANCTIONED) && changedStatus.equals(SchemeStatus.PENDING)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.SANCTIONED) && changedStatus.equals(SchemeStatus.APPLIEDFORLOAN)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.APPLIEDFORLOAN) && changedStatus.equals(SchemeStatus.APPROVEDLOAN)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.APPROVED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.SANCTIONED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.APPLIEDFORLOAN)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.APPROVEDLOAN)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.REJECTED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.CLOSED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
+                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
                             } else {
                                 return new ResponseEntity<>("Invalid Change in status", HttpStatus.I_AM_A_TEAPOT);
                             }
@@ -792,7 +820,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         else {
             return new ResponseEntity<>("Invalid Agent", HttpStatus.I_AM_A_TEAPOT);
         }
-        return null;
     }
     private void sendStatusEmail(Scheme scheme) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
@@ -876,27 +903,26 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     }
     @Override
     public ResponseEntity<?> ChangeKycStatus(String userEmail, KycStatus newStatus) {
-
         KycDetails kycDetails = kycDetailsRepo.findByEmail(userEmail);
-                if (kycDetails == null) {
-                    return new ResponseEntity<>("No Kyc exists for the given user", HttpStatus.NOT_FOUND);
-                } else {
-                    if (newStatus.equals(KycStatus.Pending)) {
-                        return new ResponseEntity<>("Invalid change in status", HttpStatus.NOT_ACCEPTABLE);
-                    } else if (newStatus.equals(KycStatus.Approved)) {
-                        kycDetails.setKycStatus(newStatus);
-                        kycDetailsRepo.save(kycDetails);
-                        sendStatusEmail(kycDetails);
-                        return new ResponseEntity<>("Status updated to Approved", HttpStatus.OK);
-                    } else if (newStatus.equals(KycStatus.Rejected)) {
-                        kycDetails.setKycStatus(newStatus);
-                        kycDetailsRepo.save(kycDetails);
-                        sendStatusEmail(kycDetails);
-                    }else {
-                     return new ResponseEntity<>("Problem Occured",HttpStatus.BAD_REQUEST);
-                    }
-                }
-                return null;
+        if (kycDetails == null) {
+            return new ResponseEntity<>("No Kyc exists for the given user", HttpStatus.NOT_FOUND);
+        } else {
+            if (newStatus.equals(KycStatus.Pending)) {
+                return new ResponseEntity<>("Invalid change in status", HttpStatus.NOT_ACCEPTABLE);
+            } else if (newStatus.equals(KycStatus.Approved)) {
+                kycDetails.setKycStatus(newStatus);
+                kycDetailsRepo.save(kycDetails);
+                sendStatusEmail(kycDetails);
+                return new ResponseEntity<>(("Status updated to "+newStatus), HttpStatus.OK);
+            } else if (newStatus.equals(KycStatus.Rejected)) {
+                kycDetails.setKycStatus(newStatus);
+                kycDetailsRepo.save(kycDetails);
+                sendStatusEmail(kycDetails);
+                return new ResponseEntity<>(("Status updated to "+newStatus), HttpStatus.OK);
+            }else {
+             return new ResponseEntity<>("Problem Occured",HttpStatus.BAD_REQUEST);
+            }
+        }
     }
 
     private void sendStatusEmail(KycDetails kycDetails) {
