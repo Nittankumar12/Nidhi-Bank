@@ -18,7 +18,7 @@ public class MisController {
     UserMisServiceImplementation misService;
 
     @PostMapping("/createMis")
-    public ResponseEntity<?> createMis(@RequestParam String agentEmail, @RequestParam String email, @RequestBody MisDto misDto) {
+    public ResponseEntity<?> createMis(@RequestParam String email, @RequestBody MisDto misDto) {
         System.out.println(misDto.getMisTenure().getInterestRate());
         System.out.println(misDto.getMisTenure().getTenure());
         MisResponseDto misResponseDto = misService.createMis(email, misDto);
