@@ -11,5 +11,6 @@ import java.util.List;
 
 @Repository
 public interface KycDetailsRepo extends JpaRepository<KycDetails,Long> {
+    KycDetails findByEmail(String email);
 //    List<KycDetails> findSomeDetails(KycDetails kycDetails);
 }

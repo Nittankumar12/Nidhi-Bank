@@ -41,14 +41,14 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     AccountsServiceInterface accountsService;
 
     @Override
-    public FdResponseDto createFd(String agentEmail, String email, FdDto fdDto) {
-        Agent agent = agentRepo.findByAgentEmail(agentEmail);
+    public FdResponseDto createFd(String email, FdDto fdDto) {
+//        Agent agent = agentRepo.findByReferralCode(agentReferralCode);
         User user = userRepo.findByEmail(email);
         if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) {
             return null;
         } else {
             FixedDeposit fd = new FixedDeposit();
-            if (agent != null && user != null) {
+            if ( user != null) {
                 fd.setAmount(fdDto.getAmount());
                 fd.setDepositDate(LocalDate.now());
                 fd.setTenure(fdDto.getTenure());
@@ -61,13 +61,14 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
                 fd.setMaturityAmount(calculateFdAmount(fd.getAmount(), fd.getInterestRate(), fd.getCompoundingFrequency(), tenureInDays));
                 fd.setFdStatus(Status.ACTIVE);
 
-                fd.setAgent(agent);
+                fd.setAgent(user.getAgent());
+                user.getAgent().getFixedDepositList().add(fd);
                 fd.setAccount(user.getAccounts());
                 fd.setTransactionsList(new ArrayList<>());
 
                 //Commission
                 Commission commission = new Commission();
-                commission.setAgent(agent);
+                commission.setAgent(user.getAgent());
                 commission.setUser(user);
                 commission.setCommissionType((CommissionType.FD));
                 commission.setCommissionRate(CommissionType.FD.getCommissionRate());
@@ -75,7 +76,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
                 commission.setCommDate(LocalDate.now());
                 commissionRepo.save(commission);
                 userRepo.save(user);
-                agentRepo.save(agent);
+                agentRepo.save(user.getAgent());
                 fdRepo.save(fd);
 
                 Transactions transactions = new Transactions();

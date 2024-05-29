@@ -23,6 +23,7 @@ public class User {
     private String phoneNumber;
     private String email;
     private String password;
+    private String refferalCode;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",

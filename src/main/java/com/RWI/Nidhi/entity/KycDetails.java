@@ -46,6 +46,7 @@ public class KycDetails {
     private Occupation occupation;
     private Integer monthlyIncome;
     private Integer numberOfFamilyMembers;
+    private String refferalCode;
     @OneToOne
     @JoinColumn
     private User user;
