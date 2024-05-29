@@ -38,6 +38,11 @@ public class AdminController {
     public ResponseEntity<?> addAdmin(@RequestBody SignupRequest signupRequest,@RequestParam("adminPassword") String adminPassword){
         return adminService.addAdmin(signupRequest, adminPassword);
     }
+    @CrossOrigin(origins = "http://localhost:5173")
+    @PostMapping("/addUser")
+    public ResponseEntity<?> addUser(@RequestBody SignupRequest signupRequest) throws Exception {
+        return adminService.addUser(signupRequest);
+    }
 
     @PutMapping("/updateAgentName")
     public ResponseEntity<?> updateAgentName(@RequestParam("agentEmail") String agentEmail, @RequestParam("agentName") String agentName) throws Exception {
@@ -127,11 +132,6 @@ public class AdminController {
     public ResponseEntity<?> changeLoanStatus(@RequestParam("agentEmail") String agentEmail, @RequestParam("userEmail") String userEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
         return adminService.changeLoanStatus(userEmail, agentEmail, changedStatus, previousStatus);
     }
-    @CrossOrigin(origins = "http://localhost:5173")
-    @PostMapping("/addUser")
-    public ResponseEntity<?> addUser(@RequestBody SignupRequest signupRequest, @RequestParam("agentRefferalCode") String agentRefferalCode) throws Exception {
-        return adminService.addUser(signupRequest, agentRefferalCode);
-    }
     @PutMapping("/ChangeSchemeStatus/{email}")
     public ResponseEntity<?> ChangeSchemeStatus(@RequestParam("email") String agentEmail, @RequestBody String userEmail, SchemeStatus changedStatus, SchemeStatus previousStatus) {
         return adminService.ChangeSchemeStatus(userEmail, agentEmail, changedStatus, previousStatus);
@@ -147,7 +147,7 @@ public class AdminController {
         return adminService.deleteUserById(userEmail, agentEmail);
     }
     @PutMapping("/ChangeKycStatus/{userEmail}")
-    public ResponseEntity<?> ChangeSchemeStatus(@RequestParam("userEmail") String userEmail, @RequestBody KycStatus newStatus) {
+    public ResponseEntity<?> ChangeKycStatus(@RequestParam("userEmail") String userEmail, @RequestBody KycStatus newStatus) {
         return adminService.ChangeKycStatus(userEmail,newStatus);
     }
     @GetMapping("/getKycDetails/{userEmail}")

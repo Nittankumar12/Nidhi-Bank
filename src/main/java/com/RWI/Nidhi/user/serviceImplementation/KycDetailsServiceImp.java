@@ -4,12 +4,11 @@ import com.RWI.Nidhi.dto.KycDetailsDto;
 import com.RWI.Nidhi.dto.ResponseKycDto;
 import com.RWI.Nidhi.entity.KycDetails;
 import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.enums.KycStatus;
 import com.RWI.Nidhi.repository.KycDetailsRepo;
 import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceInterface.KycDetailsService;
 
-
-import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ public class KycDetailsServiceImp implements KycDetailsService {
 
     @Override
     public KycDetailsDto saveKycDetails(KycDetailsDto kycDetailsDTO) {
-
         KycDetails kycDetails = convertToEntity(kycDetailsDTO);
         kycDetailsRepo.save(kycDetails);
         return kycDetailsDTO;
@@ -55,6 +53,8 @@ public class KycDetailsServiceImp implements KycDetailsService {
         kycEntity.setOccupation(kycDto.getOccupation());
         kycEntity.setMonthlyIncome(kycDto.getMonthlyIncome());
         kycEntity.setNumberOfFamilyMembers(kycDto.getNumberOfFamilyMembers());
+        kycEntity.setRefferalCode(kycDto.getReferralCode());
+        kycEntity.setKycStatus(KycStatus.Pending);
         return kycEntity;
     }
 

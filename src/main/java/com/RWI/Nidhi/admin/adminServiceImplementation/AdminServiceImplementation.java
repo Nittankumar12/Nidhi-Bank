@@ -14,6 +14,7 @@ import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.*;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
+import com.RWI.Nidhi.user.serviceImplementation.AccountsServiceImplementation;
 import com.RWI.Nidhi.user.serviceImplementation.KycDetailsServiceImp;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceImplementation.UserSchemeLoanServiceImplementation;
@@ -41,9 +42,13 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     @Autowired
     LoanRepo loanRepo;
     @Autowired
+    AccountsServiceImplementation accountsService;
+    @Autowired
     KycDetailsServiceImp kycDetailsService;
     @Autowired
     KycDetailsRepo kycDetailsRepo;
+    @Autowired
+    KycDetailsServiceImp kycDetailsServiceImp;
     @Autowired
     TransactionRepo transactionRepo;
     @Autowired
@@ -215,8 +220,12 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         return new ResponseEntity<>("User Deleted", HttpStatus.OK);
     }
 @Override
-    public ResponseEntity<?> addUser(SignupRequest signUpRequest, String agentRefferalCode) {
-        Agent agent = agentRepo.findByRefferalCode(agentRefferalCode);
+    public ResponseEntity<?> addUser(@NotNull SignupRequest signUpRequest) {
+        KycDetails kycDetails = kycDetailsRepo.findByEmail(signUpRequest.getEmail());
+        if(kycDetails == null) return new ResponseEntity<>("Kyc Details for this not found", HttpStatus.NOT_FOUND);
+        if(!kycDetails.getKycStatus().equals(KycStatus.Approved)) return new ResponseEntity<>("Kyc for current user is not approved yet" , HttpStatus.NOT_ACCEPTABLE);
+
+        Agent agent = agentRepo.findByRefferalCode(kycDetails.getRefferalCode());
         if(agent == null) return new ResponseEntity<>("Invalid Refferal Code",HttpStatus.NOT_FOUND);
 
         if (agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())) {
@@ -235,6 +244,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         newUser.setEmail(signUpRequest.getEmail());
         newUser.setPhoneNumber(signUpRequest.getPhoneNumber());
         newUser.setAgent(agent);
+        newUser.setRefferalCode(kycDetails.getRefferalCode());
         agent.getUserList().add(newUser);
         try {
 //            String tempPassword = "user21";
@@ -272,6 +282,9 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         userResponseDto.setUserName(newUser.getUserName());
         userResponseDto.setEmail(newUser.getEmail());
         userResponseDto.setPhoneNumber(newUser.getPhoneNumber());
+        accountsService.openAccount(newUser.getEmail());
+        kycDetails.setUser(newUser);
+        kycDetailsRepo.save(kycDetails);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
     @Override
@@ -670,7 +683,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(loan.getUser().getEmail());
         mailMessage.setSubject("Change in Loan Status");
-        mailMessage.setText("Hello User," + loan.getUser().getUserName() + ",\n\n Your loan status has been changed to" + loan.getStatus() + "Please confirm so with your respective agent.");
+        mailMessage.setText("Hello User," + loan.getUser().getUserName() + ",\n\n Your loan status has been changed to " + loan.getStatus() + " Please confirm so with your respective agent.");
         javaMailSender.send(mailMessage);
     }
     public ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus){
@@ -785,7 +798,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(scheme.getAccount().getUser().getEmail());
         mailMessage.setSubject("Change in Scheme Status");
-        mailMessage.setText("Hello User," + scheme.getAccount().getUser().getUserName() + ",\n\n Your Scheme Status has been changed to" + scheme.getSStatus() + "Please confirm so with your respective agent.");
+        mailMessage.setText("Hello User," + scheme.getAccount().getUser().getUserName() + ",\n\n Your Scheme Status has been changed to " + scheme.getSStatus() + " Please confirm so with your respective agent.");
         javaMailSender.send(mailMessage);
     }
     private LocalDate firstDateOfNextMonth(LocalDate date) {
@@ -863,21 +876,18 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     }
     @Override
     public ResponseEntity<?> ChangeKycStatus(String userEmail, KycStatus newStatus) {
-        if (userRepo.existsByEmail(userEmail)) {
-            User user = userService.getByEmail(userEmail);
-            Accounts accounts = user.getAccounts();
-            if (accounts != null) {
-                KycDetails kycDetails = user.getKycDetails();
+
+        KycDetails kycDetails = kycDetailsRepo.findByEmail(userEmail);
                 if (kycDetails == null) {
-                    return new ResponseEntity<>("No Kyc exists for the given user", HttpStatus.I_AM_A_TEAPOT);
+                    return new ResponseEntity<>("No Kyc exists for the given user", HttpStatus.NOT_FOUND);
                 } else {
                     if (newStatus.equals(KycStatus.Pending)) {
                         return new ResponseEntity<>("Invalid change in status", HttpStatus.NOT_ACCEPTABLE);
-                    } else if (newStatus.equals(KycStatus.Approved) && accounts.getAccountStatus().equals(Status.KycInactive)) {
+                    } else if (newStatus.equals(KycStatus.Approved)) {
                         kycDetails.setKycStatus(newStatus);
-                        accounts.setAccountStatus(Status.ACTIVE);
                         kycDetailsRepo.save(kycDetails);
                         sendStatusEmail(kycDetails);
+                        return new ResponseEntity<>("Status updated to Approved", HttpStatus.OK);
                     } else if (newStatus.equals(KycStatus.Rejected)) {
                         kycDetails.setKycStatus(newStatus);
                         kycDetailsRepo.save(kycDetails);
@@ -886,19 +896,14 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                      return new ResponseEntity<>("Problem Occured",HttpStatus.BAD_REQUEST);
                     }
                 }
-            } else {
-                return new ResponseEntity<>("Account doesn't exist", HttpStatus.I_AM_A_TEAPOT);
-            }
-        }else {
-            return  new ResponseEntity<>("User doesn't exist", HttpStatus.I_AM_A_TEAPOT);
-        }
-        return null;
+                return null;
     }
+
     private void sendStatusEmail(KycDetails kycDetails) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(kycDetails.getUser().getEmail());
+        mailMessage.setTo(kycDetails.getEmail());
         mailMessage.setSubject("Change in your Kyc Status");
-        mailMessage.setText("Hello User," + kycDetails.getUser().getUserName() + ",\n\n Your Kyc Status has been changed to" + kycDetails.getKycStatus() + "Please confirm so with your respective agent.");
+        mailMessage.setText("Hello " + kycDetails.getFirstName() + " " + kycDetails.getLastName() + ",\n\n Your Kyc Status has been changed to " + kycDetails.getKycStatus() + " Please confirm so with your respective agent.");
         javaMailSender.send(mailMessage);
     }
 }

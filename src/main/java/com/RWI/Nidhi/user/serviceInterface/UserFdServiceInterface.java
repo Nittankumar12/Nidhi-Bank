@@ -7,7 +7,7 @@ import com.RWI.Nidhi.dto.FdResponseDto;
 import java.util.List;
 
 public interface UserFdServiceInterface {
-    FdResponseDto createFd(String agentEmail, String email, FdDto fdDto);
+    FdResponseDto createFd( String email, FdDto fdDto);
 
     Double closeFd(int fdId) throws Exception;
 

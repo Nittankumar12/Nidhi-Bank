@@ -15,7 +15,7 @@ import java.util.List;
 public interface AdminServiceInterface {
     ResponseEntity<?> addAgent(SignupRequest signupRequest) throws Exception;
 
-    ResponseEntity<?> addUser(SignupRequest signupRequest, String agentEmail);
+    ResponseEntity<?> addUser(SignupRequest signupRequest);
     ResponseEntity<?> addAdmin(SignupRequest signUpRequest, String adminPassword);
     ResponseEntity<?> updateAgentName(String agentEmail, String agentName) throws Exception;
     ResponseEntity<?> updateAgentAddress(String agentEmail , String agentAddress) throws Exception;
