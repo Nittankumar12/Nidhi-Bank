@@ -44,9 +44,10 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     public FdResponseDto createFd(String email, FdDto fdDto) {
 //        Agent agent = agentRepo.findByReferralCode(agentReferralCode);
         User user = userRepo.findByEmail(email);
-        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) {
-            return null;
-        } else {
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) {return null;}
+        else {
+            if(user.getAccounts().getFdList()==null)user.getAccounts().setFdList(new ArrayList<>());
+            if(user.getAgent().getFixedDepositList()==null)user.getAgent().setFixedDepositList(new ArrayList<>());
             FixedDeposit fd = new FixedDeposit();
             if ( user != null) {
                 fd.setAmount(fdDto.getAmount());
@@ -78,6 +79,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
                 userRepo.save(user);
                 agentRepo.save(user.getAgent());
                 fdRepo.save(fd);
+                accountRepo.save(user.getAccounts());
 
                 Transactions transactions = new Transactions();
                 transactions.setAccount(user.getAccounts());

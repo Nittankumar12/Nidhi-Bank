@@ -21,10 +21,8 @@ public class AccountController {
 
 	// End point to open a new account
 	@GetMapping("/open-account")
-	public ResponseEntity<AccountResponseDTO> openAccount(@RequestParam String email) {
-		AccountResponseDTO newAccount = accountsServiceInterface.openAccount(email);
-		return ResponseEntity.ok(newAccount);
-
+	public ResponseEntity<?> openAccount(@RequestParam String email) {
+		return ResponseEntity.ok(accountsServiceInterface.openAccount(email));
 	}
 
 	// End point to get account status

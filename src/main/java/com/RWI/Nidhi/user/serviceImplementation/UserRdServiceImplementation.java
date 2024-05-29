@@ -33,24 +33,26 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     @Autowired
     CommissionRepository commissionRepo;
     @Autowired
-    private AgentRepo agentRepo;
+    AgentRepo agentRepo;
     @Autowired
-    private UserRepo userRepo;
+    UserRepo userRepo;
     @Autowired
-    private AccountsRepo accountRepo;
+    AccountsRepo accountRepo;
     @Autowired
-    private TransactionRepo transactionRepo;
+    TransactionRepo transactionRepo;
     @Autowired
     AccountsServiceInterface accountsService;
 
     @Override
-    public RdResponseDto createRd(String agentEmail, String email, RdDto rdDto) {
-        Agent agent = agentRepo.findByAgentEmail(agentEmail);
+    public RdResponseDto createRd(String email, RdDto rdDto) {
         User user = userRepo.findByEmail(email);
         if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) return null;
 //        Accounts accounts = new Accounts();
         RecurringDeposit rd = new RecurringDeposit();
-        if (agent != null && user != null) {
+
+        if (user != null) {
+            if(user.getAccounts().getRecurringDepositList()==null)user.getAccounts().setRecurringDepositList(new ArrayList<>());
+            if(user.getAgent().getRecurringDepositList()==null)user.getAgent().setRecurringDepositList(new ArrayList<>());
             rd.setMonthlyDepositAmount(rdDto.getMonthlyDepositAmount());
             rd.setStartDate(LocalDate.now());
             rd.setTenure(rdDto.getTenure());
@@ -64,7 +66,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             rd.setPenalty(0);
             rd.setMaturityAmount(calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getInterestRate(), rd.getMaturityDate()));
             rd.setRdStatus(Status.ACTIVE);
-            rd.setAgent(agent);
+            rd.setAgent(user.getAgent());
             rd.setAccount(user.getAccounts());
             rd.setTransactionsList(new ArrayList<>());
             rdRepo.save(rd);
@@ -83,7 +85,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
 
             //Commission
             Commission commission = new Commission();
-            commission.setAgent(agent);
+            commission.setAgent(user.getAgent());
             commission.setUser(user);
             commission.setCommissionType((CommissionType.RD));
             commission.setCommissionRate(CommissionType.RD.getCommissionRate());
@@ -91,7 +93,8 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             commission.setCommDate(LocalDate.now());
             commissionRepo.save(commission);
             userRepo.save(user);
-            agentRepo.save(agent);
+            agentRepo.save(user.getAgent());
+            accountRepo.save(user.getAccounts());
 
             rd.getTransactionsList().add(transactions);
             rdRepo.save(rd);

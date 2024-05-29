@@ -5,10 +5,11 @@ import com.RWI.Nidhi.dto.AccountResponseDTO;
 import com.RWI.Nidhi.dto.BankRequestDTO;
 
 import com.RWI.Nidhi.enums.Status;
+import org.springframework.http.ResponseEntity;
 
 public interface AccountsServiceInterface {
 
-	AccountResponseDTO openAccount(String email);
+	ResponseEntity<?> openAccount(String email);
 	double amountCalc(double commissionRate, double amount);
 
 	Status checkAccountStatus(String accountNumber);
