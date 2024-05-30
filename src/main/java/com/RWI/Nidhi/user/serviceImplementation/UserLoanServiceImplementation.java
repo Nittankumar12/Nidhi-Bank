@@ -10,6 +10,7 @@ import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,6 +24,8 @@ import java.util.List;
 public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     @Autowired
     LoanRepo loanRepository;
+    @Autowired
+    SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     CommissionRepository commissionRepo;
     @Autowired
@@ -84,6 +87,15 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             acc.getLoanList().add(loan);
             user.setAccounts(acc);
             loanRepository.save(loan);
+
+            // Send notification to admin
+            String notificationMessage = "User " + user.getUserName() + " has applied for a loan";
+            simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
+            // Send notification to user
+            String notificationMsg = "User " + user.getUserName() + " has applied for a loan";
+            simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
+
+
             accountsRepo.save(acc);
             userRepo.save(user);
             agent.getLoanList().add(loan);

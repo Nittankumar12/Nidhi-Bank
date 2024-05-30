@@ -17,6 +17,7 @@ public enum LoanType {
     Agriculture(2),
     Personal(2),
     Product(2),
+    Other(2),
     Scheme(2);
 
     private double loanInterestRate;
