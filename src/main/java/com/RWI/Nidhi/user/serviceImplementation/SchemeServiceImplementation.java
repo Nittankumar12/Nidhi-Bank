@@ -13,6 +13,7 @@ import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -25,6 +26,8 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
     SchemeRepo schemeRepo;
     @Autowired
     AccountsRepo accountsRepo;
+    @Autowired
+    SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     UserService userService;
     @Autowired
@@ -93,6 +96,13 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
                 scheme.setAgent(user.getAgent());
                 scheme.setTransactionsList(new ArrayList<>());
                 schemeRepo.save(scheme);
+                // Send notification to admin
+                String notificationMessage = "User " + user.getUserName() + " has applied for a scheme";
+                simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
+                // Send notification to user
+                String notificationMsg = "User " + user.getUserName() + " has applied for a scheme";
+                simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
+
                 return new ResponseEntity<>(getSchemeInfo(schemeApplyDTO.getEmail()), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("Account not created", HttpStatus.NOT_FOUND);

@@ -13,6 +13,7 @@ import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,6 +25,8 @@ import java.util.List;
 public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServiceInterface {
     @Autowired
     LoanRepo loanRepo;
+    @Autowired
+    SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     EmiCalculatorServiceImplementation emiCalculatorServiceImplementation;
     @Autowired
@@ -102,6 +105,14 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
                 userRepo.save(user);
                 agent.getLoanList().add(loan);
                 agentRepo.save(agent);
+                // Send notification to admin
+                String notificationMessage = "User " + user.getUserName() + " has applied for a scheme loan";
+                simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
+                // Send notification to user
+                String notificationMsg = "User " + user.getUserName() + " has applied for a scheme loan";
+                simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
+
+
                 LoanInfoDto loanInfoDto = new LoanInfoDto();
                 loanInfoDto.setLoanType(loan.getLoanType());
                 loanInfoDto.setPayableLoanAmount(loan.getPayableLoanAmount());

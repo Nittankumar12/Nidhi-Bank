@@ -22,6 +22,7 @@ public enum CommissionType {
     PersonalLoan(2),
     ProductLoan(2),
     SchemeLoan(2),
+    OtherLoan(2),
     AccountOpen;
 
     private double commissionRate;
