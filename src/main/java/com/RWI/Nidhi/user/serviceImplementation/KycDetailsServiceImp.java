@@ -25,6 +25,7 @@ public class KycDetailsServiceImp implements KycDetailsService {
 
     @Override
     public KycDetailsDto saveKycDetails(KycDetailsDto kycDetailsDTO) {
+        if(!userRepo.existsByEmail(kycDetailsDTO.getEmail()))return null;
         KycDetails kycDetails = convertToEntity(kycDetailsDTO);
         kycDetailsRepo.save(kycDetails);
         return kycDetailsDTO;

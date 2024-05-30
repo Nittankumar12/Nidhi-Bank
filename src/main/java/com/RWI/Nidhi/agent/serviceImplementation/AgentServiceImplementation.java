@@ -1,6 +1,9 @@
 package com.RWI.Nidhi.agent.serviceImplementation;
 
 import com.RWI.Nidhi.Security.models.Credentials;
+import com.RWI.Nidhi.Security.models.ERole;
+import com.RWI.Nidhi.Security.models.Role;
+import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.Security.repository.CredentialsRepo;
 import com.RWI.Nidhi.Security.repository.RoleRepository;
 import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
@@ -11,6 +14,7 @@ import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,6 +85,61 @@ public class AgentServiceImplementation implements AgentServiceInterface {
             userResponseDtos.add(userResponseDto);
         }
         return new ResponseEntity<>(userResponseDtos, HttpStatus.OK);
+    }
+    @Override
+    public ResponseEntity<?> addUser(@NotNull SignupRequest signUpRequest) {
+
+        if (agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())) {
+            return new ResponseEntity<>("Email already taken", HttpStatus.NOT_ACCEPTABLE);
+        }
+        if (adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getUsername()) || userRepo.existsByUserName(signUpRequest.getUsername())) {
+            return new ResponseEntity<>("Username already taken", HttpStatus.NOT_ACCEPTABLE);
+        }
+        if (adminRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber()) || agentRepo.existsByAgentPhoneNum(signUpRequest.getPhoneNumber()) || userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
+            return new ResponseEntity<>("Phone number already taken", HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        //creation of new user
+        User newUser = new User();
+        newUser.setUserName(signUpRequest.getUsername());
+        newUser.setEmail(signUpRequest.getEmail());
+        newUser.setPhoneNumber(signUpRequest.getPhoneNumber());
+        try {
+//            String tempPassword = "user21";
+//                    otpServiceImplementation.generateOTP();
+//            String subject = newUser.getUserName();
+//            String messageToSend = "Welcome to Nidhi Bank,Your temporary system generated password is: ";
+
+            String  tempPassword = otpServiceImplementation.generateOTP();
+            String   subject = "Your temporary password";
+            String   messageToSend = "Your temporary system generated password is: ";
+            System.out.println("Sending email");
+            otpServiceImplementation.sendEmailOtp(newUser.getEmail(), subject, messageToSend, tempPassword);
+            newUser.setPassword(encoder.encode(tempPassword));
+            userRepo.save(newUser);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Email Error" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        Credentials credentials = new Credentials(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPhoneNumber(),
+                newUser.getPassword());
+
+        // Set default role as USER for user
+        Set<Role> roles = new HashSet<>();
+        Role userRole = roleRepository.findByName(ERole.ROLE_USER).get();
+        if (userRole == null) {
+            return new ResponseEntity<>("User role not found", HttpStatus.NOT_FOUND);
+        }
+//                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles.add(userRole);
+        credentials.setRoles(roles);
+        newUser.setRoles(roles);
+        userRepo.save(newUser);
+        credentialsRepo.save(credentials);
+        UserResponseDto userResponseDto = new UserResponseDto();
+        userResponseDto.setUserName(newUser.getUserName());
+        userResponseDto.setEmail(newUser.getEmail());
+        userResponseDto.setPhoneNumber(newUser.getPhoneNumber());
+        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
     @Override

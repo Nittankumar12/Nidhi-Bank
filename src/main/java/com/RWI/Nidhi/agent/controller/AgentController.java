@@ -1,5 +1,6 @@
 package com.RWI.Nidhi.agent.controller;
 
+import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceImplementation;
 import com.RWI.Nidhi.dto.Agentforgetpassword;
 import com.RWI.Nidhi.dto.CommissionDto;
@@ -26,6 +27,11 @@ public class AgentController {
     public ResponseEntity<?> getAllUsers(@RequestParam("agentEmail") String agentEmail) {
         return new ResponseEntity<>(agentService.getAllUsers(agentEmail), HttpStatus.OK);
 
+    }
+    @CrossOrigin(origins = "http://localhost:5173")
+    @PostMapping("/addUser")
+    public ResponseEntity<?> addUser(@RequestBody SignupRequest signupRequest) throws Exception {
+        return agentService.addUser(signupRequest);
     }
 
     @GetMapping("findUserById")

@@ -23,6 +23,7 @@ public class KycDetailsController {
     @PostMapping("/kycdetails")
     public ResponseEntity<KycDetailsDto> saveKycDetails(@RequestBody KycDetailsDto kycDetailsDTO) {
         KycDetailsDto savedKycDetailsDTO = kycDetailsService.saveKycDetails(kycDetailsDTO);
+        if(savedKycDetailsDTO==null)return new ResponseEntity<>(savedKycDetailsDTO,HttpStatus.NOT_ACCEPTABLE);
         return new ResponseEntity<>(savedKycDetailsDTO, HttpStatus.CREATED);
     }
 

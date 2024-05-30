@@ -38,11 +38,7 @@ public class AdminController {
     public ResponseEntity<?> addAdmin(@RequestBody SignupRequest signupRequest,@RequestParam("adminPassword") String adminPassword){
         return adminService.addAdmin(signupRequest, adminPassword);
     }
-    @CrossOrigin(origins = "http://localhost:5173")
-    @PostMapping("/addUser")
-    public ResponseEntity<?> addUser(@RequestBody SignupRequest signupRequest) throws Exception {
-        return adminService.addUser(signupRequest);
-    }
+
 
     @PutMapping("/updateAgentName")
     public ResponseEntity<?> updateAgentName(@RequestParam("agentEmail") String agentEmail, @RequestParam("agentName") String agentName) throws Exception {
