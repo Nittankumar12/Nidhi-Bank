@@ -25,6 +25,8 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     @Autowired
     LoanRepo loanRepository;
     @Autowired
+    EmiService emiService;
+    @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     CommissionRepository commissionRepo;
@@ -58,9 +60,9 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     public LoanInfoDto applyLoan(LoanApplyDto loanApplyDto) {
         User user = userService.getByEmail(loanApplyDto.getUserEmail());
         Accounts acc = user.getAccounts();
-        if(acc.getLoanList()==null)acc.setLoanList(new ArrayList<>());
+        if (acc.getLoanList() == null) acc.setLoanList(new ArrayList<>());
         Agent agent = user.getAgent();
-        if(agent.getLoanList()==null)acc.setLoanList(new ArrayList<>());
+        if (agent.getLoanList() == null) acc.setLoanList(new ArrayList<>());
         if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE) {
             return null;
         } else {
@@ -101,16 +103,45 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             agent.getLoanList().add(loan);
             agentRepo.save(agent);
             LoanInfoDto loanInfoDto = new LoanInfoDto();
-            loanInfoDto.setUserEmail(user.getEmail());
-            loanInfoDto.setLoanType(loan.getLoanType());
-            loanInfoDto.setPayableLoanAmount(loan.getPayableLoanAmount());
-            loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
-            loanInfoDto.setInterestRate(loan.getInterestRate());
-            loanInfoDto.setStatus(loan.getStatus());
-            loanInfoDto.setMonthlyEMI(loan.getMonthlyEMI());
-            loanInfoDto.setRePaymentTerm(loan.getRePaymentTerm());
-            loanInfoDto.setStartDate(loan.getStartDate());
-            return loanInfoDto;
+
+            if (loan.getLoanType().equals(LoanType.Other)) {
+                EmiDetails emiDetails = emiService.calculateEmi(loan.getPrincipalLoanAmount(), loan.getDiscount(), loan.getRePaymentTerm());
+                loanInfoDto.setUserEmail(user.getEmail());
+                loanInfoDto.setLoanType(loan.getLoanType());
+                loanInfoDto.setPayableLoanAmount(emiDetails.getCustomerPrice());
+                loanInfoDto.setPrincipalLoanAmount(emiDetails.getMrpPrice());
+                loanInfoDto.setDiscount(emiDetails.getDiscount());
+                loanInfoDto.setMonthlyEMI(emiDetails.getEmi9Months());
+                if (emiDetails.getEmi9Months() == 0) {
+                    loanInfoDto.setRePaymentTerm(12);
+                } else if (emiDetails.getEmi12Months() == 0) {
+                    loanInfoDto.setRePaymentTerm(9);
+                }
+                loanInfoDto.setStartDate(loan.getStartDate());
+                loanInfoDto.setStatus(loan.getStatus());
+                return loanInfoDto;
+            }
+            else {
+                loanInfoDto.setUserEmail(user.getEmail());
+                loanInfoDto.setLoanType(loan.getLoanType());
+
+                LoanCalcDto loanCalcDto = new LoanCalcDto();
+                loanCalcDto.setLoanType(loan.getLoanType());
+                loanCalcDto.setRePaymentTerm(loan.getRePaymentTerm());
+                loanCalcDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
+                loanCalcDto.setInterestRate(loan.getLoanType());
+
+                loanInfoDto.setMonthlyEMI(calculateEMI(loanCalcDto));
+                loanInfoDto.setPayableLoanAmount(calculateFirstPayableAmount(loanCalcDto));
+                loanInfoDto.setPayableLoanAmount(loan.getPayableLoanAmount());
+                loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
+                loanInfoDto.setInterestRate(loan.getInterestRate());
+                loanInfoDto.setStatus(loan.getStatus());
+                loanInfoDto.setMonthlyEMI(loan.getMonthlyEMI());
+                loanInfoDto.setRePaymentTerm(loan.getRePaymentTerm());
+                loanInfoDto.setStartDate(loan.getStartDate());
+                return loanInfoDto;
+            }
         }
     }
 
@@ -185,6 +216,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             for (Loan loan : loanList) {
                 if (isLoanNotOpen(email) == Boolean.FALSE) {
                     loanInfoDto.setLoanType(loan.getLoanType());
+
                     loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
                     loanInfoDto.setStatus(loan.getStatus());
                     loanInfoDto.setInterestRate(loan.getInterestRate());
@@ -282,37 +314,37 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         MonthlyEmiDto monthlyEmiDto = new MonthlyEmiDto();
         List<Loan> loanList = acc.getLoanList();
         for (Loan loan : loanList) {
-                Penalty penalty = penaltyService.chargePenaltyForLoan(loan.getLoanId());
-                double payableLoanAmount = loan.getPayableLoanAmount();
-                double temp = payableLoanAmount;
-                payableLoanAmount = temp - loan.getMonthlyEMI();
+            Penalty penalty = penaltyService.chargePenaltyForLoan(loan.getLoanId());
+            double payableLoanAmount = loan.getPayableLoanAmount();
+            double temp = payableLoanAmount;
+            payableLoanAmount = temp - loan.getMonthlyEMI();
 
-                loan.setPayableLoanAmount(payableLoanAmount);
-                loan.setEmiDate(firstDateOfNextMonth(LocalDate.now()));
-                penalty.setPenaltyStatus(PenaltyStatus.PAID);
-                penaltyRepo.save(penalty);
+            loan.setPayableLoanAmount(payableLoanAmount);
+            loan.setEmiDate(firstDateOfNextMonth(LocalDate.now()));
+            penalty.setPenaltyStatus(PenaltyStatus.PAID);
+            penaltyRepo.save(penalty);
 
-                Transactions transactions = new Transactions();
-                transactions.setAccount(acc);
-                transactions.setLoan(loan);
-                transactions.setTransactionAmount(loan.getMonthlyEMI()+penalty.getPenaltyAmount());
-                Transactions.addTotalBalance(loan.getMonthlyEMI()+penalty.getPenaltyAmount());
-                transactions.setTransactionDate(new Date());
-                transactions.setTransactionType(TransactionType.CREDITED);
-                transactions.setTransactionStatus(TransactionStatus.COMPLETED);
-                transactionRepo.save(transactions);
-                loan.getTransactionsList().add(transactions);
-                loan.setCurrentFine(0);
-                loanRepository.save(loan);
+            Transactions transactions = new Transactions();
+            transactions.setAccount(acc);
+            transactions.setLoan(loan);
+            transactions.setTransactionAmount(loan.getMonthlyEMI()+penalty.getPenaltyAmount());
+            Transactions.addTotalBalance(loan.getMonthlyEMI()+penalty.getPenaltyAmount());
+            transactions.setTransactionDate(new Date());
+            transactions.setTransactionType(TransactionType.CREDITED);
+            transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+            transactionRepo.save(transactions);
+            loan.getTransactionsList().add(transactions);
+            loan.setCurrentFine(0);
+            loanRepository.save(loan);
 
-                LocalDate endDate = ChronoUnit.DAYS.addTo(loan.getStartDate(), loan.getRePaymentTerm());
-                int rePaymentTermLeft = (int) ChronoUnit.DAYS.between(endDate, LocalDate.now());
+            LocalDate endDate = ChronoUnit.DAYS.addTo(loan.getStartDate(), loan.getRePaymentTerm());
+            int rePaymentTermLeft = (int) ChronoUnit.DAYS.between(endDate, LocalDate.now());
 
-                monthlyEmiDto.setPayableLoanAmount(payableLoanAmount);
-                monthlyEmiDto.setMonthlyEMI(loan.getMonthlyEMI() + loan.getCurrentFine());
-                monthlyEmiDto.setRePaymentTermLeft(rePaymentTermLeft);
-                monthlyEmiDto.setPaymentDate(LocalDate.now());
-                monthlyEmiDto.setNextEMIDate(firstDateOfNextMonth(LocalDate.now()));
+            monthlyEmiDto.setPayableLoanAmount(payableLoanAmount);
+            monthlyEmiDto.setMonthlyEMI(loan.getMonthlyEMI() + loan.getCurrentFine());
+            monthlyEmiDto.setRePaymentTermLeft(rePaymentTermLeft);
+            monthlyEmiDto.setPaymentDate(LocalDate.now());
+            monthlyEmiDto.setNextEMIDate(firstDateOfNextMonth(LocalDate.now()));
         }
         return monthlyEmiDto;
     }
