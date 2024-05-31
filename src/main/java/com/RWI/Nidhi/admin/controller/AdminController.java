@@ -2,7 +2,6 @@ package com.RWI.Nidhi.admin.controller;
 
 import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.admin.adminServiceImplementation.AdminServiceImplementation;
-import com.RWI.Nidhi.dto.KycDetailsDto;
 import com.RWI.Nidhi.dto.LoanHistoryDto;
 import com.RWI.Nidhi.enums.KycStatus;
 import com.RWI.Nidhi.enums.LoanStatus;
