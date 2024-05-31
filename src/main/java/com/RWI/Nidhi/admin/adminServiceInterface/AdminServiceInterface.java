@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface AdminServiceInterface {
+    ResponseEntity <?> setLoanDiscount(String userEmail,double discount);
     ResponseEntity<?> addAgent(SignupRequest signupRequest) throws Exception;
 
     ResponseEntity<?> addAdmin(SignupRequest signUpRequest, String adminPassword);

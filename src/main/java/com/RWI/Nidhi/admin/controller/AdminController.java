@@ -30,12 +30,13 @@ public class AdminController {
     AdminRepo adminRepo;
 
     @PostMapping("/addAgent")
-    public ResponseEntity<?> addAgent(@RequestBody SignupRequest signupRequest){
+    public ResponseEntity<?> addAgent(@RequestBody SignupRequest signupRequest) {
         return adminService.addAgent(signupRequest);
     }
+
     @CrossOrigin(origins = "http://localhost:5173/")
     @PostMapping("/addAdmin")
-    public ResponseEntity<?> addAdmin(@RequestBody SignupRequest signupRequest,@RequestParam("adminPassword") String adminPassword){
+    public ResponseEntity<?> addAdmin(@RequestBody SignupRequest signupRequest, @RequestParam("adminPassword") String adminPassword) {
         return adminService.addAdmin(signupRequest, adminPassword);
     }
 
@@ -74,42 +75,49 @@ public class AdminController {
     public ResponseEntity<?> findAgentById(@PathVariable int id) throws Exception {
         return adminService.getAgentById(id);
     }
+
     @GetMapping("/getLoanByStatus")
-    public ResponseEntity<?> findByStatus(@RequestParam("status") LoanStatus status){
+    public ResponseEntity<?> findByStatus(@RequestParam("status") LoanStatus status) {
         return adminService.findByStatus(status);
     }
+
     @GetMapping("/transactionOfCurrentMonth")
     public ResponseEntity<?> getTransactionForCurrentMonth() {
         return adminService.getTransactionForCurrentMonth();
     }
+
     @GetMapping("/transactionOfToday")
     public ResponseEntity<?> getTransactionForToday() {
         return adminService.getTransactionForToday();
     }
+
     @GetMapping("/transactionOfWeek")
     public ResponseEntity<?> getTransactionForCurrentWeek() {
         return adminService.getTransactionForCurrentWeek();
     }
+
     @GetMapping("/transactionOfDate")
-    public ResponseEntity<?> getTransactionBetweenDates(@RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate){
+    public ResponseEntity<?> getTransactionBetweenDates(@RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate) {
         return adminService.getTransactionBetweenDates(startDate, endDate);
     }
+
     @GetMapping("/getLoanByType")
     public ResponseEntity<Object> getByLoanType(@RequestParam LoanType loanType) {
         List<LoanHistoryDto> loanHistoryDtos = adminService.getLoansByLoanType(loanType);
         return new ResponseEntity<>(loanHistoryDtos, HttpStatus.OK);
     }
+
     @GetMapping("/loanStatus")
     public ResponseEntity<Object> getLoansByStatus(@RequestParam LoanStatus loanStatus) {
-        List<LoanHistoryDto> loanHistoryDtos =adminService.getLoansByLoanStatus(loanStatus);
-        return new ResponseEntity<>(loanHistoryDtos,HttpStatus.OK);
+        List<LoanHistoryDto> loanHistoryDtos = adminService.getLoansByLoanStatus(loanStatus);
+        return new ResponseEntity<>(loanHistoryDtos, HttpStatus.OK);
     }
 
-    ResponseEntity<?> addBalanceToAccount(double amount){
+    ResponseEntity<?> addBalanceToAccount(double amount) {
         return adminService.addBalanceToAccount(amount);
     }
 
-    ResponseEntity<?> deductBalanceToAccount(double amount){
+    ResponseEntity<?> deductBalanceToAccount(double amount) {
         return adminService.deductBalanceToAccount(amount);
     }
 
@@ -124,10 +132,12 @@ public class AdminController {
     public ResponseEntity<?> closeAccount(@RequestParam("accountNumber") String accountNumber, @RequestParam("agentEmail") String agentEmail) throws Exception {
         return adminService.closeAccount(accountNumber, agentEmail);
     }
+
     @PutMapping("/ChangeLoanStatus")
     public ResponseEntity<?> changeLoanStatus(@RequestParam("agentEmail") String agentEmail, @RequestParam("userEmail") String userEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
         return adminService.changeLoanStatus(userEmail, agentEmail, changedStatus, previousStatus);
     }
+
     @PutMapping("/ChangeSchemeStatus/{email}")
     public ResponseEntity<?> ChangeSchemeStatus(@RequestParam("email") String agentEmail, @RequestBody String userEmail, SchemeStatus changedStatus, SchemeStatus previousStatus) {
         return adminService.ChangeSchemeStatus(userEmail, agentEmail, changedStatus, previousStatus);
@@ -142,15 +152,21 @@ public class AdminController {
     public ResponseEntity<?> deleteUserById(@RequestParam("userEmail") String userEmail, @RequestParam("agentEmail") String agentEmail) throws Exception {
         return adminService.deleteUserById(userEmail, agentEmail);
     }
+
     @PutMapping("/ChangeKycStatus/{userEmail}")
     public ResponseEntity<?> ChangeKycStatus(@RequestParam("userEmail") String userEmail, @RequestBody KycStatus newStatus) {
-        return adminService.ChangeKycStatus(userEmail,newStatus);
-    }
-    @GetMapping("/getKycDetails/{userEmail}")
-    public ResponseEntity<?> getKycDetails(String userEmail){
-        return adminService.getKycDetails(userEmail);
+        return adminService.ChangeKycStatus(userEmail, newStatus);
     }
 
+    @PutMapping("/setLoanDiscount/{userEmail}")
+    public ResponseEntity<?> setLoanDiscount(@RequestParam String userEmail, @RequestParam double discount) {
+        return adminService.setLoanDiscount(userEmail, discount);
+    }
+
+    @GetMapping("/getKycDetails/{userEmail}")
+    public ResponseEntity<?> getKycDetails(String userEmail) {
+        return adminService.getKycDetails(userEmail);
+    }
 //    @PostMapping("/login-admin")
 //    public ResponseEntity<?> authenticateUser(@RequestBody LoginReq loginReq) {
 //        Admin admin = adminRepo.findByAdminName(loginReq.getUsername());

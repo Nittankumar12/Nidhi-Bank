@@ -23,9 +23,10 @@ public class Loan {
     private int loanId;
     private double payableLoanAmount;// Total Amount user has to pay - PrincipalLoanAmount + Total EMI for repayTerm
     private double principalLoanAmount;//Loan Amount user gets as Loan
-    private int rePaymentTerm; //should be counted in terms EMI is paid in
+    private int rePaymentTerm; //should be counted in terms EMI is paid in(currently in months)
     private LocalDate startDate;
     private double interestRate;
+    private double discount;//only for otherLoan
     private double monthlyEMI;
     private double currentFine;
     private LocalDate emiDate;
