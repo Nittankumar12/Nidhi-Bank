@@ -3,11 +3,11 @@ package com.RWI.Nidhi.user.serviceImplementation;
 import com.RWI.Nidhi.dto.RdDto;
 import com.RWI.Nidhi.dto.RdRequestDto;
 import com.RWI.Nidhi.dto.RdResponseDto;
-import com.RWI.Nidhi.entity.*;
-import com.RWI.Nidhi.enums.CommissionType;
-import com.RWI.Nidhi.enums.Status;
-import com.RWI.Nidhi.enums.TransactionStatus;
-import com.RWI.Nidhi.enums.TransactionType;
+import com.RWI.Nidhi.entity.Commission;
+import com.RWI.Nidhi.entity.RecurringDeposit;
+import com.RWI.Nidhi.entity.Transactions;
+import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.enums.*;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserRdServiceInterface;
@@ -29,8 +29,6 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     private final int penalty = 500;
     double currentInterest;
     @Autowired
-    private RecurringDepositRepo rdRepo;
-    @Autowired
     CommissionRepository commissionRepo;
     @Autowired
     AgentRepo agentRepo;
@@ -42,6 +40,8 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     TransactionRepo transactionRepo;
     @Autowired
     AccountsServiceInterface accountsService;
+    @Autowired
+    private RecurringDepositRepo rdRepo;
 
     @Override
     public RdResponseDto createRd(String email, RdDto rdDto) {
@@ -51,8 +51,10 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         RecurringDeposit rd = new RecurringDeposit();
 
         if (user != null) {
-            if(user.getAccounts().getRecurringDepositList()==null)user.getAccounts().setRecurringDepositList(new ArrayList<>());
-            if(user.getAgent().getRecurringDepositList()==null)user.getAgent().setRecurringDepositList(new ArrayList<>());
+            if (user.getAccounts().getRecurringDepositList() == null)
+                user.getAccounts().setRecurringDepositList(new ArrayList<>());
+            if (user.getAgent().getRecurringDepositList() == null)
+                user.getAgent().setRecurringDepositList(new ArrayList<>());
             rd.setMonthlyDepositAmount(rdDto.getMonthlyDepositAmount());
             rd.setStartDate(LocalDate.now());
             rd.setTenure(rdDto.getTenure());
@@ -61,10 +63,10 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             rd.setCompoundingFrequency(rdDto.getRdCompoundingFrequency().getCompoundingFreq());
             rd.setTotalAmountDeposited(calculateTotalAmount(rdDto.getMonthlyDepositAmount(), rdDto.getTenure()));
             rd.setMaturityDate(LocalDate.now().plusYears(rdDto.getTenure()));
-            int tenureInDays = getCompleteDaysCount(rd.getStartDate(), rd.getMaturityDate());
+//            int tenureInDays = getCompleteDaysCount(rd.getStartDate(), rd.getMaturityDate());
 
             rd.setPenalty(0);
-            rd.setMaturityAmount(calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getInterestRate(), rd.getMaturityDate()));
+            rd.setMaturityAmount(calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getCompoundingFrequency(),rd.getTenure(),rd.getInterestRate(), rd.getMaturityDate()));
             rd.setRdStatus(Status.ACTIVE);
             rd.setAgent(user.getAgent());
             rd.setAccount(user.getAccounts());
@@ -89,7 +91,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             commission.setUser(user);
             commission.setCommissionType((CommissionType.RD));
             commission.setCommissionRate(CommissionType.RD.getCommissionRate());
-            commission.setCommissionAmount(accountsService.amountCalc(CommissionType.RD.getCommissionRate(),rd.getMaturityAmount()));
+            commission.setCommissionAmount(accountsService.amountCalc(CommissionType.RD.getCommissionRate(), rd.getMaturityAmount()));
             commission.setCommDate(LocalDate.now());
             commissionRepo.save(commission);
             userRepo.save(user);
@@ -123,37 +125,47 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         return (int) daysDifference;
     }
 
-    private double calculateRdAmount(double monthlyDepositAmount, double interestRate, LocalDate maturityDate) {
-        double currentAmount = 0;
-        double ratePerMonth = interestRate / 365;
-        int numberOfDays = getCompleteDaysCount(LocalDate.now(), maturityDate);
+    private double calculateRdAmount(double monthlyDepositAmount,int tenure,int compoundingFreq, double interestRate, LocalDate maturityDate) {
+        LocalDate currentDate = LocalDate.now();
+        int months = (int) ChronoUnit.MONTHS.between(currentDate, maturityDate);
+        double totalAmount = 0;
 
-        for (int i = 1; i <= numberOfDays; i++) {
-            currentAmount += monthlyDepositAmount;
-//            System.out.print(currentAmount + "    ");
-            double currInterest = (currentAmount * ratePerMonth) / 100;
-//            System.out.print(currInterest + "    ");
-            currentAmount += currInterest;
-//            System.out.println(currentAmount);
+        int totalCompounds = compoundingFreq * tenure;
+        for(int i=0; i<totalCompounds; i++){
+            double currentInterest = 0;
+            double currentAmount = totalAmount;
+            for(int j=0; j<(12/compoundingFreq); j++){
+                currentAmount += monthlyDepositAmount;
+                // System.out.print(currentAmount + "    ");
+                currentInterest += ((currentAmount * interestRate)/100);
+                // System.out.println(currentInterest + "    ");
+            }
+            totalAmount = (currentAmount + currentInterest);
+            // System.out.println(totalAmount);
         }
-        return currentAmount;
+        return totalAmount;
     }
 
+
+
+
+
+
     private double calculateTotalAmount(double monthlyDepositAmount, int tenure) {
-        double totalAmount = monthlyDepositAmount * tenure;
+        double totalAmount = monthlyDepositAmount * tenure * 12;
         return totalAmount;
     }
 
 
     @Override
-    public RecurringDeposit closeRd(int rdId) throws Exception{
+    public RecurringDeposit closeRd(int rdId) throws Exception {
         RecurringDeposit currRd = rdRepo.findById(rdId).orElseThrow(() -> {
             return new Exception("RD not found");
         });
         if (currRd != null) {
             RecurringDeposit rd = currRd;
             if (rd.getMaturityAmount() == 0) {
-                double interest = calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getInterestRate(), rd.getMaturityDate());
+                double interest = calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getCompoundingFrequency(),rd.getTenure(),rd.getInterestRate(), rd.getMaturityDate());
                 rd.setMaturityAmount(rd.getMonthlyDepositAmount() * rd.getTenure() + interest);
             }
             rd.setRdStatus(Status.CLOSED);
@@ -193,8 +205,10 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     }
 
     @Override
-    public ResponseEntity<?> sendMonthlyIncomeToUser(int rdId) throws Exception{
-        RecurringDeposit currRd = rdRepo.findById(rdId).orElseThrow(() -> {return new Exception("RD not found");});
+    public ResponseEntity<?> sendMonthlyIncomeToUser(int rdId) throws Exception {
+        RecurringDeposit currRd = rdRepo.findById(rdId).orElseThrow(() -> {
+            return new Exception("RD not found");
+        });
         Transactions transactions = new Transactions();
         transactions.setTransactionDate(new Date());
         transactions.setTransactionType(TransactionType.DEBITED);
@@ -206,8 +220,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         try {
             transactionRepo.save(transactions);
             rdRepo.save(currRd);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new Exception("Error");
         }
         return new ResponseEntity<>(currRd.getMonthlyDepositAmount(), HttpStatus.OK);
