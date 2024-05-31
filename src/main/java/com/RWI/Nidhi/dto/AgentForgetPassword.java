@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Agentforgetpassword {
+public class AgentForgetPassword {
     String email;
     String password;
 }

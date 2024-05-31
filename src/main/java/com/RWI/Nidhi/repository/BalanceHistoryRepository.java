@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface BalanceHistoryRepository extends JpaRepository<BalanceHistory, Long> {
+
     List<BalanceHistory> findByDateBetween( LocalDate startDate, LocalDate endDate);
 
     List<BalanceHistory> findByDate(LocalDate today);

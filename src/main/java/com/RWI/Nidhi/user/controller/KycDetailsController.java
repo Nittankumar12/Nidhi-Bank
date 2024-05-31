@@ -20,7 +20,7 @@ public class KycDetailsController {
     private KycDetailsService kycDetailsService;
 
     //    @CrossOrigin(origins = "*")
-    @PostMapping("/kycdetails")
+    @PostMapping("/kycDetails")
     public ResponseEntity<KycDetailsDto> saveKycDetails(@RequestBody KycDetailsDto kycDetailsDTO) {
         KycDetailsDto savedKycDetailsDTO = kycDetailsService.saveKycDetails(kycDetailsDTO);
         if(savedKycDetailsDTO==null)return new ResponseEntity<>(savedKycDetailsDTO,HttpStatus.NOT_ACCEPTABLE);
@@ -39,7 +39,7 @@ public class KycDetailsController {
         return new ResponseEntity<>(kycDetails, HttpStatus.OK);
     }
 
-    @GetMapping("/getall")
+    @GetMapping("/getAll")
     public ResponseEntity<Object> getAllKyc() {
         List<KycDetails> kycDetails = kycDetailsService.getAll();
         return new ResponseEntity<>(kycDetails, HttpStatus.OK);

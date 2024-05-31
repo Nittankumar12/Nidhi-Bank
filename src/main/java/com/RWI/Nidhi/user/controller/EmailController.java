@@ -11,10 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/email")
 public class EmailController {
+
     @Autowired
     private EmailServiceImplementation emailService;
 

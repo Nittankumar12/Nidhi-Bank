@@ -2,7 +2,7 @@ package com.RWI.Nidhi.agent.controller;
 
 import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.agent.serviceImplementation.AgentServiceImplementation;
-import com.RWI.Nidhi.dto.Agentforgetpassword;
+import com.RWI.Nidhi.dto.AgentForgetPassword;
 import com.RWI.Nidhi.dto.CommissionDto;
 import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.repository.AgentRepo;
@@ -28,6 +28,7 @@ public class AgentController {
         return new ResponseEntity<>(agentService.getAllUsers(agentEmail), HttpStatus.OK);
 
     }
+
     @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/addUser")
     public ResponseEntity<?> addUser(@RequestBody SignupRequest signupRequest) throws Exception {
@@ -62,8 +63,8 @@ public class AgentController {
     @CrossOrigin(origins = "http://localhost:5173")
     @PutMapping("/updateAgentPassword")
     public ResponseEntity<?> updateAgentPassword(
-            @RequestBody Agentforgetpassword agentforgetpassword
-            ) {
+            @RequestBody AgentForgetPassword agentforgetpassword
+    ) {
         try {
             return agentService.updateAgentPassword(agentforgetpassword);
         } catch (Exception e) {
@@ -72,22 +73,22 @@ public class AgentController {
     }
 
     @GetMapping("/getCommissionList/{agentEmail}")
-    public ResponseEntity<?> getCommissionList(@RequestParam ("agentEmail")String agentEmail){
-        if(agentRepo.existsByAgentEmail(agentEmail)){
+    public ResponseEntity<?> getCommissionList(@RequestParam("agentEmail") String agentEmail) {
+        if (agentRepo.existsByAgentEmail(agentEmail)) {
             List<CommissionDto> commissionDtoList = agentService.getCommissionListByType(agentEmail);
-            if(commissionDtoList == null) return new ResponseEntity<>("No Commissions Found", HttpStatus.NOT_FOUND);
-            return new ResponseEntity<>(commissionDtoList,HttpStatus.OK);
-        }
-        else
+            if (commissionDtoList == null) return new ResponseEntity<>("No Commissions Found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(commissionDtoList, HttpStatus.OK);
+        } else
             return new ResponseEntity<>("No Agent Found", HttpStatus.NOT_FOUND);
     }
+
     @GetMapping("/getCommissionList/{agentEmail}/{CommissionType}")
-    public ResponseEntity<?> getCommissionListByType(@RequestParam("agentEmail") String agentEmail,@RequestParam("commissionType") CommissionType commissionType){
-        if(agentRepo.existsByAgentEmail(agentEmail)) {
+    public ResponseEntity<?> getCommissionListByType(@RequestParam("agentEmail") String agentEmail, @RequestParam("commissionType") CommissionType commissionType) {
+        if (agentRepo.existsByAgentEmail(agentEmail)) {
             List<CommissionDto> commissionDtoList = agentService.getCommissionListByType(agentEmail, commissionType);
-            if(commissionDtoList==null) return  new ResponseEntity<>("No Commissions Found", HttpStatus.NOT_FOUND);
+            if (commissionDtoList == null) return new ResponseEntity<>("No Commissions Found", HttpStatus.NOT_FOUND);
             return new ResponseEntity<>(commissionDtoList, HttpStatus.OK);
-        }else
+        } else
             return new ResponseEntity<>("No Agent found", HttpStatus.NOT_FOUND);
     }
 //    @PutMapping("/ChangeLoanStatus/{email}")

@@ -19,13 +19,13 @@ public class SignVideoVerificationController {
 
     @PostMapping("/signVideoVerification")
     public ResponseEntity<String> uploadFile(@RequestParam("sign") MultipartFile sign,
-                                             @RequestParam("video")MultipartFile video){
-        return ResponseEntity.ok(service.uploadImage(sign,video));
+                                             @RequestParam("video") MultipartFile video) {
+        return ResponseEntity.ok(service.uploadImage(sign, video));
     }
+
     @GetMapping("/getAll")
-    public ResponseEntity<Object> getAll(){
+    public ResponseEntity<Object> getAll() {
         List<SignVideoVerification> verification = service.getAll();
         return new ResponseEntity<>(verification, HttpStatus.OK);
     }
-
 }

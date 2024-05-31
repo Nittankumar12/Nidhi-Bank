@@ -31,7 +31,7 @@ public interface LoanRepo extends JpaRepository<Loan, Integer> {
     @Query(value = "SELECT l.current_fine FROM loan l WHERE loan_id = :loanId", nativeQuery = true)
     double findCurrentFineByLoanId(int loanId);
 
-    // neeed to make the query
+    // need to make the query
     List<Loan> findByEmiDateBetween(LocalDate startDate, LocalDate endDate);
 
     @Transactional

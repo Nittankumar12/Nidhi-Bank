@@ -12,6 +12,5 @@ public class MonthlyEmiDto {
     private LocalDate nextEMIDate;
     LocalDate paymentDate;
     double fine;
-
 }
 

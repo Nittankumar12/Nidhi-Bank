@@ -18,29 +18,32 @@ public class LoanController {
     UserService userService;
     @Autowired
     UserLoanServiceInterface userLoanService;
+
     @GetMapping("/maxLoan/{email}")
     public ResponseEntity<?> maxLoan(@PathVariable("email") String email) {
         if (userLoanService.isLoanNotOpen(email) == Boolean.TRUE)
             return new ResponseEntity<>(userLoanService.maxApplicableLoan(email), HttpStatus.OK);
         else
-            return new ResponseEntity<>("Another Loan active",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Another Loan active", HttpStatus.BAD_REQUEST);
     }
+
     @GetMapping("/getInfoByLoanType")
-    public ResponseEntity<?> getLoanInfoByLoanType(@RequestParam LoanType loanType,@RequestParam double principalAmount,@RequestParam int rePaymentTerm){
-        return userLoanService.getLoanInfoByLoanType(loanType,principalAmount,rePaymentTerm);
+    public ResponseEntity<?> getLoanInfoByLoanType(@RequestParam LoanType loanType, @RequestParam double principalAmount, @RequestParam int rePaymentTerm) {
+        return userLoanService.getLoanInfoByLoanType(loanType, principalAmount, rePaymentTerm);
     }
+
     @PostMapping("/applyLoan")
     public ResponseEntity<?> applyLoan(@RequestBody LoanApplyDto loanApplyDto) {
-            if (userLoanService.isLoanNotOpen(loanApplyDto.getUserEmail()) == Boolean.TRUE) {
-                if (userLoanService.checkForLoanBound(loanApplyDto.getUserEmail(), loanApplyDto.getPrincipalLoanAmount()) == Boolean.TRUE) {
-                    LoanInfoDto loanInfoDto = userLoanService.applyLoan(loanApplyDto);
-                    if(loanInfoDto == null)
-                        return new ResponseEntity<>("Either user account closed or error while creating Loan", HttpStatus.NOT_ACCEPTABLE);
-                    return new ResponseEntity<>(loanInfoDto, HttpStatus.OK);
-                } else
-                    return new ResponseEntity<>("Loan Amount Request exceed allowed amount", HttpStatus.BAD_REQUEST);
+        if (userLoanService.isLoanNotOpen(loanApplyDto.getUserEmail()) == Boolean.TRUE) {
+            if (userLoanService.checkForLoanBound(loanApplyDto.getUserEmail(), loanApplyDto.getPrincipalLoanAmount()) == Boolean.TRUE) {
+                LoanInfoDto loanInfoDto = userLoanService.applyLoan(loanApplyDto);
+                if (loanInfoDto == null)
+                    return new ResponseEntity<>("Either user account closed or error while creating Loan", HttpStatus.NOT_ACCEPTABLE);
+                return new ResponseEntity<>(loanInfoDto, HttpStatus.OK);
             } else
-                return new ResponseEntity<>("You have another active loan", HttpStatus.NOT_ACCEPTABLE);
+                return new ResponseEntity<>("Loan Amount Request exceed allowed amount", HttpStatus.BAD_REQUEST);
+        } else
+            return new ResponseEntity<>("You have another active loan", HttpStatus.NOT_ACCEPTABLE);
     }
 
 
@@ -56,8 +59,9 @@ public class LoanController {
         } else
             return new ResponseEntity<>(userLoanService.payEMI(email), HttpStatus.OK);
     }
+
     @GetMapping("/findInterest/")
-    public ResponseEntity<?> findRateByLoanType(@RequestParam LoanType loanType){
+    public ResponseEntity<?> findRateByLoanType(@RequestParam LoanType loanType) {
         return userLoanService.findRateByLoanType(loanType);
     }
 

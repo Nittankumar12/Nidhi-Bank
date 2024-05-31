@@ -43,5 +43,4 @@ public class FdController {
         List<FdRequestDto> fdRequestDtoList = service.getFdByEmail(email);
         return new ResponseEntity<>(fdRequestDtoList, HttpStatus.OK);
     }
-
 }

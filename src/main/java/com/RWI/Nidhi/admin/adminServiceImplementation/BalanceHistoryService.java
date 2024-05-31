@@ -1,17 +1,12 @@
 package com.RWI.Nidhi.admin.adminServiceImplementation;
 
 
-import com.RWI.Nidhi.entity.Agent;
 import com.RWI.Nidhi.entity.BalanceHistory;
-import com.RWI.Nidhi.entity.User;
-import com.RWI.Nidhi.repository.AgentRepo;
 import com.RWI.Nidhi.repository.BalanceHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @Service

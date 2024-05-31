@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class AdminServiceImplementation implements AdminServiceInterface {
+    private static final int CODE_LENGTH = 6;
+    private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     @Autowired
     AgentRepo agentRepo;
     @Autowired
@@ -76,19 +78,16 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     FixedDepositRepo fixedDepositRepo;
     @Autowired
     AccountsRepo accountsRepo;
-    private static final int CODE_LENGTH = 6;
-    private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
 
     @Override
-    public ResponseEntity<?> addAgent(SignupRequest signUpRequest){
-         if(agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())){
+    public ResponseEntity<?> addAgent(SignupRequest signUpRequest) {
+        if (agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())) {
             return new ResponseEntity<>("Email Already taken", HttpStatus.NOT_ACCEPTABLE);
         }
-        if(adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getEmail()) || userRepo.existsByUserName(signUpRequest.getUsername())){
+        if (adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getEmail()) || userRepo.existsByUserName(signUpRequest.getUsername())) {
             return new ResponseEntity<>("Username Already taken", HttpStatus.NOT_ACCEPTABLE);
         }
-        if(adminRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber()) || agentRepo.existsByAgentPhoneNum(signUpRequest.getPhoneNumber()) || userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())){
+        if (adminRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber()) || agentRepo.existsByAgentPhoneNum(signUpRequest.getPhoneNumber()) || userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
             return new ResponseEntity<>("Phone number already taken", HttpStatus.NOT_ACCEPTABLE);
         }
 
@@ -115,25 +114,26 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         Set<Role> roles = new HashSet<>();
         Role agentRole = roleRepository.findByName(ERole.ROLE_AGENT).get();
 
-        if(agentRole == null) return new ResponseEntity<>("Role Not found ", HttpStatus.NOT_FOUND);
+        if (agentRole == null) return new ResponseEntity<>("Role Not found ", HttpStatus.NOT_FOUND);
 
         roles.add(agentRole);
         agent.setRoles(roles);
         newAgent.setRoles(roles);
-        newAgent.setRefferalCode(generateReferralCode());
+        newAgent.setReferralCode(generateReferralCode());
         agentRepo.save(newAgent);
         credentialsRepo.save(agent);
-        return new ResponseEntity<>(signUpRequest,HttpStatus.OK);
+        return new ResponseEntity<>(signUpRequest, HttpStatus.OK);
     }
+
     @Override
-    public ResponseEntity<?> addAdmin(@NotNull SignupRequest signUpRequest,@NotNull String adminPassword){
-        if(agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())){
-            return new ResponseEntity<>("Email Already taken" , HttpStatus.NOT_ACCEPTABLE);
+    public ResponseEntity<?> addAdmin(@NotNull SignupRequest signUpRequest, @NotNull String adminPassword) {
+        if (agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())) {
+            return new ResponseEntity<>("Email Already taken", HttpStatus.NOT_ACCEPTABLE);
         }
-        if(adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getEmail()) || userRepo.existsByUserName(signUpRequest.getUsername())){
+        if (adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getEmail()) || userRepo.existsByUserName(signUpRequest.getUsername())) {
             return new ResponseEntity<>("Username already taken", HttpStatus.NOT_ACCEPTABLE);
         }
-        if(adminRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber()) || agentRepo.existsByAgentPhoneNum(signUpRequest.getPhoneNumber()) || userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())){
+        if (adminRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber()) || agentRepo.existsByAgentPhoneNum(signUpRequest.getPhoneNumber()) || userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
             return new ResponseEntity<>("Phone number already taken", HttpStatus.NOT_ACCEPTABLE);
         }
         Admin newAdmin = new Admin();
@@ -145,7 +145,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
             newAdmin.setPassword(encoder.encode(tempPassword));
             adminRepo.save(newAdmin);
         } catch (Exception e) {
-            return new ResponseEntity<>("Error occured " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Error occurred " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         Credentials agent = new Credentials(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPhoneNumber(),
@@ -153,7 +153,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 //
         Set<Role> roles = new HashSet<>();
         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN).get();
-        if(adminRole == null) return new ResponseEntity<>("Role not found", HttpStatus.NOT_FOUND);
+        if (adminRole == null) return new ResponseEntity<>("Role not found", HttpStatus.NOT_FOUND);
 
         roles.add(adminRole);
         agent.setRoles(roles);
@@ -161,13 +161,13 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         adminRepo.save(newAdmin);
 
         credentialsRepo.save(agent);
-        return new ResponseEntity<>("Admin Registered Successfully",HttpStatus.OK);
-
+        return new ResponseEntity<>("Admin Registered Successfully", HttpStatus.OK);
     }
+
     @Override
-    public ResponseEntity<?> updateAgentName(String agentEmail, String agentName) throws Exception{
+    public ResponseEntity<?> updateAgentName(String agentEmail, String agentName) throws Exception {
         Agent currAgent = agentRepo.findByAgentEmail(agentEmail);
-        if(currAgent == null) return new ResponseEntity<>("Agent Not Found", HttpStatus.NOT_FOUND);
+        if (currAgent == null) return new ResponseEntity<>("Agent Not Found", HttpStatus.NOT_FOUND);
         currAgent.setAgentName(agentName);
         agentRepo.save(currAgent);
 
@@ -175,7 +175,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         addAgentDto.setAgentName(currAgent.getAgentName());
         addAgentDto.setAgentEmail(currAgent.getAgentEmail());
         addAgentDto.setAgentPhoneNum(currAgent.getAgentPhoneNum());
-        return new ResponseEntity<>(addAgentDto,HttpStatus.OK);
+        return new ResponseEntity<>(addAgentDto, HttpStatus.OK);
     }
 
     @Override
@@ -187,22 +187,22 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
         user.getAccounts().setAccountStatus(Status.CLOSED);
         List<FixedDeposit> fixedDepositList = user.getAccounts().getFdList();
-        for(FixedDeposit fixedDeposit: fixedDepositList){
+        for (FixedDeposit fixedDeposit : fixedDepositList) {
             fixedDeposit.setFdStatus(Status.FORECLOSED);
             fixedDepositRepo.save(fixedDeposit);
         }
         List<RecurringDeposit> recurringDepositList = user.getAccounts().getRecurringDepositList();
-        for(RecurringDeposit fixedDeposit: recurringDepositList){
+        for (RecurringDeposit fixedDeposit : recurringDepositList) {
             fixedDeposit.setRdStatus(Status.FORECLOSED);
             recurringDepositRepo.save(fixedDeposit);
         }
-        List<MIS>  misList = user.getAccounts().getMisList();
-        for(MIS fixedDeposit: misList){
+        List<MIS> misList = user.getAccounts().getMisList();
+        for (MIS fixedDeposit : misList) {
             fixedDeposit.setStatus(Status.FORECLOSED);
             misRepo.save(fixedDeposit);
         }
-        List<Loan>  loanList = user.getAccounts().getLoanList();
-        for(Loan fixedDeposit: loanList){
+        List<Loan> loanList = user.getAccounts().getLoanList();
+        for (Loan fixedDeposit : loanList) {
             fixedDeposit.setStatus(LoanStatus.FORECLOSED);
             loanRepo.save(fixedDeposit);
         }
@@ -214,10 +214,11 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 
         return new ResponseEntity<>("User Deleted", HttpStatus.OK);
     }
+
     @Override
     public ResponseEntity<?> updateAgentAddress(String agentEmail, String agentAddress) throws Exception {
         Agent currAgent = agentRepo.findByAgentEmail(agentEmail);
-        if(currAgent == null) return new ResponseEntity<>("Agent Not Found", HttpStatus.NOT_FOUND);
+        if (currAgent == null) return new ResponseEntity<>("Agent Not Found", HttpStatus.NOT_FOUND);
         currAgent.setAgentAddress(agentAddress);
         agentRepo.save(currAgent);
 
@@ -225,13 +226,13 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         addAgentDto.setAgentName(currAgent.getAgentName());
         addAgentDto.setAgentEmail(currAgent.getAgentEmail());
         addAgentDto.setAgentPhoneNum(currAgent.getAgentPhoneNum());
-        return new ResponseEntity<>(addAgentDto,HttpStatus.OK);
+        return new ResponseEntity<>(addAgentDto, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<?> updateAgentEmail(String agentOldEmail, String agentNewEmail) throws Exception{
+    public ResponseEntity<?> updateAgentEmail(String agentOldEmail, String agentNewEmail) throws Exception {
         Agent currAgent = agentRepo.findByAgentEmail(agentOldEmail);
-        if(currAgent == null) return new ResponseEntity<>("Agent Not Found", HttpStatus.NOT_FOUND);
+        if (currAgent == null) return new ResponseEntity<>("Agent Not Found", HttpStatus.NOT_FOUND);
         currAgent.setAgentEmail(agentNewEmail);
         agentRepo.save(currAgent);
 
@@ -241,10 +242,11 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         addAgentDto.setAgentPhoneNum(currAgent.getAgentPhoneNum());
         return new ResponseEntity<>(addAgentDto, HttpStatus.OK);
     }
+
     @Override
     public ResponseEntity<?> updateAgentPhoneNum(String agentEmail, String phoneNum) throws Exception {
         Agent currAgent = agentRepo.findByAgentEmail(agentEmail);
-        if(currAgent == null) return new ResponseEntity<>("Agent Not Found", HttpStatus.NOT_FOUND);
+        if (currAgent == null) return new ResponseEntity<>("Agent Not Found", HttpStatus.NOT_FOUND);
         currAgent.setAgentPhoneNum(phoneNum);
         agentRepo.save(currAgent);
 
@@ -254,27 +256,29 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         addAgentDto.setAgentPhoneNum(currAgent.getAgentPhoneNum());
         return new ResponseEntity<>(addAgentDto, HttpStatus.OK);
     }
+
     @Override
-    public ResponseEntity<?> deleteAgentById(int id){
+    public ResponseEntity<?> deleteAgentById(int id) {
         Agent agent = agentRepo.findById(id).get();
-        if(agent == null) return new ResponseEntity<>("Agent Not found", HttpStatus.NOT_FOUND);
+        if (agent == null) return new ResponseEntity<>("Agent Not found", HttpStatus.NOT_FOUND);
         agentRepo.deleteById(id);
-        return new ResponseEntity<>("Agent Deleted" , HttpStatus.OK);
-    }
-    @Override
-    public ResponseEntity<?> getAllAgents() {
-        List<Agent> allAgents = agentRepo.findAll();
-        if(allAgents.size() == 0) return new ResponseEntity<>("No agents Found", HttpStatus.NOT_FOUND);
-        List<AgentMinimalDto> idUsernameAgent = allAgents.stream()
-                .map(agent -> new AgentMinimalDto(agent.getAgentId(),agent.getAgentName()))
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(idUsernameAgent,HttpStatus.OK);
+        return new ResponseEntity<>("Agent Deleted", HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<?> getAgentById(int id){
+    public ResponseEntity<?> getAllAgents() {
+        List<Agent> allAgents = agentRepo.findAll();
+        if (allAgents.size() == 0) return new ResponseEntity<>("No agents Found", HttpStatus.NOT_FOUND);
+        List<AgentMinimalDto> idUsernameAgent = allAgents.stream()
+                .map(agent -> new AgentMinimalDto(agent.getAgentId(), agent.getAgentName()))
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(idUsernameAgent, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> getAgentById(int id) {
         Agent agent = agentRepo.findById(id).get();
-        if(agent == null) return new ResponseEntity<>("Agent not found with this id",HttpStatus.NOT_FOUND);
+        if (agent == null) return new ResponseEntity<>("Agent not found with this id", HttpStatus.NOT_FOUND);
 
         AdminViewsAgentDto responseDto = new AdminViewsAgentDto();
         responseDto.setAgentId(agent.getAgentId());
@@ -295,15 +299,16 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         List<Scheme> schemeList = agent.getSchemeList();
         responseDto.setNumberOfScheme(schemeList.size());
 
-        return new ResponseEntity<>(responseDto,HttpStatus.OK);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
 
     }
+
     @Override
     public ResponseEntity<?> getTransactionForCurrentMonth() {
-        List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().withDayOfMonth(1),LocalDate.now());
-        if(currTransactions.size() == 0) return new ResponseEntity<>("No Transactions found", HttpStatus.NOT_FOUND);
+        List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().withDayOfMonth(1), LocalDate.now());
+        if (currTransactions.size() == 0) return new ResponseEntity<>("No Transactions found", HttpStatus.NOT_FOUND);
         List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
-        for(Transactions t : currTransactions){
+        for (Transactions t : currTransactions) {
             TransactionsHistoryDto temp = new TransactionsHistoryDto();
             temp.setTransactionId(t.getTransactionId());
             temp.setAmount(t.getTransactionAmount());
@@ -318,11 +323,11 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 
     @Override
     public ResponseEntity<?> getTransactionForCurrentWeek() {
-        List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().minusDays(7),LocalDate.now());
-        if(currTransactions.size() == 0) return new ResponseEntity<>("No Transactions found", HttpStatus.NOT_FOUND);
+        List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now().minusDays(7), LocalDate.now());
+        if (currTransactions.size() == 0) return new ResponseEntity<>("No Transactions found", HttpStatus.NOT_FOUND);
 
         List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
-        for(Transactions t : currTransactions){
+        for (Transactions t : currTransactions) {
             TransactionsHistoryDto temp = new TransactionsHistoryDto();
             temp.setTransactionId(t.getTransactionId());
             temp.setAmount(t.getTransactionAmount());
@@ -332,15 +337,15 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 
             transactionsHistoryList.add(temp);
         }
-        return new ResponseEntity<>(transactionsHistoryList,HttpStatus.OK);
+        return new ResponseEntity<>(transactionsHistoryList, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<?> getTransactionForToday() {
         List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(LocalDate.now(), LocalDate.now());
-        if(currTransactions.size() == 0) return new ResponseEntity<>("No Transactions found", HttpStatus.NOT_FOUND);
+        if (currTransactions.size() == 0) return new ResponseEntity<>("No Transactions found", HttpStatus.NOT_FOUND);
         List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
-        for(Transactions t : currTransactions){
+        for (Transactions t : currTransactions) {
             TransactionsHistoryDto temp = new TransactionsHistoryDto();
             temp.setTransactionId(t.getTransactionId());
             temp.setAmount(t.getTransactionAmount());
@@ -349,16 +354,16 @@ public class AdminServiceImplementation implements AdminServiceInterface {
             temp.setAccountNumber(t.getAccount().getAccountNumber());
             transactionsHistoryList.add(temp);
         }
-        return new ResponseEntity<>(transactionsHistoryList,HttpStatus.OK);
+        return new ResponseEntity<>(transactionsHistoryList, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<?> getTransactionBetweenDates(LocalDate startDate, LocalDate endDate) {
         List<Transactions> currTransactions = transactionRepo.getTransactionBetweenDates(startDate, endDate);
-        if(currTransactions.size() == 0) return new ResponseEntity<>("No Transactions found", HttpStatus.NOT_FOUND);
+        if (currTransactions.size() == 0) return new ResponseEntity<>("No Transactions found", HttpStatus.NOT_FOUND);
 
         List<TransactionsHistoryDto> transactionsHistoryList = new ArrayList<>();
-        for(Transactions t : currTransactions){
+        for (Transactions t : currTransactions) {
             TransactionsHistoryDto temp = new TransactionsHistoryDto();
             temp.setTransactionId(t.getTransactionId());
             temp.setAmount(t.getTransactionAmount());
@@ -377,10 +382,10 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 
     @Override
     public List<LoanHistoryDto> getLoansByLoanType(LoanType loanType) {
-        List<Loan> loans = loanRepo.findAll().stream().filter((loan ->loan.getLoanType().equals(loanType))).toList();
+        List<Loan> loans = loanRepo.findAll().stream().filter((loan -> loan.getLoanType().equals(loanType))).toList();
 
         List<LoanHistoryDto> loanDTOList = new ArrayList<>();
-        for(Loan loan:loans){
+        for (Loan loan : loans) {
             LoanHistoryDto loanHistoryDto = new LoanHistoryDto();
             loanHistoryDto.setLoanId(loan.getLoanId());
             loanHistoryDto.setUserName(loan.getAccount().getUser().getUserName());
@@ -407,6 +412,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         transactionRepo.save(newTransaction);
         return new ResponseEntity<>(newTransaction, HttpStatus.OK);
     }
+
     @Override
     public ResponseEntity<?> deductBalanceToAccount(double amount) {
         Transactions.addTotalBalance(amount);
@@ -423,7 +429,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
 
     @Override
     public List<LoanHistoryDto> getLoansByLoanStatus(LoanStatus loanStatus) {
-        List<Loan> loans = loanRepo.findAll().stream().filter((loan) ->loan.getStatus().equals(loanStatus)).toList();
+        List<Loan> loans = loanRepo.findAll().stream().filter((loan) -> loan.getStatus().equals(loanStatus)).toList();
         List<LoanHistoryDto> loanDTOList = new ArrayList<>();
         loans.forEach(loan -> {
             LoanHistoryDto loanHistoryDto = new LoanHistoryDto();
@@ -436,7 +442,6 @@ public class AdminServiceImplementation implements AdminServiceInterface {
             loanHistoryDto.setInterestRate(loan.getInterestRate());
             loanDTOList.add(loanHistoryDto);
         });
-
         return loanDTOList;
     }
 
@@ -450,7 +455,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         return null;
     }
 
-    private String getEncryptedPassword (String password){
+    private String getEncryptedPassword(String password) {
         String encryptedPassword = "";
         try {
             BigInteger number = new BigInteger(1, getSHA(password));
@@ -476,10 +481,9 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         if (!user.getAgent().getAgentEmail().equals(agentEmail))
             return new ResponseEntity<>("This agent is not associated with this account's owner", HttpStatus.NOT_FOUND);
 
-
         currentAcc.setAccountStatus(Status.INACTIVE);
         accountsRepo.save(currentAcc);
-        return new ResponseEntity<>("Account decativated!!", HttpStatus.OK);
+        return new ResponseEntity<>("Account deactivated!!", HttpStatus.OK);
     }
 
     @Override
@@ -499,31 +503,29 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     }
 
 
-
     @Override
     public ResponseEntity<?> changeLoanStatus(String userEmail, String agentEmail, LoanStatus changedStatus, LoanStatus previousStatus) {
         if (agentRepo.existsByAgentEmail(agentEmail)) {
             User user = userService.getByEmail(userEmail);
             Accounts accounts = user.getAccounts();
             List<Loan> loanList = accounts.getLoanList();
-            if(loanList.isEmpty()){
-                return new ResponseEntity<>("No Loan exists for the given user",HttpStatus.I_AM_A_TEAPOT);
-            }
-            else {
+            if (loanList.isEmpty()) {
+                return new ResponseEntity<>("No Loan exists for the given user", HttpStatus.I_AM_A_TEAPOT);
+            } else {
                 for (Loan loan : loanList) {
-                    if(loan.getStatus().equals(previousStatus)){
-                        if(previousStatus.equals(LoanStatus.APPLIED) && changedStatus.equals(LoanStatus.APPROVED)){
+                    if (loan.getStatus().equals(previousStatus)) {
+                        if (previousStatus.equals(LoanStatus.APPLIED) && changedStatus.equals(LoanStatus.APPROVED)) {
                             loan.setStatus(changedStatus);
                             loan.setStartDate(LocalDate.now());
                             loan.setTransactionsList(new ArrayList<>());
                             loan.setEmiDate(userLoanService.calcFirstEMIDate(loan.getStartDate()));
-                            if(loan.getLoanType().equals(LoanType.Scheme)){
+                            if (loan.getLoanType().equals(LoanType.Scheme)) {
                                 SchLoanCalcDto loanCalcDto = new SchLoanCalcDto();
                                 loanCalcDto.setRePaymentTerm(loan.getRePaymentTerm());
                                 loanCalcDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
                                 loan.setMonthlyEMI(userSchemeLoanService.calculateSchLoanEMI(loanCalcDto));
                                 loan.setPayableLoanAmount(userSchemeLoanService.calculateFirstPayableSchLoanAmount(loanCalcDto));
-                            }else {
+                            } else {
                                 LoanCalcDto loanCalcDto = new LoanCalcDto();
                                 loanCalcDto.setLoanType(loan.getLoanType());
                                 loanCalcDto.setRePaymentTerm(loan.getRePaymentTerm());
@@ -534,20 +536,20 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                             }
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
-                        } else if (previousStatus.equals(LoanStatus.APPLIED) && changedStatus.equals(LoanStatus.PENDING)){
+                            return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
+                        } else if (previousStatus.equals(LoanStatus.APPLIED) && changedStatus.equals(LoanStatus.PENDING)) {
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
-                        } else if (previousStatus.equals(LoanStatus.APPLIED) && changedStatus.equals(LoanStatus.REJECTED)){
+                            return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
+                        } else if (previousStatus.equals(LoanStatus.APPLIED) && changedStatus.equals(LoanStatus.REJECTED)) {
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
-                        } else if (previousStatus.equals(LoanStatus.APPROVED) && changedStatus.equals(LoanStatus.SANCTIONED)){
+                            return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
+                        } else if (previousStatus.equals(LoanStatus.APPROVED) && changedStatus.equals(LoanStatus.SANCTIONED)) {
                             loan.setStatus(changedStatus);
-                            
+
                             Transactions transactions = new Transactions();
                             transactions.setAccount(accounts);
                             transactions.setLoan(loan);
@@ -560,62 +562,62 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                             loan.getTransactionsList().add(transactions);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
-                        } else if (previousStatus.equals(LoanStatus.APPROVED) && changedStatus.equals(LoanStatus.PENDING)){
+                            return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
+                        } else if (previousStatus.equals(LoanStatus.APPROVED) && changedStatus.equals(LoanStatus.PENDING)) {
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
-                        } else if (previousStatus.equals(LoanStatus.APPROVED) && changedStatus.equals(LoanStatus.REJECTED)){
+                            return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
+                        } else if (previousStatus.equals(LoanStatus.APPROVED) && changedStatus.equals(LoanStatus.REJECTED)) {
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
-                        } else if (previousStatus.equals(LoanStatus.SANCTIONED) && changedStatus.equals(LoanStatus.CLOSED)){
+                            return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
+                        } else if (previousStatus.equals(LoanStatus.SANCTIONED) && changedStatus.equals(LoanStatus.CLOSED)) {
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
-                        } else if (previousStatus.equals(LoanStatus.SANCTIONED) && changedStatus.equals(LoanStatus.PENDING)){
+                            return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
+                        } else if (previousStatus.equals(LoanStatus.SANCTIONED) && changedStatus.equals(LoanStatus.PENDING)) {
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
-                        } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.APPROVED)){
+                            return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
+                        } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.APPROVED)) {
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
-                        } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.SANCTIONED)){
+                            return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
+                        } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.SANCTIONED)) {
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
-                        } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.REJECTED)){
+                            return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
+                        } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.REJECTED)) {
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
-                        } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.CLOSED)){
+                            return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
+                        } else if (previousStatus.equals(LoanStatus.PENDING) && changedStatus.equals(LoanStatus.CLOSED)) {
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
-                        } else if (previousStatus.equals(LoanStatus.REQUESTEDFORFORECLOSURE) && changedStatus.equals(LoanStatus.FORECLOSED)){
+                            return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
+                        } else if (previousStatus.equals(LoanStatus.REQUESTEDFORFORECLOSURE) && changedStatus.equals(LoanStatus.FORECLOSED)) {
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                            return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
-                        }else {
-                            return new ResponseEntity<>("Invalid Change in status",HttpStatus.I_AM_A_TEAPOT);
+                            return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
+                        } else {
+                            return new ResponseEntity<>("Invalid Change in status", HttpStatus.I_AM_A_TEAPOT);
                         }
-                    }else
-                        return new ResponseEntity<>("Applied Change in status doesn't match recorded status",HttpStatus.I_AM_A_TEAPOT);
+                    } else
+                        return new ResponseEntity<>("Applied Change in status doesn't match recorded status", HttpStatus.I_AM_A_TEAPOT);
                 }
-                return new ResponseEntity<>("No Loan List ",HttpStatus.I_AM_A_TEAPOT);
+                return new ResponseEntity<>("No Loan List ", HttpStatus.I_AM_A_TEAPOT);
             }
         } else
-            return new ResponseEntity<>("Invalid Agent",HttpStatus.I_AM_A_TEAPOT);
+            return new ResponseEntity<>("Invalid Agent", HttpStatus.I_AM_A_TEAPOT);
     }
 
     private void sendStatusEmail(Loan loan) {
@@ -625,7 +627,8 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         mailMessage.setText("Hello User," + loan.getUser().getUserName() + ",\n\n Your loan status has been changed to " + loan.getStatus() + " Please confirm so with your respective agent.");
         javaMailSender.send(mailMessage);
     }
-    public ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus){
+
+    public ResponseEntity<?> ChangeSchemeStatus(String userEmail, String agentEmail, SchemeStatus changedStatus, SchemeStatus previousStatus) {
         if (agentRepo.existsByAgentEmail(agentEmail)) {
             if (userRepo.existsByEmail(userEmail)) {
                 User user = userService.getByEmail(userEmail);
@@ -644,24 +647,24 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                                 scheme.setAgent(agentRepo.findByAgentEmail(agentEmail));
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.APPLIED) && changedStatus.equals(SchemeStatus.PENDING)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.APPLIED) && changedStatus.equals(SchemeStatus.REJECTED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.APPROVED) && changedStatus.equals(SchemeStatus.SANCTIONED)) {
                                 scheme.setSStatus(changedStatus);
                                 Transactions transactions = new Transactions();
                                 transactions.setAccount(accounts);
                                 transactions.setScheme(scheme);
-                                transactions.setTransactionAmount(scheme.getMonthlyDepositAmount()*scheme.getTenure());
-                                Transactions.deductTotalBalance(scheme.getMonthlyDepositAmount()*scheme.getTenure());
+                                transactions.setTransactionAmount(scheme.getMonthlyDepositAmount() * scheme.getTenure());
+                                Transactions.deductTotalBalance(scheme.getMonthlyDepositAmount() * scheme.getTenure());
                                 transactions.setTransactionDate(new Date());
                                 transactions.setTransactionType(TransactionType.DEBITED);
                                 transactions.setTransactionStatus(TransactionStatus.COMPLETED);
@@ -669,67 +672,67 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                                 scheme.getTransactionsList().add(transactions);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.APPROVED) && changedStatus.equals(SchemeStatus.PENDING)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.APPROVED) && changedStatus.equals(SchemeStatus.REJECTED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.SANCTIONED) && changedStatus.equals(SchemeStatus.CLOSED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.SANCTIONED) && changedStatus.equals(SchemeStatus.PENDING)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.SANCTIONED) && changedStatus.equals(SchemeStatus.APPLIEDFORLOAN)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.APPLIEDFORLOAN) && changedStatus.equals(SchemeStatus.APPROVEDLOAN)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.APPROVED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.SANCTIONED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.APPLIEDFORLOAN)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.APPROVEDLOAN)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.REJECTED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else if (previousStatus.equals(SchemeStatus.PENDING) && changedStatus.equals(SchemeStatus.CLOSED)) {
                                 scheme.setSStatus(changedStatus);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);
-                                return new ResponseEntity<>(("Status updated to "+changedStatus), HttpStatus.OK);
+                                return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                             } else {
                                 return new ResponseEntity<>("Invalid Change in status", HttpStatus.I_AM_A_TEAPOT);
                             }
@@ -740,14 +743,14 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                 } else {
                     return new ResponseEntity<>("Account doesn't exist", HttpStatus.I_AM_A_TEAPOT);
                 }
-            }else {
-                return  new ResponseEntity<>("User doesn't exist", HttpStatus.I_AM_A_TEAPOT);
+            } else {
+                return new ResponseEntity<>("User doesn't exist", HttpStatus.I_AM_A_TEAPOT);
             }
-        }
-        else {
+        } else {
             return new ResponseEntity<>("Invalid Agent", HttpStatus.I_AM_A_TEAPOT);
         }
     }
+
     private void sendStatusEmail(Scheme scheme) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(scheme.getAccount().getUser().getEmail());
@@ -755,10 +758,12 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         mailMessage.setText("Hello User," + scheme.getAccount().getUser().getUserName() + ",\n\n Your Scheme Status has been changed to " + scheme.getSStatus() + " Please confirm so with your respective agent.");
         javaMailSender.send(mailMessage);
     }
+
     private LocalDate firstDateOfNextMonth(LocalDate date) {
         LocalDate nextMonth = date.plusMonths(1);
         return nextMonth.withDayOfMonth(1);
     }
+
     @Override
     public String deleteScheme(String email) {// scheme delete for when scheme has ended
         if (userRepo.existsByEmail(email)) {
@@ -775,7 +780,8 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
         return "User not found";
     }
-     private String generateReferralCode() {
+
+    private String generateReferralCode() {
         Random random = new Random();
         StringBuilder referralCode = new StringBuilder(CODE_LENGTH);
 
@@ -785,8 +791,9 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         }
         return referralCode.toString();
     }
+
     @Override
-    public ResponseEntity<?> getKycDetails(String userEmail){
+    public ResponseEntity<?> getKycDetails(String userEmail) {
         if (userRepo.existsByEmail(userEmail)) {
             User user = userService.getByEmail(userEmail);
             KycDetails kycDetails = user.getKycDetails();
@@ -817,21 +824,22 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                 kycDetailsDto.setMonthlyIncome(kycDetailss.getMonthlyIncome());
                 kycDetailsDto.setNumberOfFamilyMembers(kycDetailss.getNumberOfFamilyMembers());
                 kycDetailsDto.setKycStatus(kycDetailss.getKycStatus());
-                return new ResponseEntity<>(kycDetailsDto,HttpStatus.OK);
+                return new ResponseEntity<>(kycDetailsDto, HttpStatus.OK);
             }
-        }else {
-            return  new ResponseEntity<>("User doesn't exist", HttpStatus.I_AM_A_TEAPOT);
+        } else {
+            return new ResponseEntity<>("User doesn't exist", HttpStatus.I_AM_A_TEAPOT);
         }
     }
+
     @Override
     public ResponseEntity<?> ChangeKycStatus(String userEmail, KycStatus newStatus) {
         KycDetails kycDetails = kycDetailsRepo.findByEmail(userEmail);
         User user = userRepo.findByEmail(userEmail);
-        Agent agent = agentRepo.findByRefferalCode(kycDetails.getRefferalCode());
+        Agent agent = agentRepo.findByReferralCode(kycDetails.getReferralCode());
         if (kycDetails == null) {
             return new ResponseEntity<>("No Kyc exists for the given user", HttpStatus.NOT_FOUND);
         } else {
-            if(agent == null) return new ResponseEntity<>("Invalid Referral Code",HttpStatus.NOT_FOUND);
+            if (agent == null) return new ResponseEntity<>("Invalid Referral Code", HttpStatus.NOT_FOUND);
             if (newStatus.equals(KycStatus.Pending)) {
                 return new ResponseEntity<>("Invalid change in status", HttpStatus.NOT_ACCEPTABLE);
             } else if (newStatus.equals(KycStatus.Approved)) {
@@ -839,19 +847,19 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                 kycDetailsRepo.save(kycDetails);
                 sendStatusEmail(kycDetails);
                 user.setAgent(agent);
-                user.setRefferalCode(kycDetails.getRefferalCode());
+                user.setReferralCode(kycDetails.getReferralCode());
                 userRepo.save(user);
-                if(agent.getUserList().isEmpty())agent.setUserList(new ArrayList<>());
+                if (agent.getUserList().isEmpty()) agent.setUserList(new ArrayList<>());
                 agent.getUserList().add(user);
                 agentRepo.save(agent);
-                return new ResponseEntity<>(("Status updated to "+newStatus), HttpStatus.OK);
+                return new ResponseEntity<>(("Status updated to " + newStatus), HttpStatus.OK);
             } else if (newStatus.equals(KycStatus.Rejected)) {
                 kycDetails.setKycStatus(newStatus);
                 kycDetailsRepo.save(kycDetails);
                 sendStatusEmail(kycDetails);
-                return new ResponseEntity<>(("Status updated to "+newStatus), HttpStatus.OK);
-            }else {
-             return new ResponseEntity<>("Problem Occurred",HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(("Status updated to " + newStatus), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Problem Occurred", HttpStatus.BAD_REQUEST);
             }
         }
     }

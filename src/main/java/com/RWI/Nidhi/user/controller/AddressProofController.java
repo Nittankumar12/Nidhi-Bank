@@ -1,8 +1,8 @@
 package com.RWI.Nidhi.user.controller;
 
-//import com.nidhi.kyc.KYC.Enum.AdressDocumentType;
+//import com.nidhi.kyc.KYC.Enum.AddressDocumentType;
 import com.RWI.Nidhi.entity.AddressProof;
-import com.RWI.Nidhi.enums.AdressDocumentType;
+import com.RWI.Nidhi.enums.AddressDocumentType;
 //import com.nidhi.kyc.KYC.Service.AddressProofServiceImp;
 import com.RWI.Nidhi.user.serviceImplementation.AddressProofServiceImp;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,7 @@ public class AddressProofController {
                                                    @RequestParam("district") String district,
                                                    @RequestParam("city") String city,
                                                    @RequestParam("postalCode") long postalCode,
-                                                   @RequestParam("selectDocument") AdressDocumentType selectDocument,
+                                                   @RequestParam("selectDocument") AddressDocumentType selectDocument,
                                                    @RequestParam("docPhoto") MultipartFile docPhoto){
 
         return   ResponseEntity.ok((addressProofServiceImp.uploadFile(residentialAddress,
@@ -44,6 +44,4 @@ public class AddressProofController {
         List<AddressProof> addressProof = addressProofServiceImp.getAllAddress();
         return new ResponseEntity<>(addressProof, HttpStatus.OK);
     }
-
-
 }

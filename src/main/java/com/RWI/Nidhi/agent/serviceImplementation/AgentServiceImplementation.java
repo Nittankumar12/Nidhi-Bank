@@ -7,9 +7,14 @@ import com.RWI.Nidhi.Security.payload.request.SignupRequest;
 import com.RWI.Nidhi.Security.repository.CredentialsRepo;
 import com.RWI.Nidhi.Security.repository.RoleRepository;
 import com.RWI.Nidhi.agent.serviceInterface.AgentServiceInterface;
-import com.RWI.Nidhi.dto.*;
-import com.RWI.Nidhi.entity.*;
-import com.RWI.Nidhi.enums.*;
+import com.RWI.Nidhi.dto.AddAgentDto;
+import com.RWI.Nidhi.dto.AgentForgetPassword;
+import com.RWI.Nidhi.dto.CommissionDto;
+import com.RWI.Nidhi.dto.UserResponseDto;
+import com.RWI.Nidhi.entity.Agent;
+import com.RWI.Nidhi.entity.Commission;
+import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
@@ -76,16 +81,17 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         Agent agent = agentRepo.findByAgentEmail(email);
         List<User> users = agent.getUserList();
         if (users.size() == 0) return new ResponseEntity<>("No users found", HttpStatus.NOT_FOUND);
-        List<UserResponseDto> userResponseDtos = new ArrayList<>();
+        List<UserResponseDto> userResponseDtoList = new ArrayList<>();
         for (User user : users) {
             UserResponseDto userResponseDto = new UserResponseDto();
             userResponseDto.setUserName(user.getUserName());
             userResponseDto.setEmail(user.getEmail());
             userResponseDto.setPhoneNumber(user.getPhoneNumber());
-            userResponseDtos.add(userResponseDto);
+            userResponseDtoList.add(userResponseDto);
         }
-        return new ResponseEntity<>(userResponseDtos, HttpStatus.OK);
+        return new ResponseEntity<>(userResponseDtoList, HttpStatus.OK);
     }
+
     @Override
     public ResponseEntity<?> addUser(@NotNull SignupRequest signUpRequest) {
 
@@ -110,9 +116,9 @@ public class AgentServiceImplementation implements AgentServiceInterface {
 //            String subject = newUser.getUserName();
 //            String messageToSend = "Welcome to Nidhi Bank,Your temporary system generated password is: ";
 
-            String  tempPassword = otpServiceImplementation.generateOTP();
-            String   subject = "Your temporary password";
-            String   messageToSend = "Your temporary system generated password is: ";
+            String tempPassword = otpServiceImplementation.generateOTP();
+            String subject = "Your temporary password";
+            String messageToSend = "Your temporary system generated password is: ";
             System.out.println("Sending email");
             otpServiceImplementation.sendEmailOtp(newUser.getEmail(), subject, messageToSend, tempPassword);
             newUser.setPassword(encoder.encode(tempPassword));
@@ -171,7 +177,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
 //
 //        currentAcc.setAccountStatus(Status.INACTIVE);
 //        accountsRepo.save(currentAcc);
-//        return new ResponseEntity<>("Account decativated!!", HttpStatus.OK);
+//        return new ResponseEntity<>("Account deactivated!!", HttpStatus.OK);
 //    }
 //
 //    @Override
@@ -241,21 +247,20 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     }
 
     @Override
-    public ResponseEntity<?> updateAgentPassword(Agentforgetpassword agentforgetpassword) throws Exception {
+    public ResponseEntity<?> updateAgentPassword(AgentForgetPassword agentforgetpassword) throws Exception {
         Agent currAgent = agentRepo.findByAgentEmail(agentforgetpassword.getEmail());
 
         AddAgentDto agentDto = new AddAgentDto();
 
         currAgent.setAgentPassword(encoder.encode(agentforgetpassword.getPassword()));
         try {
-            Optional<Credentials> currAgent1=credRepo.findByEmail(agentforgetpassword.getEmail());
-            if(currAgent1.isPresent()) {
+            Optional<Credentials> currAgent1 = credRepo.findByEmail(agentforgetpassword.getEmail());
+            if (currAgent1.isPresent()) {
                 currAgent1.get().setPassword(encoder.encode(agentforgetpassword.getPassword()));
 
                 credRepo.save(currAgent1.get());
                 agentRepo.save(currAgent);
-            }
-            else {
+            } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
@@ -266,7 +271,7 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
-        return new ResponseEntity<>(agentDto,HttpStatus.OK);
+        return new ResponseEntity<>(agentDto, HttpStatus.OK);
 
     }
 
@@ -274,9 +279,9 @@ public class AgentServiceImplementation implements AgentServiceInterface {
     public List<CommissionDto> getCommissionListByType(String agentEmail) {
         Agent agent = agentRepo.findByAgentEmail(agentEmail);
         List<Commission> commissionList = agent.getCommissionList();
-        if(commissionList.size() == 0) return null;
+        if (commissionList.size() == 0) return null;
         List<CommissionDto> commissionDtoList = new ArrayList<>();
-        for(Commission commission : commissionList){
+        for (Commission commission : commissionList) {
             CommissionDto commissionDto = new CommissionDto();
             commissionDto.setCommissionRate(commission.getCommissionRate());
             commissionDto.setCommissionAmount(commission.getCommissionAmount());
@@ -287,14 +292,15 @@ public class AgentServiceImplementation implements AgentServiceInterface {
         }
         return commissionDtoList;
     }
+
     @Override
     public List<CommissionDto> getCommissionListByType(String agentEmail, CommissionType commissionType) {
         List<CommissionDto> commissionDtoList = getCommissionListByType(agentEmail);
-        if(commissionDtoList == null) return null;
+        if (commissionDtoList == null) return null;
         List<CommissionDto> commissionDtoListByType = new ArrayList<>();
 
-        for(CommissionDto commissionDto : commissionDtoList){
-            if(commissionDto.getCommissionType()==commissionType)
+        for (CommissionDto commissionDto : commissionDtoList) {
+            if (commissionDto.getCommissionType() == commissionType)
                 commissionDtoListByType.add(commissionDto);
         }
         return commissionDtoListByType;

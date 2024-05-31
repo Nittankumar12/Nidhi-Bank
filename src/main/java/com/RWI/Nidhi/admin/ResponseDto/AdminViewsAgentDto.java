@@ -15,6 +15,4 @@ public class AdminViewsAgentDto {
     private int numberOfMis;
     private int numberOfRd;
     private int numberOfScheme;
-
-
 }

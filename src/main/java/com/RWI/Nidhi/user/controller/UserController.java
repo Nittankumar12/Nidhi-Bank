@@ -2,8 +2,6 @@ package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.dto.UserResponseDto;
-import com.RWI.Nidhi.entity.User;
-import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceImplementation.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,42 +13,46 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     @Autowired
     UserServiceImpl userServiceImpl;
+
     @PutMapping("updateName")
-    public ResponseEntity<?> updateUserName(@RequestParam("userEmail")  String email, @RequestParam("userName") String userName){
+    public ResponseEntity<?> updateUserName(@RequestParam("userEmail") String email, @RequestParam("userName") String userName) {
         UserResponseDto user = userServiceImpl.updateUserName(email, userName);
-        if(user == null){
+        if (user == null) {
             return new ResponseEntity<>("Error occurred", HttpStatus.NOT_ACCEPTABLE);
         }
-        return new ResponseEntity<>(user,HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
+
     @PutMapping("updateEmail")
-    public ResponseEntity<?> updateUserEmail(@RequestParam("userEmail") String email, @RequestParam("updateUserEmail") String userEmail){
+    public ResponseEntity<?> updateUserEmail(@RequestParam("userEmail") String email, @RequestParam("updateUserEmail") String userEmail) {
         UserResponseDto user = userServiceImpl.updateUserEmail(email, userEmail);
-        if(user == null){
+        if (user == null) {
             return new ResponseEntity<>("Error occurred", HttpStatus.NOT_ACCEPTABLE);
         }
-        return new ResponseEntity<>(user,HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
+
     @PutMapping("updatePhoneNumber")
-    public ResponseEntity<?> updateUserPhoneNum(@RequestParam("userEmail") String email,@RequestParam("phoneNum") String phoneNum){
+    public ResponseEntity<?> updateUserPhoneNum(@RequestParam("userEmail") String email, @RequestParam("phoneNum") String phoneNum) {
         UserResponseDto user = userServiceImpl.updateUserPhoneNum(email, phoneNum);
-        if(user == null){
+        if (user == null) {
             return new ResponseEntity<>("Error occurred", HttpStatus.NOT_ACCEPTABLE);
         }
-        return new ResponseEntity<>(user,HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
+
     @PostMapping("/forget/verifyEmail")
     public ResponseEntity<String> verifyEmail(@RequestParam("email") String email) throws Exception {
         return userServiceImpl.userForgetPasswordSendVerificationCode(email);
     }
 
     @PostMapping("/forget/verifyOtp")
-    public ResponseEntity<String> verifyOtp(@RequestParam("email") String email, @RequestParam("enteredOtp") String enteredOtp ) throws Exception {
+    public ResponseEntity<String> verifyOtp(@RequestParam("email") String email, @RequestParam("enteredOtp") String enteredOtp) throws Exception {
         return userServiceImpl.userForgetPasswordVerifyVerificationCode(email, enteredOtp);
     }
 
     @PutMapping("/updateUserPassword")
-    public AddUserDto updateUserPassword(@RequestParam("email") String email, @RequestParam("password") String password ) throws Exception {
+    public AddUserDto updateUserPassword(@RequestParam("email") String email, @RequestParam("password") String password) throws Exception {
         return userServiceImpl.updateUserPassword(email, password);
     }
 }
