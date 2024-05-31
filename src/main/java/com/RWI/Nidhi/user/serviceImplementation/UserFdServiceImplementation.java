@@ -127,7 +127,6 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
 
     private double calculateFdAmount(int amount, double interestRate, int compoundingFreq, int tenureInDays) {
         double finalAmount;
-
         finalAmount = amount * (Math.pow((1 + (interestRate / (100 * compoundingFreq))), ((tenureInDays / 365) * compoundingFreq)));
         return finalAmount;
     }
