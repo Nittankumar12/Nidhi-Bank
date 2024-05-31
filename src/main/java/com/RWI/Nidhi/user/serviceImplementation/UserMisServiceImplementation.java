@@ -3,7 +3,10 @@ package com.RWI.Nidhi.user.serviceImplementation;
 import com.RWI.Nidhi.dto.MisDto;
 import com.RWI.Nidhi.dto.MisRequestDto;
 import com.RWI.Nidhi.dto.MisResponseDto;
-import com.RWI.Nidhi.entity.*;
+import com.RWI.Nidhi.entity.Commission;
+import com.RWI.Nidhi.entity.MIS;
+import com.RWI.Nidhi.entity.Transactions;
+import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.enums.TransactionStatus;
@@ -26,9 +29,13 @@ import java.util.List;
 @Service
 public class UserMisServiceImplementation implements UserMisServiceInterface {
     @Autowired
-    private MisRepo misRepo;
-    @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
+    @Autowired
+    AccountsServiceInterface accountsService;
+    @Autowired
+    CommissionRepository commissionRepo;
+    @Autowired
+    private MisRepo misRepo;
     @Autowired
     private AgentRepo agentRepo;
     @Autowired
@@ -37,10 +44,6 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
     private TransactionRepo transactionRepo;
     @Autowired
     private AccountsRepo accountsRepo;
-    @Autowired
-    AccountsServiceInterface accountsService;
-    @Autowired
-    CommissionRepository commissionRepo;
 
     @Override
     public MisResponseDto createMis(String email, MisDto misDto) {
@@ -49,8 +52,8 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
 //        Accounts accounts = new Accounts();
         MIS newMis = new MIS();
         if (user != null) {
-            if(user.getAccounts().getMisList()==null)user.getAccounts().setMisList(new ArrayList<>());
-            if(user.getAgent().getMisList()==null)user.getAgent().setMisList(new ArrayList<>());
+            if (user.getAccounts().getMisList() == null) user.getAccounts().setMisList(new ArrayList<>());
+            if (user.getAgent().getMisList() == null) user.getAgent().setMisList(new ArrayList<>());
             newMis.setTotalDepositedAmount(misDto.getTotalDepositedAmount());
             newMis.setStartDate(LocalDate.now());
             newMis.setTenure(misDto.getMisTenure().getTenure());
@@ -82,7 +85,7 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
             commission.setUser(user);
             commission.setCommissionType(CommissionType.MIS);
             commission.setCommissionRate(CommissionType.MIS.getCommissionRate());
-            commission.setCommissionAmount(accountsService.amountCalc(CommissionType.MIS.getCommissionRate(),newMis.getTotalDepositedAmount()));
+            commission.setCommissionAmount(accountsService.amountCalc(CommissionType.MIS.getCommissionRate(), newMis.getTotalDepositedAmount()));
             commission.setCommDate(LocalDate.now());
             commissionRepo.save(commission);
             userRepo.save(user);
@@ -159,8 +162,10 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
     }
 
     @Override
-    public ResponseEntity<?> sendMonthlyIncomeToUser(int misId) throws Exception{
-        MIS currMis = misRepo.findById(misId).orElseThrow(() -> {return new Exception("Mis not found");});
+    public ResponseEntity<?> sendMonthlyIncomeToUser(int misId) throws Exception {
+        MIS currMis = misRepo.findById(misId).orElseThrow(() -> {
+            return new Exception("Mis not found");
+        });
         Transactions transactions = new Transactions();
         transactions.setTransactionDate(new Date());
         transactions.setTransactionType(TransactionType.DEBITED);
@@ -172,8 +177,7 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         try {
             transactionRepo.save(transactions);
             misRepo.save(currMis);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new Exception("Error");
         }
         return new ResponseEntity<>(currMis.getMonthlyIncome(), HttpStatus.OK);
@@ -199,5 +203,4 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         }
         return misRequestDtoList;
     }
-
 }

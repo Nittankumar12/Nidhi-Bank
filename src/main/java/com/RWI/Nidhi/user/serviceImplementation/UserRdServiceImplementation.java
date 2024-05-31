@@ -7,7 +7,10 @@ import com.RWI.Nidhi.entity.Commission;
 import com.RWI.Nidhi.entity.RecurringDeposit;
 import com.RWI.Nidhi.entity.Transactions;
 import com.RWI.Nidhi.entity.User;
-import com.RWI.Nidhi.enums.*;
+import com.RWI.Nidhi.enums.CommissionType;
+import com.RWI.Nidhi.enums.Status;
+import com.RWI.Nidhi.enums.TransactionStatus;
+import com.RWI.Nidhi.enums.TransactionType;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserRdServiceInterface;
@@ -69,7 +72,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
 //            int tenureInDays = getCompleteDaysCount(rd.getStartDate(), rd.getMaturityDate());
 
             rd.setPenalty(0);
-            rd.setMaturityAmount(calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getCompoundingFrequency(),rd.getTenure(),rd.getInterestRate(), rd.getMaturityDate()));
+            rd.setMaturityAmount(calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getCompoundingFrequency(), rd.getTenure(), rd.getInterestRate(), rd.getMaturityDate()));
             rd.setRdStatus(Status.ACTIVE);
             rd.setAgent(user.getAgent());
             rd.setAccount(user.getAccounts());
@@ -134,19 +137,19 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         return (int) daysDifference;
     }
 
-    private double calculateRdAmount(double monthlyDepositAmount,int tenure,int compoundingFreq, double interestRate, LocalDate maturityDate) {
+    private double calculateRdAmount(double monthlyDepositAmount, int tenure, int compoundingFreq, double interestRate, LocalDate maturityDate) {
         LocalDate currentDate = LocalDate.now();
         int months = (int) ChronoUnit.MONTHS.between(currentDate, maturityDate);
         double totalAmount = 0;
 
         int totalCompounds = compoundingFreq * tenure;
-        for(int i=0; i<totalCompounds; i++){
+        for (int i = 0; i < totalCompounds; i++) {
             double currentInterest = 0;
             double currentAmount = totalAmount;
-            for(int j=0; j<(12/compoundingFreq); j++){
+            for (int j = 0; j < (12 / compoundingFreq); j++) {
                 currentAmount += monthlyDepositAmount;
                 // System.out.print(currentAmount + "    ");
-                currentInterest += ((currentAmount * interestRate)/100);
+                currentInterest += ((currentAmount * interestRate) / 100);
                 // System.out.println(currentInterest + "    ");
             }
             totalAmount = (currentAmount + currentInterest);
@@ -154,10 +157,6 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         }
         return totalAmount;
     }
-
-
-
-
 
 
     private double calculateTotalAmount(double monthlyDepositAmount, int tenure) {
@@ -174,7 +173,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         if (currRd != null) {
             RecurringDeposit rd = currRd;
             if (rd.getMaturityAmount() == 0) {
-                double interest = calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getCompoundingFrequency(),rd.getTenure(),rd.getInterestRate(), rd.getMaturityDate());
+                double interest = calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getCompoundingFrequency(), rd.getTenure(), rd.getInterestRate(), rd.getMaturityDate());
                 rd.setMaturityAmount(rd.getMonthlyDepositAmount() * rd.getTenure() + interest);
             }
             rd.setRdStatus(Status.CLOSED);

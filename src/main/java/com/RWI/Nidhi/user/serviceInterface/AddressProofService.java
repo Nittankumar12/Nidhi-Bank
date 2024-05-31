@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
 //import com.nidhi.kyc.KYC.Enum.AddressDocumentType;
+
 import com.RWI.Nidhi.entity.AddressProof;
 import com.RWI.Nidhi.enums.AddressDocumentType;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,6 @@ public interface AddressProofService {
                       AddressDocumentType selectDocument,
                       MultipartFile docPhoto);
 
-     List<AddressProof> getAllAddress();
+    List<AddressProof> getAllAddress();
 
 }

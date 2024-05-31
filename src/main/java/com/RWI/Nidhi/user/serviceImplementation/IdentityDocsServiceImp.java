@@ -76,14 +76,12 @@ public class IdentityDocsServiceImp implements IdentityDocsService {
     public String getDownloadUrlForFront(Integer id) {
         Optional<IdentityDocs> identityDocs = identityRepo.findById(id);
         return identityDocs.map(IdentityDocs :: getAadharImageFront).orElse(null);
-
     }
 
     @Override
     public String getDownloadUrlForBack(Integer id) {
         Optional<IdentityDocs> identityDocs = identityRepo.findById(id);
         return identityDocs.map(IdentityDocs::getAadharImageBack).orElse(null);
-
     }
 
     @Override
@@ -91,8 +89,4 @@ public class IdentityDocsServiceImp implements IdentityDocsService {
         Optional<IdentityDocs> identityDocs = identityRepo.findById(id);
         return identityDocs.map(IdentityDocs::getProfilePhoto).orElse(null);
     }
-
-
-
-
 }

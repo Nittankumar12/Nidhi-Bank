@@ -164,7 +164,7 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
 
                 schemeRepo.save(scheme);
 
-                return new ResponseEntity<>("Monthly Deposit successfull", HttpStatus.OK);
+                return new ResponseEntity<>("Monthly Deposit successful", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("No Current Sanctioned Scheme", HttpStatus.NOT_FOUND);
             }
