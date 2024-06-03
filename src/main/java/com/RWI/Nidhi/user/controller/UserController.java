@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.AddUserDto;
+import com.RWI.Nidhi.dto.UpdateUserDTO;
 import com.RWI.Nidhi.dto.UserResponseDto;
 import com.RWI.Nidhi.user.serviceImplementation.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,5 +55,9 @@ public class UserController {
     @PutMapping("/updateUserPassword")
     public AddUserDto updateUserPassword(@RequestParam("email") String email, @RequestParam("password") String password) throws Exception {
         return userServiceImpl.updateUserPassword(email, password);
+    }
+    @PutMapping("/updateProfile")
+    public ResponseEntity<?> updateUser(@RequestBody UpdateUserDTO updateUserDTO){
+        return userServiceImpl.updateUser(updateUserDTO);
     }
 }

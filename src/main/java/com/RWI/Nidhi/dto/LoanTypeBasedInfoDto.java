@@ -11,4 +11,5 @@ public class LoanTypeBasedInfoDto {
     private double interestRate;
     private double totalPayableAmount;
     private double monthlyEMI;
+    private double discount;
 }

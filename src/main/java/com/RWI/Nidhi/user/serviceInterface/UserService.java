@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
 import com.RWI.Nidhi.dto.AddUserDto;
+import com.RWI.Nidhi.dto.UpdateUserDTO;
 import com.RWI.Nidhi.dto.UserResponseDto;
 import com.RWI.Nidhi.entity.User;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ public interface UserService {
     ResponseEntity<String> userForgetPasswordVerifyVerificationCode(String email, String enteredOtp) throws Exception;
 
     User getByEmail(String email);
+    ResponseEntity<?> updateUser(UpdateUserDTO updateUserDTO);
 }
 
 

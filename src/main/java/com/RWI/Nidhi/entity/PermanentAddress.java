@@ -29,4 +29,7 @@ public class PermanentAddress {
     @OneToOne
     @JoinColumn
     private KYC kyc;
+    @OneToOne
+    @JoinColumn
+    private KycDetails kycDetails;
 }
