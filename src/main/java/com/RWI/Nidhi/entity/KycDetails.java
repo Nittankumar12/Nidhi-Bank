@@ -49,6 +49,11 @@ public class KycDetails {
     @OneToOne
     @JoinColumn
     private User user;
+    @OneToOne(mappedBy = "kycDetails", cascade = CascadeType.ALL)
+    private PermanentAddress permanentAddress;
+
+    @OneToOne(mappedBy = "kycDetails", cascade = CascadeType.ALL)
+    private ResidentialAddress residentialAddress;
 }
 
 

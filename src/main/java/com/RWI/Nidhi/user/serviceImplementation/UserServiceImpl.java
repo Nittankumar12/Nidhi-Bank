@@ -3,11 +3,14 @@ package com.RWI.Nidhi.user.serviceImplementation;
 import com.RWI.Nidhi.Security.models.Credentials;
 import com.RWI.Nidhi.Security.repository.CredentialsRepo;
 import com.RWI.Nidhi.dto.AddUserDto;
+import com.RWI.Nidhi.dto.UpdateUserDTO;
 import com.RWI.Nidhi.dto.UserResponseDto;
+import com.RWI.Nidhi.entity.KycDetails;
+import com.RWI.Nidhi.entity.PermanentAddress;
+import com.RWI.Nidhi.entity.ResidentialAddress;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
-import com.RWI.Nidhi.repository.AgentRepo;
-import com.RWI.Nidhi.repository.UserRepo;
+import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +28,12 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     @Autowired
     UserRepo userRepo;
-
+    @Autowired
+    PermanentAddressRepo permanentAddressRepo;
+    @Autowired
+    ResidentialAddressRepo residentialAddressRepo;
+    @Autowired
+    KycDetailsRepo kycDetailsRepo;
     @Autowired
     OtpServiceImplementation otpServiceImplementation;
     @Autowired
@@ -186,6 +194,45 @@ public class UserServiceImpl implements UserService {
             throw new Exception(e.getMessage());
         }
         return newUser;
+    }
+    @Override
+    public ResponseEntity<?> updateUser(UpdateUserDTO updateUserDTO){
+        User user = getByEmail(updateUserDTO.getEmail());
+        KycDetails kycDetails = user.getKycDetails();
+        if(user==null)return new ResponseEntity("User not found",HttpStatus.NOT_FOUND);
+        if(kycDetails==null) return  new ResponseEntity("No Kyc details found",HttpStatus.NOT_FOUND);
+        kycDetails.setFirstName(updateUserDTO.getFirstName());
+        kycDetails.setLastName(updateUserDTO.getLastName());
+
+        ResidentialAddress residentialAddress = new ResidentialAddress();
+        residentialAddress.setHouseNumber(updateUserDTO.getResidentialAddress().getHouseNumber());
+        residentialAddress.setBuildingName(updateUserDTO.getResidentialAddress().getBuildingName());
+        residentialAddress.setLocality(updateUserDTO.getResidentialAddress().getLocality());
+        residentialAddress.setCity(updateUserDTO.getResidentialAddress().getCity());
+        residentialAddress.setDistrict(updateUserDTO.getResidentialAddress().getDistrict());
+        residentialAddress.setState(updateUserDTO.getResidentialAddress().getState());
+        residentialAddress.setPinCode(updateUserDTO.getResidentialAddress().getPinCode());
+        residentialAddress.setLandmark(updateUserDTO.getResidentialAddress().getLandmark());
+        residentialAddressRepo.save(residentialAddress);
+
+        PermanentAddress permanentAddress = new PermanentAddress();
+        permanentAddress.setHouseNumber(updateUserDTO.getPermanentAddress().getHouseNumber());
+        permanentAddress.setBuildingName(updateUserDTO.getPermanentAddress().getBuildingName());
+        permanentAddress.setLocality(updateUserDTO.getPermanentAddress().getLocality());
+        permanentAddress.setCity(updateUserDTO.getResidentialAddress().getCity());
+        permanentAddress.setDistrict(updateUserDTO.getPermanentAddress().getDistrict());
+        permanentAddress.setState(updateUserDTO.getPermanentAddress().getState());
+        permanentAddress.setPinCode(updateUserDTO.getPermanentAddress().getPinCode());
+        permanentAddress.setLandmark(updateUserDTO.getPermanentAddress().getLandmark());
+        permanentAddressRepo.save(permanentAddress);
+
+        kycDetails.setResidentialAddress(residentialAddress);
+        kycDetails.setPermanentAddress(permanentAddress);
+        kycDetails.setEducation(updateUserDTO.getEducation());
+
+        kycDetailsRepo.save(kycDetails);
+        userRepo.save(user);
+        return new ResponseEntity<>("User updated",HttpStatus.OK);
     }
 }
 

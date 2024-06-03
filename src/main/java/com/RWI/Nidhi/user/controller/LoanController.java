@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/loan")
@@ -28,8 +30,9 @@ public class LoanController {
     }
 
     @GetMapping("/getInfoByLoanType")
-    public ResponseEntity<?> getLoanInfoByLoanType(@RequestParam LoanType loanType, @RequestParam double principalAmount, @RequestParam int rePaymentTerm) {
-        return userLoanService.getLoanInfoByLoanType(loanType, principalAmount, rePaymentTerm);
+    public ResponseEntity<?> getLoanInfoByLoanType(@RequestParam LoanType loanType, @RequestParam double principalAmount, @RequestParam int rePaymentTerm,@RequestParam Optional<Double> discount){
+        if(loanType.equals(LoanType.Other))return userLoanService.getLoanInfoForOtherLoanType(discount.orElseThrow(), principalAmount,rePaymentTerm);
+        return userLoanService.getLoanInfoByLoanType(loanType,principalAmount,rePaymentTerm);
     }
 
     @PostMapping("/applyLoan")
