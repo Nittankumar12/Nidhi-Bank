@@ -42,9 +42,4 @@ public class RdController {
         List<RdRequestDto> rdRequestDtoList = service.getRdByEmail(email);
         return new ResponseEntity<>(rdRequestDtoList, HttpStatus.OK);
     }
-
-    @PutMapping("/sendMonthlyIncome")
-    public ResponseEntity<?> sendMonthlyIncomeToUser(@RequestParam("rdId") int rdId) throws Exception {
-        return service.sendMonthlyIncomeToUser(rdId);
-    }
 }

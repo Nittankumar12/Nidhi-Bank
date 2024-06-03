@@ -207,28 +207,6 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         return responseDto;
     }
 
-    @Override
-    public ResponseEntity<?> sendMonthlyIncomeToUser(int rdId) throws Exception {
-        RecurringDeposit currRd = rdRepo.findById(rdId).orElseThrow(() -> {
-            return new Exception("RD not found");
-        });
-        Transactions transactions = new Transactions();
-        transactions.setTransactionDate(new Date());
-        transactions.setTransactionType(TransactionType.DEBITED);
-        transactions.setTransactionAmount(currRd.getMonthlyDepositAmount());
-        transactions.setTransactionStatus(TransactionStatus.COMPLETED);
-        transactions.setAccount(currRd.getAccount());
-        transactions.setRd(currRd);
-        Transactions.deductTotalBalance(currRd.getMonthlyDepositAmount());
-        try {
-            transactionRepo.save(transactions);
-            rdRepo.save(currRd);
-        } catch (Exception e) {
-            throw new Exception("Error");
-        }
-        return new ResponseEntity<>(currRd.getMonthlyDepositAmount(), HttpStatus.OK);
-    }
-
 
     @Override
     public List<RdRequestDto> getRdByEmail(String email) {
