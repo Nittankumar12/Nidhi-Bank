@@ -1,8 +1,7 @@
 package com.RWI.Nidhi.repository;
 
-//import com.nidhi.kyc.KYC.Entity.AddressProof;
-import com.RWI.Nidhi.entity.AddressProof;
+import com.RWI.Nidhi.entity.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AddressRepo extends JpaRepository<AddressProof,Long> {
+public interface AddressRepo extends JpaRepository<Address,Long> {
 }
