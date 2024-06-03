@@ -5,10 +5,7 @@ import com.RWI.Nidhi.Security.repository.CredentialsRepo;
 import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.dto.UpdateUserDTO;
 import com.RWI.Nidhi.dto.UserResponseDto;
-import com.RWI.Nidhi.entity.KycDetails;
-import com.RWI.Nidhi.entity.PermanentAddress;
-import com.RWI.Nidhi.entity.ResidentialAddress;
-import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
@@ -18,10 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.attribute.UserPrincipalNotFoundException;
-import java.security.MessageDigest;
 import java.util.Optional;
 
 @Service
@@ -29,9 +22,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserRepo userRepo;
     @Autowired
-    PermanentAddressRepo permanentAddressRepo;
-    @Autowired
-    ResidentialAddressRepo residentialAddressRepo;
+    AddressRepo addressRepo;
     @Autowired
     KycDetailsRepo kycDetailsRepo;
     @Autowired
@@ -203,31 +194,15 @@ public class UserServiceImpl implements UserService {
         if(kycDetails==null) return  new ResponseEntity("No Kyc details found",HttpStatus.NOT_FOUND);
         kycDetails.setFirstName(updateUserDTO.getFirstName());
         kycDetails.setLastName(updateUserDTO.getLastName());
+        kycDetails.setPhnNo(updateUserDTO.getAlternatePhnNo());
+        kycDetails.setMartialStatus(updateUserDTO.getMartialStatus());
 
-        ResidentialAddress residentialAddress = new ResidentialAddress();
-        residentialAddress.setHouseNumber(updateUserDTO.getResidentialAddress().getHouseNumber());
-        residentialAddress.setBuildingName(updateUserDTO.getResidentialAddress().getBuildingName());
-        residentialAddress.setLocality(updateUserDTO.getResidentialAddress().getLocality());
-        residentialAddress.setCity(updateUserDTO.getResidentialAddress().getCity());
-        residentialAddress.setDistrict(updateUserDTO.getResidentialAddress().getDistrict());
-        residentialAddress.setState(updateUserDTO.getResidentialAddress().getState());
-        residentialAddress.setPinCode(updateUserDTO.getResidentialAddress().getPinCode());
-        residentialAddress.setLandmark(updateUserDTO.getResidentialAddress().getLandmark());
-        residentialAddressRepo.save(residentialAddress);
+        Address address = new Address();
+        address.setAddress(updateUserDTO.getPermanentAddress().getAddress());
+        address.setDistrict(updateUserDTO.getPermanentAddress().getDistrict());
+        address.setState(updateUserDTO.getPermanentAddress().getState());
+        addressRepo.save(address);
 
-        PermanentAddress permanentAddress = new PermanentAddress();
-        permanentAddress.setHouseNumber(updateUserDTO.getPermanentAddress().getHouseNumber());
-        permanentAddress.setBuildingName(updateUserDTO.getPermanentAddress().getBuildingName());
-        permanentAddress.setLocality(updateUserDTO.getPermanentAddress().getLocality());
-        permanentAddress.setCity(updateUserDTO.getResidentialAddress().getCity());
-        permanentAddress.setDistrict(updateUserDTO.getPermanentAddress().getDistrict());
-        permanentAddress.setState(updateUserDTO.getPermanentAddress().getState());
-        permanentAddress.setPinCode(updateUserDTO.getPermanentAddress().getPinCode());
-        permanentAddress.setLandmark(updateUserDTO.getPermanentAddress().getLandmark());
-        permanentAddressRepo.save(permanentAddress);
-
-        kycDetails.setResidentialAddress(residentialAddress);
-        kycDetails.setPermanentAddress(permanentAddress);
         kycDetails.setEducation(updateUserDTO.getEducation());
 
         kycDetailsRepo.save(kycDetails);

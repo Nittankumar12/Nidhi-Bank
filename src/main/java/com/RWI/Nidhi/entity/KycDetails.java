@@ -43,6 +43,8 @@ public class KycDetails {
     private String relationWithNominee;
     @Enumerated(value = EnumType.STRING)
     private Occupation occupation;
+    @Enumerated(value = EnumType.STRING)
+    private MartialStatus martialStatus;
     private Integer monthlyIncome;
     private Integer numberOfFamilyMembers;
     private String referralCode;
@@ -50,10 +52,6 @@ public class KycDetails {
     @JoinColumn
     private User user;
     @OneToOne(mappedBy = "kycDetails", cascade = CascadeType.ALL)
-    private PermanentAddress permanentAddress;
+    Address address;
 
-    @OneToOne(mappedBy = "kycDetails", cascade = CascadeType.ALL)
-    private ResidentialAddress residentialAddress;
 }
-
-

@@ -6,7 +6,7 @@ package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.entity.AddressProof;
 import com.RWI.Nidhi.enums.AddressDocumentType;
-import com.RWI.Nidhi.repository.AddressRepo;
+import com.RWI.Nidhi.repository.AddressProofRepo;
 import com.RWI.Nidhi.user.serviceInterface.AddressProofService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,7 +19,7 @@ public class AddressProofServiceImp implements AddressProofService {
     @Autowired
     private StorageService storageService;
     @Autowired
-    private AddressRepo addressRepo;
+    private AddressProofRepo addressRepo;
 
     @Override
     public String uploadFile(String residentialAddress,
