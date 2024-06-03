@@ -10,7 +10,9 @@ public class UpdateUserDTO {
     private String firstName;
     private String lastName;
     private String email;
-    private ResidentialAddress residentialAddress;
-    private PermanentAddress permanentAddress;
+    private UpdateAddressDTO residentialAddress;
+    private UpdateAddressDTO permanentAddress;
     private Education education;
 }
+
+
