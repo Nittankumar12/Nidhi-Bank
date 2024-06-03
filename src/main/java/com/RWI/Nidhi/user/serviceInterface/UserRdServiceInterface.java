@@ -18,7 +18,5 @@ public interface UserRdServiceInterface {
 
     List<RdRequestDto> getRdByEmail(String email);
 
-    ResponseEntity<?> sendMonthlyIncomeToUser(int rdId) throws Exception;
-
 //    Double onMaturity(Double amount, Integer tenure, Double interestRate);
 }
