@@ -565,12 +565,18 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                             return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
                         } else if (previousStatus.equals(LoanStatus.APPROVED) && changedStatus.equals(LoanStatus.SANCTIONED)) {
                             loan.setStatus(changedStatus);
-
                             Transactions transactions = new Transactions();
                             transactions.setAccount(accounts);
                             transactions.setLoan(loan);
-                            transactions.setTransactionAmount(loan.getPrincipalLoanAmount());
-                            Transactions.deductTotalBalance(loan.getPrincipalLoanAmount());
+                            if(loan.getLoanType().equals(LoanType.Scheme)){
+                                Scheme scheme = accounts.getScheme();
+                                double schemeAmount = scheme.getTotalDepositAmount() + (scheme.getTotalDepositAmount()*scheme.getInterestRate()/scheme.getMonthlyDepositAmount());
+                                transactions.setTransactionAmount(loan.getPrincipalLoanAmount() + schemeAmount);
+                                Transactions.deductTotalBalance(loan.getPrincipalLoanAmount() + schemeAmount);
+                            }else {
+                                transactions.setTransactionAmount(loan.getPrincipalLoanAmount());
+                                Transactions.deductTotalBalance(loan.getPrincipalLoanAmount());
+                            }
                             transactions.setTransactionDate(new Date());
                             transactions.setTransactionType(TransactionType.DEBITED);
                             transactions.setTransactionStatus(TransactionStatus.COMPLETED);

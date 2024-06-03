@@ -72,16 +72,12 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
                 return new ResponseEntity<>("No scheme running", HttpStatus.I_AM_A_TEAPOT);
             } else {
                 double schemeLoan = scheme.getMonthlyDepositAmount() * scheme.getTenure();
-                SchLoanCalcDto schLoanCalcDto = new SchLoanCalcDto();
-                schLoanCalcDto.setRePaymentTerm((scheme.getTenure()- ((int)ChronoUnit.DAYS.between(scheme.getStartDate(), LocalDate.now()))));
-                schLoanCalcDto.setPrincipalLoanAmount(schemeLoan - scheme.getTotalDepositAmount());
 
                 Loan loan = new Loan();
                 loan.setLoanType(LoanType.Scheme);
                 loan.setInterestRate(LoanType.Scheme.getLoanInterestRate());
                 loan.setRePaymentTerm((scheme.getTenure()- ((int)ChronoUnit.DAYS.between(scheme.getStartDate(), LocalDate.now()))));
-                loan.setPrincipalLoanAmount(schemeLoan);
-                schLoanCalcDto.setPrincipalLoanAmount(schemeLoan - scheme.getTotalDepositAmount());
+                loan.setPrincipalLoanAmount(schemeLoan - scheme.getTotalDepositAmount());
 
                 //Commission
                 Commission commission = new Commission();
