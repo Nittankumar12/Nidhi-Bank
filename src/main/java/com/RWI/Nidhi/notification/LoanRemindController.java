@@ -18,5 +18,4 @@ public class LoanRemindController {
         loanNotificationService.sendLoanReminders();
         return ResponseEntity.ok("Loan notifications sent successfully.");
     }
-
 }

@@ -1,6 +1,6 @@
 package com.RWI.Nidhi.enums;
 
-public enum AdressDocumentType {
+public enum AddressDocumentType {
     PASSPORT,
     DRIVER_LICENSE,
     VOTER_ID,

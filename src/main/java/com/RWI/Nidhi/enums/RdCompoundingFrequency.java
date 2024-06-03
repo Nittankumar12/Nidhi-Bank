@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum RdCompoundingFrequency {
-    yearly(12.0, 1), // Payable yearly compounding yearly
+    yearly(12.0, 4), // Payable yearly compounding yearly
     quarterly(12.0, 4); // Payable yearly compounding quarterly
 
     private double rdInterestRate;

@@ -102,14 +102,14 @@ public class AdminController {
 
     @GetMapping("/getLoanByType")
     public ResponseEntity<Object> getByLoanType(@RequestParam LoanType loanType) {
-        List<LoanHistoryDto> loanHistoryDtos = adminService.getLoansByLoanType(loanType);
-        return new ResponseEntity<>(loanHistoryDtos, HttpStatus.OK);
+        List<LoanHistoryDto> loanHistoryDto = adminService.getLoansByLoanType(loanType);
+        return new ResponseEntity<>(loanHistoryDto, HttpStatus.OK);
     }
 
     @GetMapping("/loanStatus")
     public ResponseEntity<Object> getLoansByStatus(@RequestParam LoanStatus loanStatus) {
-        List<LoanHistoryDto> loanHistoryDtos = adminService.getLoansByLoanStatus(loanStatus);
-        return new ResponseEntity<>(loanHistoryDtos, HttpStatus.OK);
+        List<LoanHistoryDto> loanHistoryDto = adminService.getLoansByLoanStatus(loanStatus);
+        return new ResponseEntity<>(loanHistoryDto, HttpStatus.OK);
     }
 
     ResponseEntity<?> addBalanceToAccount(double amount) {
@@ -157,15 +157,17 @@ public class AdminController {
         return adminService.ChangeKycStatus(userEmail, newStatus);
     }
 
+    @GetMapping("/getKycDetails/{userEmail}")
+    public ResponseEntity<?> getKycDetails(String userEmail) {
+        return adminService.getKycDetails(userEmail);
+    }
+
     @PutMapping("/setLoanDiscount/{userEmail}")
     public ResponseEntity<?> setLoanDiscount(@RequestParam String userEmail, @RequestParam double discount) {
         return adminService.setLoanDiscount(userEmail, discount);
     }
 
-    @GetMapping("/getKycDetails/{userEmail}")
-    public ResponseEntity<?> getKycDetails(String userEmail) {
-        return adminService.getKycDetails(userEmail);
-    }
+
 //    @PostMapping("/login-admin")
 //    public ResponseEntity<?> authenticateUser(@RequestBody LoginReq loginReq) {
 //        Admin admin = adminRepo.findByAdminName(loginReq.getUsername());

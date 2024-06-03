@@ -1,10 +1,11 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
 //import com.nidhi.kyc.KYC.Entity.AddressProof;
-//import com.nidhi.kyc.KYC.Enum.AdressDocumentType;
+//import com.nidhi.kyc.KYC.Enum.AddressDocumentType;
 //import com.nidhi.kyc.KYC.Repo.AddressRepo;
+
 import com.RWI.Nidhi.entity.AddressProof;
-import com.RWI.Nidhi.enums.AdressDocumentType;
+import com.RWI.Nidhi.enums.AddressDocumentType;
 import com.RWI.Nidhi.repository.AddressRepo;
 import com.RWI.Nidhi.user.serviceInterface.AddressProofService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +28,14 @@ public class AddressProofServiceImp implements AddressProofService {
                              String district,
                              String city,
                              long postalCode,
-                             AdressDocumentType selectDocument,
-                             MultipartFile docPhoto)  {
+                             AddressDocumentType selectDocument,
+                             MultipartFile docPhoto) {
 
         AddressProof addressProof;
         try {
-        String docPhotoUrl = storageService.uploadImage(docPhoto);
+            String docPhotoUrl = storageService.uploadImage(docPhoto);
 
-        addressProof = new AddressProof();
+            addressProof = new AddressProof();
             addressProof.setResidentialAddress(residentialAddress);
             addressProof.setPermanentAddress(permanentAddress);
             addressProof.setState(state);
@@ -45,21 +46,15 @@ public class AddressProofServiceImp implements AddressProofService {
             addressProof.setDocPhoto(docPhotoUrl);
             addressRepo.save(addressProof);
 
-        return null;
-        }catch (IOException e) {
+            return null;
+        } catch (IOException e) {
             e.printStackTrace();
             return "Failed to upload";
         }
-
-
-
     }
 
     @Override
     public List<AddressProof> getAllAddress() {
         return addressRepo.findAll();
     }
-
-
-
 }

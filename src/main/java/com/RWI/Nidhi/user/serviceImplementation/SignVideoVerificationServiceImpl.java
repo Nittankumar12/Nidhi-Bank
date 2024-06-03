@@ -34,7 +34,6 @@ public class SignVideoVerificationServiceImpl implements SignVideoVerificationSe
             e.printStackTrace();
             return "Failed to upload";
         }
-
     }
 
     @Override

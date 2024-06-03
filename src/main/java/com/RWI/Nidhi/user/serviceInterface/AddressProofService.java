@@ -1,12 +1,11 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
-//import com.nidhi.kyc.KYC.Enum.AdressDocumentType;
+//import com.nidhi.kyc.KYC.Enum.AddressDocumentType;
+
 import com.RWI.Nidhi.entity.AddressProof;
-import com.RWI.Nidhi.entity.KycDetails;
-import com.RWI.Nidhi.enums.AdressDocumentType;
+import com.RWI.Nidhi.enums.AddressDocumentType;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface AddressProofService {
@@ -16,9 +15,9 @@ public interface AddressProofService {
                       String district,
                       String city,
                       long postalCode,
-                      AdressDocumentType selectDocument,
+                      AddressDocumentType selectDocument,
                       MultipartFile docPhoto);
 
-     List<AddressProof> getAllAddress();
+    List<AddressProof> getAllAddress();
 
 }

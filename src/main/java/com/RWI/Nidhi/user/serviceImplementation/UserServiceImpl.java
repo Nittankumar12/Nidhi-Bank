@@ -158,7 +158,6 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
-
         return new ResponseEntity("OTP send", HttpStatus.OK);
     }
 

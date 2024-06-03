@@ -12,6 +12,6 @@ public class CommissionDto {
     private Double commissionAmount;
     private double commissionRate;
     private String userName;
-    private CommissionType commissionType;//Commission value - laon, mis, etc.
+    private CommissionType commissionType;//Commission value - loan, mis, etc.
     private LocalDate commDate;
 }

@@ -24,7 +24,7 @@ public class RdController {
         return new ResponseEntity<>(rd, HttpStatus.OK);
     }
 
-    @PutMapping("/delete/{id}")
+    @PutMapping("/close/{id}")
     public ResponseEntity<String> closeRd(@PathVariable("id") int rdId) throws Exception {
         System.out.println(rdId);
         service.closeRd(rdId);

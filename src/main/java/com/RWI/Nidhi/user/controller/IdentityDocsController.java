@@ -2,24 +2,23 @@ package com.RWI.Nidhi.user.controller;
 
 //import com.nidhi.kyc.KYC.Dto.IdentityDocsDto;
 //import com.nidhi.kyc.KYC.Service.IdentityDocsService;
+
 import com.RWI.Nidhi.user.serviceInterface.IdentityDocsService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/kyc")
-public class identityDocsController {
+public class IdentityDocsController {
 
     @Autowired
     private IdentityDocsService identityDocsService;
 
-    @PostMapping("/identitydocs")
-    public ResponseEntity<String> saveIdentityDocs(@RequestParam("aadharNumbet") Long aadharNumber,
+    @PostMapping("/identityDocs")
+    public ResponseEntity<String> saveIdentityDocs(@RequestParam("aadharNumber") Long aadharNumber,
                                                    @RequestParam("aadharImageFront") MultipartFile aadharImageFront,
                                                    @RequestParam("aadharImageBack") MultipartFile aadharImageBack,
                                                    @RequestParam("panNumber") String panNumber,
@@ -32,20 +31,13 @@ public class identityDocsController {
                                                    @RequestParam("voterIdImageFront") MultipartFile voterIdImageFront,
                                                    @RequestParam("voterIdImageBack") MultipartFile voterIdImageBack,
                                                    @RequestParam("profilePhoto") MultipartFile profilePhoto) {
-        return  ResponseEntity.ok((identityDocsService.uploadFile( aadharNumber,
-                                                                   aadharImageFront,
-                                                                   aadharImageBack,
-                                                                   panNumber,
-                                                                   panImage,
-                                                                   accountNumber,
-                                                                   IFSC_Code,
-                                                                   bankName,
-                                                                   passbookImage,
-                                                                   voterIdNo,
-                                                                   voterIdImageFront,
-                                                                   voterIdImageBack,
-                                                                   profilePhoto)));
-
+        return ResponseEntity.ok((identityDocsService.uploadFile(aadharNumber, aadharImageFront,
+                aadharImageBack, panNumber,
+                panImage, accountNumber,
+                IFSC_Code, bankName,
+                passbookImage, voterIdNo,
+                voterIdImageFront, voterIdImageBack,
+                profilePhoto)));
     }
 
     @GetMapping("/front/image-url/{id}")
@@ -66,9 +58,5 @@ public class identityDocsController {
         String string = identityDocsService.getProfilePhoto(id);
         return new ResponseEntity<>(string, HttpStatus.OK);
     }
-
-
-
-
 }
 

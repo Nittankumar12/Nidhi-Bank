@@ -10,9 +10,9 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface TransactionRepo extends JpaRepository<Transactions,Integer> {
+public interface TransactionRepo extends JpaRepository<Transactions, Integer> {
     @Transactional
     @Modifying
-    @Query(value = "select * from transactions where transaction_date between :startDate and :endDate",nativeQuery = true)
+    @Query(value = "select * from transactions where transaction_date between :startDate and :endDate", nativeQuery = true)
     List<Transactions> getTransactionBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }

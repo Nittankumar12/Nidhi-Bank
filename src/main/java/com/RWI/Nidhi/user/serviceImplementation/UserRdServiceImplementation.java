@@ -69,7 +69,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
 //            int tenureInDays = getCompleteDaysCount(rd.getStartDate(), rd.getMaturityDate());
 
             rd.setPenalty(0);
-            rd.setMaturityAmount(calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getCompoundingFrequency(),rd.getTenure(),rd.getInterestRate(), rd.getMaturityDate()));
+            rd.setMaturityAmount(calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getCompoundingFrequency(), rd.getInterestRate(), rd.getMaturityDate()));
             rd.setRdStatus(Status.ACTIVE);
             rd.setAgent(user.getAgent());
             rd.setAccount(user.getAccounts());
@@ -134,30 +134,24 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         return (int) daysDifference;
     }
 
-    private double calculateRdAmount(double monthlyDepositAmount,int tenure,int compoundingFreq, double interestRate, LocalDate maturityDate) {
-        LocalDate currentDate = LocalDate.now();
-        int months = (int) ChronoUnit.MONTHS.between(currentDate, maturityDate);
-        double totalAmount = 0;
+    private double calculateRdAmount(double monthlyDepositAmount, int compoundingFreq, double interestRate, LocalDate maturityDate) {
 
-        int totalCompounds = compoundingFreq * tenure;
-        for(int i=0; i<totalCompounds; i++){
-            double currentInterest = 0;
-            double currentAmount = totalAmount;
-            for(int j=0; j<(12/compoundingFreq); j++){
-                currentAmount += monthlyDepositAmount;
-                // System.out.print(currentAmount + "    ");
-                currentInterest += ((currentAmount * interestRate)/100);
-                // System.out.println(currentInterest + "    ");
+        long tenureInMonths = ChronoUnit.MONTHS.between(LocalDate.now(),maturityDate);
+        double totalAmount = 0;
+        double interestRatePerMonth = interestRate / 12;
+
+        for (int i = 1; i <= tenureInMonths; i++) {
+            double currInterest = 0;
+            for (int j = i; j < i + (12 / compoundingFreq); j++) {
+                totalAmount += monthlyDepositAmount;
+
+                currInterest += (totalAmount * interestRatePerMonth / 100);
             }
-            totalAmount = (currentAmount + currentInterest);
-            // System.out.println(totalAmount);
+            totalAmount += currInterest;
+            i += 2;
         }
         return totalAmount;
     }
-
-
-
-
 
 
     private double calculateTotalAmount(double monthlyDepositAmount, int tenure) {
@@ -174,7 +168,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
         if (currRd != null) {
             RecurringDeposit rd = currRd;
             if (rd.getMaturityAmount() == 0) {
-                double interest = calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getCompoundingFrequency(),rd.getTenure(),rd.getInterestRate(), rd.getMaturityDate());
+                double interest = calculateRdAmount(rd.getMonthlyDepositAmount(), rd.getCompoundingFrequency(), rd.getInterestRate(), rd.getMaturityDate());
                 rd.setMaturityAmount(rd.getMonthlyDepositAmount() * rd.getTenure() + interest);
             }
             rd.setRdStatus(Status.CLOSED);

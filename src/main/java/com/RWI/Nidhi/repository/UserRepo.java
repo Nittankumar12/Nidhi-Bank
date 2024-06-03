@@ -4,15 +4,15 @@ import com.RWI.Nidhi.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
 public interface UserRepo extends JpaRepository<User, Integer> {
-	boolean existsByEmail(String email);
-	 User findByEmail(String email);
-	 boolean existsByUserName(String username);
+    boolean existsByEmail(String email);
 
-	boolean existsByPhoneNumber(String phoneNumber);
+    User findByEmail(String email);
 
-	User findByUserName(String username);
+    boolean existsByUserName(String username);
+
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    User findByUserName(String username);
 }

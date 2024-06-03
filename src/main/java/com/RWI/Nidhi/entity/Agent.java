@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +24,7 @@ public class Agent {
     private String agentAddress;
     private String agentEmail;
     private String agentPassword;
-    private String refferalCode;
+    private String referralCode;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(  name = "agent_roles",
             joinColumns = @JoinColumn(name = "agent_id")

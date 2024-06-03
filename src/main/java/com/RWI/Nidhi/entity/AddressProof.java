@@ -1,8 +1,8 @@
 package com.RWI.Nidhi.entity;
 
-//import com.nidhi.kyc.KYC.Enum.AdressDocumentType;
+//import com.nidhi.kyc.KYC.Enum.AddressDocumentType;
 
-import com.RWI.Nidhi.enums.AdressDocumentType;
+import com.RWI.Nidhi.enums.AddressDocumentType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,6 +22,6 @@ public class AddressProof {
     private String district;
     private String city;
     private long postalCode;
-    private AdressDocumentType selectDocument;
+    private AddressDocumentType selectDocument;
     private String docPhoto;
 }

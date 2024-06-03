@@ -1,4 +1,5 @@
 package com.RWI.Nidhi.user.controller;
+
 import com.RWI.Nidhi.dto.MonthlyEmiDto;
 import com.RWI.Nidhi.user.serviceInterface.UserSchemeLoanServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class UserSchemeLoanController {
     @PutMapping("/payEMI/{email}")
     ResponseEntity<?> payEMI(String email) {
         MonthlyEmiDto monthlyEmiDto = userSchemeLoanService.payEMI(email);
-        if(monthlyEmiDto == null){
+        if (monthlyEmiDto == null) {
             return new ResponseEntity<>("either scheme is null or user is inactive", HttpStatus.NOT_ACCEPTABLE);
         }
         return new ResponseEntity<>(monthlyEmiDto, HttpStatus.OK);
@@ -57,5 +58,4 @@ public class UserSchemeLoanController {
     ResponseEntity<?> applyLoanClosureDetails(String email) {
         return userSchemeLoanService.applyForLoanClosure(email);
     }
-
 }

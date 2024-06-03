@@ -21,7 +21,7 @@ public class Commission {
     private Double commissionAmount;
     private double commissionRate;
     @Enumerated(EnumType.STRING)
-    private CommissionType commissionType;//Commission value - laon, mis, etc.
+    private CommissionType commissionType;//Commission value - loan, mis, etc.
     private LocalDate commDate;
     @ManyToOne
     @JoinColumn
