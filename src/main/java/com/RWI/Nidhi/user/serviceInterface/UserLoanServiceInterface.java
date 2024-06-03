@@ -28,7 +28,8 @@ public interface UserLoanServiceInterface {
 
     ResponseEntity<?> getLoanInfo(String email);
 
-    ResponseEntity<?> getLoanInfoByLoanType(LoanType loanType, double principalAmount, int RepaymentTerm);
+    ResponseEntity<?> getLoanInfoForOtherLoanType(double discount, double principalAmount, int rePaymentTerm);
+    ResponseEntity<?> getLoanInfoByLoanType(LoanType loanType,double principalAmount, int RepaymentTerm);
 
     ResponseEntity<?> getLoanClosureDetails(String email);
 

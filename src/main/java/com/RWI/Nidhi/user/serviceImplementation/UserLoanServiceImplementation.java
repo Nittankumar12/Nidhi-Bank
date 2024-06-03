@@ -262,6 +262,20 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     @Override
+    public ResponseEntity<?> getLoanInfoForOtherLoanType(double discount, double principalAmount, int rePaymentTerm) {
+        EmiDetails emiDetails = emiService.calculateEmi(principalAmount, discount,rePaymentTerm);
+        LoanTypeBasedInfoDto loanInfoDto = new LoanTypeBasedInfoDto();
+        loanInfoDto.setTotalPayableAmount(emiDetails.getCustomerPrice());
+        loanInfoDto.setDiscount(emiDetails.getDiscount());
+        loanInfoDto.setMonthlyEMI(emiDetails.getEmi9Months());
+        if (emiDetails.getEmi9Months() == 0) {
+            loanInfoDto.setRePaymentTerm(12);
+        } else if (emiDetails.getEmi12Months() == 0) {
+            loanInfoDto.setRePaymentTerm(9);
+        }
+        return new ResponseEntity<>(loanInfoDto,HttpStatus.OK);
+    }
+    @Override
     public MonthlyEmiDto payEMI(String email) {
         User user = userService.getByEmail(email);
         if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE)  return null;

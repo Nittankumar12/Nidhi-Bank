@@ -3,10 +3,13 @@ package com.RWI.Nidhi.user.serviceImplementation;
 import com.RWI.Nidhi.Security.models.Credentials;
 import com.RWI.Nidhi.Security.repository.CredentialsRepo;
 import com.RWI.Nidhi.dto.AddUserDto;
+import com.RWI.Nidhi.dto.UpdateUserDTO;
 import com.RWI.Nidhi.dto.UserResponseDto;
+import com.RWI.Nidhi.entity.KycDetails;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.AgentRepo;
+import com.RWI.Nidhi.repository.KycDetailsRepo;
 import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +28,8 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     @Autowired
     UserRepo userRepo;
-
+    @Autowired
+    KycDetailsRepo kycDetailsRepo;
     @Autowired
     OtpServiceImplementation otpServiceImplementation;
     @Autowired
@@ -186,6 +190,21 @@ public class UserServiceImpl implements UserService {
             throw new Exception(e.getMessage());
         }
         return newUser;
+    }
+    @Override
+    public ResponseEntity<?> updateUser(UpdateUserDTO updateUserDTO){
+        User user = getByEmail(updateUserDTO.getEmail());
+        KycDetails kycDetails = user.getKycDetails();
+        if(user==null)return new ResponseEntity("User not found",HttpStatus.NOT_FOUND);
+        if(kycDetails==null) return  new ResponseEntity("No Kyc details found",HttpStatus.NOT_FOUND);
+        kycDetails.setFirstName(updateUserDTO.getFirstName());
+        kycDetails.setLastName(updateUserDTO.getLastName());
+        kycDetails.setResidentialAddress(updateUserDTO.getResidentialAddress());
+        kycDetails.setPermanentAddress(updateUserDTO.getPermanentAddress());
+        kycDetails.setEducation(updateUserDTO.getEducation());
+        kycDetailsRepo.save(kycDetails);
+        userRepo.save(user);
+        return new ResponseEntity<>("User updated",HttpStatus.OK);
     }
 }
 
