@@ -16,6 +16,7 @@ public class KycDetailsDto {
         private String firstName;
         private String lastName;
         private String fatherName;
+        private MartialStatus martialStatus;
         private String fatherLastName;
         private String email;
         private Long phnNo;
