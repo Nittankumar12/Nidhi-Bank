@@ -24,7 +24,7 @@ public class FdController {
         return new ResponseEntity<>(fd, HttpStatus.OK);
     }
 
-    @PutMapping("/delete/{id}")
+    @PutMapping("/close/{id}")
     public ResponseEntity<String> closeFd(@PathVariable("id") int fdId) throws Exception {
         System.out.println(fdId);
         service.closeFd(fdId);

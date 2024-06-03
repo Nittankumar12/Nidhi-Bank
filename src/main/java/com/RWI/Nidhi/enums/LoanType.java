@@ -9,16 +9,16 @@ import java.util.EnumSet;
 @NoArgsConstructor
 public enum LoanType {
     Gold(2),
-    Vehicle(2),
-    Home(2),
-    Business(2),
-    Property(2),
-    Appliances(2),
-    Agriculture(2),
-    Personal(2),
-    Product(2),
-    Other(2),
-    Scheme(2);
+    Vehicle(4),
+    Home(2.5),
+    Business(6),
+    Property(5.5),
+    Appliances(3),
+    Agriculture(4),
+    Personal(6.8),
+    Product(2.9),
+    Other(2.2),
+    Scheme(3.4);
 
     private double loanInterestRate;
     LoanType(double loanInterestRate) {
