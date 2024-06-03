@@ -40,4 +40,37 @@ public class SignVideoVerificationServiceImpl implements SignVideoVerificationSe
     public List<SignVideoVerification> getAll() {
         return verification.findAll();
     }
+
+    @Override
+    public String uploadOnlyImage(MultipartFile sign) {
+        SignVideoVerification signVideoVerification;
+        try {
+            String signUrl = storageService.uploadImage(sign);
+            signVideoVerification = new SignVideoVerification();
+            signVideoVerification.setSign(signUrl);
+            verification.save(signVideoVerification);
+
+            return "Documents uploaded successfully";
+        }catch (IOException e) {
+            e.printStackTrace();
+            return "Failed to upload";
+        }
+    }
+
+    @Override
+    public String uploadOnlyVideo(MultipartFile video) {
+        SignVideoVerification signVideoVerification;
+        try {
+            String signUrl = storageService.uploadImage(video);
+            signVideoVerification = new SignVideoVerification();
+            signVideoVerification.setSign(signUrl);
+            verification.save(signVideoVerification);
+
+            return "Documents uploaded successfully";
+        }catch (IOException e) {
+            e.printStackTrace();
+            return "Failed to upload";
+        }
+
+    }
 }

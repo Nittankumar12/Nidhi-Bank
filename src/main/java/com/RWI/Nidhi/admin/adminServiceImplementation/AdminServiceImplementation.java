@@ -14,9 +14,7 @@ import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.*;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
-import com.RWI.Nidhi.user.serviceImplementation.KycDetailsServiceImp;
-import com.RWI.Nidhi.user.serviceImplementation.UserLoanServiceImplementation;
-import com.RWI.Nidhi.user.serviceImplementation.UserSchemeLoanServiceImplementation;
+import com.RWI.Nidhi.user.serviceImplementation.*;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +40,10 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     AgentRepo agentRepo;
     @Autowired
     LoanRepo loanRepo;
+    @Autowired
+    AccountsServiceImplementation accountsService;
+    @Autowired
+    EmiService emiService;
     @Autowired
     KycDetailsServiceImp kycDetailsService;
     @Autowired
@@ -82,6 +84,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     @Override
     public ResponseEntity<?> addAgent(SignupRequest signUpRequest) {
         if (agentRepo.existsByAgentEmail(signUpRequest.getEmail()) || userRepo.existsByEmail(signUpRequest.getEmail())) {
+
             return new ResponseEntity<>("Email Already taken", HttpStatus.NOT_ACCEPTABLE);
         }
         if (adminRepo.existsByAdminName(signUpRequest.getUsername()) || agentRepo.existsByAgentName(signUpRequest.getEmail()) || userRepo.existsByUserName(signUpRequest.getUsername())) {
@@ -525,6 +528,19 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                                 loanCalcDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
                                 loan.setMonthlyEMI(userSchemeLoanService.calculateSchLoanEMI(loanCalcDto));
                                 loan.setPayableLoanAmount(userSchemeLoanService.calculateFirstPayableSchLoanAmount(loanCalcDto));
+
+                            } else if (loan.getLoanType().equals(LoanType.Other)) {
+                                EmiDetails emiDetails = emiService.calculateEmi(loan.getPrincipalLoanAmount(), loan.getDiscount(), loan.getRePaymentTerm());
+                                loan.setPrincipalLoanAmount(emiDetails.getMrpPrice());
+                                loan.setPayableLoanAmount(emiDetails.getCustomerPrice());
+                                loan.setMonthlyEMI(emiDetails.getEmi9Months());
+                                if (emiDetails.getEmi9Months() == 0) {
+                                    loan.setRePaymentTerm(12);
+                                } else if (emiDetails.getEmi12Months() == 0) {
+                                    loan.setRePaymentTerm(9);
+                                } else {
+                                    throw new IllegalArgumentException("Unsupported EMI duration ");
+                                }
                             } else {
                                 LoanCalcDto loanCalcDto = new LoanCalcDto();
                                 loanCalcDto.setLoanType(loan.getLoanType());
@@ -870,5 +886,27 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         mailMessage.setSubject("Change in your Kyc Status");
         mailMessage.setText("Hello " + kycDetails.getFirstName() + " " + kycDetails.getLastName() + ",\n\n Your Kyc Status has been changed to " + kycDetails.getKycStatus() + " Please confirm so with your respective agent.");
         javaMailSender.send(mailMessage);
+    }
+
+    @Override
+    public ResponseEntity<?> setLoanDiscount(String userEmail, double discount) {
+        User user = userService.getByEmail(userEmail);
+        if (user == null) return new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
+        Accounts accounts = user.getAccounts();
+        if (accounts == null) return new ResponseEntity<>("account not found", HttpStatus.NOT_FOUND);
+        if (accountsService.CheckAccStatus(user.getEmail()) == Boolean.FALSE)
+            return new ResponseEntity<>("account not active", HttpStatus.NOT_ACCEPTABLE);
+        if (accounts.getLoanList() == null || userLoanService.isLoanNotOpen(userEmail) == Boolean.TRUE)
+            return new ResponseEntity<>("no active loan", HttpStatus.NOT_ACCEPTABLE);
+        List<Loan> loanList = accounts.getLoanList();
+        for (Loan loan : loanList) {
+            if (loan.getLoanType().equals(LoanType.Other)) {
+                loan.setDiscount(discount);
+                loanRepo.save(loan);
+                return new ResponseEntity<>("Discount set", HttpStatus.OK);
+            } else
+                return new ResponseEntity<>("not eligible for discount", HttpStatus.NOT_ACCEPTABLE);
+        }
+        return null;
     }
 }

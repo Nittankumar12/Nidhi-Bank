@@ -10,4 +10,7 @@ public interface SignVideoVerificationService {
                        MultipartFile video);
 
     List<SignVideoVerification> getAll();
+
+    String uploadOnlyImage(MultipartFile sign);
+    String uploadOnlyVideo(MultipartFile video);
 }

@@ -162,6 +162,12 @@ public class AdminController {
         return adminService.getKycDetails(userEmail);
     }
 
+    @PutMapping("/setLoanDiscount/{userEmail}")
+    public ResponseEntity<?> setLoanDiscount(@RequestParam String userEmail, @RequestParam double discount) {
+        return adminService.setLoanDiscount(userEmail, discount);
+    }
+
+
 //    @PostMapping("/login-admin")
 //    public ResponseEntity<?> authenticateUser(@RequestBody LoginReq loginReq) {
 //        Admin admin = adminRepo.findByAdminName(loginReq.getUsername());

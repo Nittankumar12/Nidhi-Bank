@@ -28,4 +28,15 @@ public class SignVideoVerificationController {
         List<SignVideoVerification> verification = service.getAll();
         return new ResponseEntity<>(verification, HttpStatus.OK);
     }
+
+    @PostMapping("/sign")
+    public ResponseEntity<String> uploadOnlyImage(@RequestParam("sign")MultipartFile sign){
+        return ResponseEntity.ok(service.uploadOnlyImage(sign));
+    }
+
+    @PostMapping("/video")
+    public ResponseEntity<String> uploadOnlyVideo(@RequestParam("video")MultipartFile video){
+        return ResponseEntity.ok(service.uploadOnlyVideo(video));
+    }
+
 }
