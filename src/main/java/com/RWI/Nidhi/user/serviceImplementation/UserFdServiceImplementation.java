@@ -28,7 +28,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     private final int penalty = 500;
     @Autowired
     FixedDepositRepo fdRepo;
-    @Autowired
+//    @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     CommissionRepository commissionRepo;

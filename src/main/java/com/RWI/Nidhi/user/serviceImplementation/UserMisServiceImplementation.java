@@ -28,7 +28,7 @@ import java.util.List;
 
 @Service
 public class UserMisServiceImplementation implements UserMisServiceInterface {
-    @Autowired
+//    @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     AccountsServiceInterface accountsService;

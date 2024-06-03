@@ -31,7 +31,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     double currentInterest;
     @Autowired
     CommissionRepository commissionRepo;
-    @Autowired
+//    @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     AgentRepo agentRepo;
