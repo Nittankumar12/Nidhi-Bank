@@ -25,7 +25,7 @@ import java.util.List;
 public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServiceInterface {
     @Autowired
     LoanRepo loanRepo;
-    @Autowired
+//    @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     EmiCalculatorServiceImplementation emiCalculatorServiceImplementation;

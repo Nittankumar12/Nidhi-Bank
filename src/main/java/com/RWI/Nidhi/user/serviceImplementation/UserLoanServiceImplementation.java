@@ -26,7 +26,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     LoanRepo loanRepository;
     @Autowired
     EmiService emiService;
-    @Autowired
+//    @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     CommissionRepository commissionRepo;

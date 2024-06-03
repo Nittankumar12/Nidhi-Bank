@@ -40,7 +40,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     AgentRepo agentRepo;
     @Autowired
     LoanRepo loanRepo;
-    @Autowired
+   // @Autowired
     AccountsServiceImplementation accountsService;
     @Autowired
     EmiService emiService;

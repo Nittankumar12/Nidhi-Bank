@@ -26,7 +26,7 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
     SchemeRepo schemeRepo;
     @Autowired
     AccountsRepo accountsRepo;
-    @Autowired
+//    @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     UserService userService;
