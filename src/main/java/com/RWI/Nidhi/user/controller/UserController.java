@@ -3,11 +3,21 @@ package com.RWI.Nidhi.user.controller;
 import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.dto.UpdateUserDTO;
 import com.RWI.Nidhi.dto.UserResponseDto;
+import com.RWI.Nidhi.dto.UserTransactionsHistoryDto;
+import com.RWI.Nidhi.entity.Transactions;
+import com.RWI.Nidhi.entity.User;
+import com.RWI.Nidhi.repository.TransactionRepo;
+import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceImplementation.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -59,5 +69,17 @@ public class UserController {
     @PutMapping("/updateProfile")
     public ResponseEntity<?> updateUser(@RequestBody UpdateUserDTO updateUserDTO){
         return userServiceImpl.updateUser(updateUserDTO);
+    }
+    @GetMapping("/getTodaysTransactionForUser")
+    public List<UserTransactionsHistoryDto> getTodaysTransactionForUser(@RequestParam("userEmail") String userEmail){
+        return userServiceImpl.getTransactionsBetweenDateByUserEmail(userEmail, LocalDate.now() , LocalDate.now());
+    }
+    @GetMapping("/getYesterdaysTransactionForUser")
+    public List<UserTransactionsHistoryDto> getYesterdaysTransactionForUser(@RequestParam("userEmail") String userEmail){
+        return userServiceImpl.getTransactionsBetweenDateByUserEmail(userEmail, LocalDate.now().minusDays(1), LocalDate.now());
+    }
+    @GetMapping("/getMonthTransactionForUser")
+    public List<UserTransactionsHistoryDto> getMonthTransactionForUser(@RequestParam("userEmail") String userEmail){
+        return userServiceImpl.getTransactionsBetweenDateByUserEmail(userEmail, LocalDate.now().withDayOfMonth(1), LocalDate.now());
     }
 }

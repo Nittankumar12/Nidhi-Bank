@@ -156,7 +156,7 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
                 transactions.setScheme(scheme);
                 transactions.setTransactionAmount(scheme.getMonthlyDepositAmount());
                 Transactions.addTotalBalance(scheme.getMonthlyDepositAmount());
-                transactions.setTransactionDate(new Date());
+                transactions.setTransactionDate(LocalDate.now());
                 transactions.setTransactionType(TransactionType.CREDITED);
                 transactions.setTransactionStatus(TransactionStatus.COMPLETED);
                 transactionRepo.save(transactions);

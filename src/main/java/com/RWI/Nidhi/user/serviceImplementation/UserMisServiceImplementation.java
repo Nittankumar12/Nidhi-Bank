@@ -69,7 +69,7 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
             misRepo.save(newMis);
 
             Transactions transactions = new Transactions();
-            transactions.setTransactionDate(new Date());
+            transactions.setTransactionDate(LocalDate.now());
             transactions.setTransactionType(TransactionType.CREDITED);
             transactions.setTransactionAmount(misDto.getTotalDepositedAmount());
             transactions.setTransactionStatus(TransactionStatus.COMPLETED);
@@ -131,7 +131,7 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         currMis.setStatus(Status.CLOSED);
 
         Transactions transactions = new Transactions();
-        transactions.setTransactionDate(new Date());
+        transactions.setTransactionDate(LocalDate.now());
         transactions.setTransactionType(TransactionType.DEBITED);
         transactions.setTransactionAmount(currMis.getTotalDepositedAmount());
         transactions.setTransactionStatus(TransactionStatus.COMPLETED);
@@ -167,7 +167,7 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
             return new Exception("Mis not found");
         });
         Transactions transactions = new Transactions();
-        transactions.setTransactionDate(new Date());
+        transactions.setTransactionDate(LocalDate.now());
         transactions.setTransactionType(TransactionType.DEBITED);
         transactions.setTransactionAmount(currMis.getMonthlyIncome());
         transactions.setTransactionStatus(TransactionStatus.COMPLETED);
