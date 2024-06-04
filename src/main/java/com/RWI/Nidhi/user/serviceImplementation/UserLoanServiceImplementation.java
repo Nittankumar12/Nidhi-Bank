@@ -297,7 +297,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                     transactions.setLoan(loan);
                     transactions.setTransactionAmount(loan.getMonthlyEMI());
                     Transactions.addTotalBalance(loan.getMonthlyEMI());
-                    transactions.setTransactionDate(new Date());
+                    transactions.setTransactionDate(LocalDate.now());
                     transactions.setTransactionType(TransactionType.CREDITED);
                     transactions.setTransactionStatus(TransactionStatus.COMPLETED);
                     transactionRepo.save(transactions);
@@ -343,7 +343,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             transactions.setLoan(loan);
             transactions.setTransactionAmount(loan.getMonthlyEMI()+penalty.getPenaltyAmount());
             Transactions.addTotalBalance(loan.getMonthlyEMI()+penalty.getPenaltyAmount());
-            transactions.setTransactionDate(new Date());
+            transactions.setTransactionDate(LocalDate.now());
             transactions.setTransactionType(TransactionType.CREDITED);
             transactions.setTransactionStatus(TransactionStatus.COMPLETED);
             transactionRepo.save(transactions);

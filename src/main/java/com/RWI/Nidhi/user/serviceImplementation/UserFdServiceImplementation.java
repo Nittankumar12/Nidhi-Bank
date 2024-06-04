@@ -88,7 +88,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
                 transactions.setAccount(user.getAccounts());
                 transactions.setTransactionAmount(fd.getAmount());
                 Transactions.addTotalBalance(fd.getAmount());
-                transactions.setTransactionDate(new Date());
+                transactions.setTransactionDate(LocalDate.now());
                 transactions.setTransactionType(TransactionType.CREDITED);
                 transactions.setTransactionStatus(TransactionStatus.COMPLETED);
                 transactions.setFd(fd);
@@ -150,7 +150,7 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
         } else {
             fd.setFdStatus(Status.CLOSED);
             Transactions transactions = new Transactions();
-            transactions.setTransactionDate(new Date());
+            transactions.setTransactionDate(LocalDate.now());
             transactions.setTransactionType(TransactionType.DEBITED);
             transactions.setTransactionAmount(fd.getAmount());
             transactions.setTransactionStatus(TransactionStatus.COMPLETED);

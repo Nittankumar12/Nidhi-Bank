@@ -5,6 +5,7 @@ import com.RWI.Nidhi.Security.repository.CredentialsRepo;
 import com.RWI.Nidhi.dto.AddUserDto;
 import com.RWI.Nidhi.dto.UpdateUserDTO;
 import com.RWI.Nidhi.dto.UserResponseDto;
+import com.RWI.Nidhi.dto.UserTransactionsHistoryDto;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
@@ -15,6 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,11 +34,12 @@ public class UserServiceImpl implements UserService {
     OtpServiceImplementation otpServiceImplementation;
     @Autowired
     PasswordEncoder encoder;
-
     @Autowired
     AgentRepo agentRepo;
     @Autowired
     private CredentialsRepo credRepo;
+    @Autowired
+    TransactionRepo transactionRepo;
 
     @Override
     public User getByEmail(String email) {
@@ -209,6 +215,27 @@ public class UserServiceImpl implements UserService {
         kycDetailsRepo.save(kycDetails);
         userRepo.save(user);
         return new ResponseEntity<>("User updated",HttpStatus.OK);
+    }
+
+    @Override
+    public List<UserTransactionsHistoryDto> getTransactionsBetweenDateByUserEmail(String userEmail, LocalDate startDate, LocalDate endDate) {
+        User currUser = userRepo.findByEmail(userEmail);
+
+        int accountId = currUser.getAccounts().getAccountId();
+
+        List<Transactions> currTransaction = transactionRepo.findByAccountAccountIdAndTransactionDateBetween(accountId, startDate, endDate);
+        List<UserTransactionsHistoryDto> transactionsHistoryDtoList = new ArrayList<>();
+
+        for(Transactions t : currTransaction){
+            UserTransactionsHistoryDto temp = new UserTransactionsHistoryDto();
+            temp.setTransactionId(t.getTransactionId());
+            temp.setDate(t.getTransactionDate());
+            temp.setAmount(t.getTransactionAmount());
+            temp.setTransactionStatus(t.getTransactionStatus());
+
+            transactionsHistoryDtoList.add(temp);
+        }
+        return transactionsHistoryDtoList;
     }
 }
 

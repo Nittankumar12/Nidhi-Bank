@@ -19,6 +19,7 @@ import com.RWI.Nidhi.user.serviceInterface.UserService;
 import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -408,7 +409,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     public ResponseEntity<?> addBalanceToAccount(double amount) {
         Transactions.addTotalBalance(amount);
         Transactions newTransaction = new Transactions();
-        newTransaction.setTransactionDate(new Date());
+        newTransaction.setTransactionDate(LocalDate.now());
         newTransaction.setTransactionType(TransactionType.CREDITED);
         newTransaction.setTransactionAmount(amount);
         newTransaction.setTransactionStatus(TransactionStatus.COMPLETED);
@@ -421,7 +422,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     public ResponseEntity<?> deductBalanceToAccount(double amount) {
         Transactions.addTotalBalance(amount);
         Transactions newTransaction = new Transactions();
-        newTransaction.setTransactionDate(new Date());
+        newTransaction.setTransactionDate(LocalDate.now());
         newTransaction.setTransactionType(TransactionType.DEBITED);
         newTransaction.setTransactionAmount(amount);
         newTransaction.setTransactionStatus(TransactionStatus.COMPLETED);
@@ -578,7 +579,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                                 transactions.setTransactionAmount(loan.getPrincipalLoanAmount());
                                 Transactions.deductTotalBalance(loan.getPrincipalLoanAmount());
                             }
-                            transactions.setTransactionDate(new Date());
+                            transactions.setTransactionDate(LocalDate.now());
                             transactions.setTransactionType(TransactionType.DEBITED);
                             transactions.setTransactionStatus(TransactionStatus.COMPLETED);
                             transactionRepo.save(transactions);
@@ -688,7 +689,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                                 transactions.setScheme(scheme);
                                 transactions.setTransactionAmount(scheme.getMonthlyDepositAmount() * scheme.getTenure());
                                 Transactions.deductTotalBalance(scheme.getMonthlyDepositAmount() * scheme.getTenure());
-                                transactions.setTransactionDate(new Date());
+                                transactions.setTransactionDate(LocalDate.now());
                                 transactions.setTransactionType(TransactionType.DEBITED);
                                 transactions.setTransactionStatus(TransactionStatus.COMPLETED);
                                 transactionRepo.save(transactions);
