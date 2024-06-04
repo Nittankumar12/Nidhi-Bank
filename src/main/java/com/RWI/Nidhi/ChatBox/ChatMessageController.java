@@ -7,6 +7,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,4 +36,5 @@ public class ChatMessageController {
         headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
         return chatMessage;
     }
+
 }

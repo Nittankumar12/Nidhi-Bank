@@ -20,6 +20,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
         sessions.add(session); // Add session to the set
     }
 
+
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
         // Handle incoming messages

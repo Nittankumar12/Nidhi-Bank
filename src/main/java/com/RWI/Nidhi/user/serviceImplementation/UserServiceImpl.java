@@ -197,11 +197,14 @@ public class UserServiceImpl implements UserService {
         kycDetails.setPhnNo(updateUserDTO.getAlternatePhnNo());
         kycDetails.setMartialStatus(updateUserDTO.getMartialStatus());
 
-        Address address = new Address();
+        Address address = kycDetails.getAddress();
+
+//        Address address = new Address();
+//        address.setId(Long.valueOf(2));
         address.setAddress(updateUserDTO.getPermanentAddress().getAddress());
         address.setDistrict(updateUserDTO.getPermanentAddress().getDistrict());
         address.setState(updateUserDTO.getPermanentAddress().getState());
-        address.setKycDetails(kycDetails);
+//        address.setKycDetails(kycDetails);
         addressRepo.save(address);
 
         kycDetails.setEducation(updateUserDTO.getEducation());
