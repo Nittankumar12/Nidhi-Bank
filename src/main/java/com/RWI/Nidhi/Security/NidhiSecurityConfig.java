@@ -94,7 +94,12 @@ public class NidhiSecurityConfig {
                           ,"/forget/verifyEmail"
                           ,"/forget/verifyOtp"
                           ,"/updateUserPassword"
-                          ,"/ws/**").permitAll().requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                          ,"/ws/**"
+                  ,"/user/updateProfile/**"
+                  ,"/Calculator/emi/**"
+                  ,"/kyc/kycdetails/**"
+                  ,"/kyc/identitydocs/**"
+                  ,"/kyc/address/**").permitAll().requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 
           .requestMatchers("/admin/**").hasAnyRole("ADMIN")
           .requestMatchers("/agent/**").hasAnyRole("AGENT","ADMIN")

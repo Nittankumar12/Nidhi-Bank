@@ -16,6 +16,7 @@ import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceImplementation.*;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
+import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -856,6 +857,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     @Override
     public ResponseEntity<?> ChangeKycStatus(String userEmail, KycStatus newStatus) {
         KycDetails kycDetails = kycDetailsRepo.findByEmail(userEmail);
+
         User user = userRepo.findByEmail(userEmail);
         Agent agent = agentRepo.findByReferralCode(kycDetails.getReferralCode());
         if (kycDetails == null) {
@@ -869,6 +871,8 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                 kycDetailsRepo.save(kycDetails);
                 sendStatusEmail(kycDetails);
                 user.setAgent(agent);
+                user.setKycDetails(kycDetails);
+                kycDetails.setUser(user);
                 user.setReferralCode(kycDetails.getReferralCode());
                 userRepo.save(user);
                 if (agent.getUserList().isEmpty()) agent.setUserList(new ArrayList<>());

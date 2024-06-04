@@ -188,9 +188,9 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public ResponseEntity<?> updateUser(UpdateUserDTO updateUserDTO){
-        User user = getByEmail(updateUserDTO.getEmail());
-        KycDetails kycDetails = user.getKycDetails();
+        User user = userRepo.findByEmail(updateUserDTO.getOldEmail());
         if(user==null)return new ResponseEntity("User not found",HttpStatus.NOT_FOUND);
+        KycDetails kycDetails = user.getKycDetails();
         if(kycDetails==null) return  new ResponseEntity("No Kyc details found",HttpStatus.NOT_FOUND);
         kycDetails.setFirstName(updateUserDTO.getFirstName());
         kycDetails.setLastName(updateUserDTO.getLastName());
@@ -201,6 +201,7 @@ public class UserServiceImpl implements UserService {
         address.setAddress(updateUserDTO.getPermanentAddress().getAddress());
         address.setDistrict(updateUserDTO.getPermanentAddress().getDistrict());
         address.setState(updateUserDTO.getPermanentAddress().getState());
+        address.setKycDetails(kycDetails);
         addressRepo.save(address);
 
         kycDetails.setEducation(updateUserDTO.getEducation());

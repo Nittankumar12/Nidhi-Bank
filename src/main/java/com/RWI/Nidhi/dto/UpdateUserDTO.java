@@ -9,7 +9,7 @@ public class UpdateUserDTO {
     private String firstName;
     private Long alternatePhnNo;
     private String lastName;
-    private String email;
+    private String oldEmail;
     private UpdateAddressDTO permanentAddress;
     private MartialStatus martialStatus;
     private Education education;
