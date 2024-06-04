@@ -29,6 +29,13 @@ public class AuthController {
     @Autowired
     Jwtgen jwtUtils;
 
+    @GetMapping("/logout")
+    public String logout() {
+        // invalidate the security context
+        SecurityContextHolder.clearContext();
+        // remove the JWT token from the local storage
+        return "You've been logged out successfully!";
+    }
 
     @CrossOrigin(origins = "http://localhost:5173/")
     @PostMapping("/signin")
