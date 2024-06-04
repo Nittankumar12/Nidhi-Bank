@@ -201,7 +201,7 @@ public class UserServiceImpl implements UserService {
         address.setAddress(updateUserDTO.getPermanentAddress().getAddress());
         address.setDistrict(updateUserDTO.getPermanentAddress().getDistrict());
         address.setState(updateUserDTO.getPermanentAddress().getState());
-        address.setKycDetails(kycDetails);
+//        address.setKycDetails(kycDetails);
         addressRepo.save(address);
 
         kycDetails.setEducation(updateUserDTO.getEducation());

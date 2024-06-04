@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class Address {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String address;
     private String district;

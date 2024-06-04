@@ -5,6 +5,7 @@ import com.RWI.Nidhi.entity.AddressProof;
 import com.RWI.Nidhi.enums.AddressDocumentType;
 //import com.nidhi.kyc.KYC.Service.AddressProofServiceImp;
 import com.RWI.Nidhi.user.serviceImplementation.AddressProofServiceImp;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequestMapping("/kyc")
 public class AddressProofController {
 
+    @Autowired
     private AddressProofServiceImp addressProofServiceImp;
 
     @PostMapping("/address")
