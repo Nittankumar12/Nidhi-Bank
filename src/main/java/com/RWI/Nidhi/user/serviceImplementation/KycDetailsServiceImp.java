@@ -56,6 +56,7 @@ public class KycDetailsServiceImp implements KycDetailsService {
         kycEntity.setMonthlyIncome(kycDto.getMonthlyIncome());
         kycEntity.setNumberOfFamilyMembers(kycDto.getNumberOfFamilyMembers());
         kycEntity.setReferralCode(kycDto.getReferralCode());
+        System.out.println("this is refferall code" +kycEntity.getReferralCode());
         kycEntity.setKycStatus(KycStatus.Pending);
         return kycEntity;
     }
