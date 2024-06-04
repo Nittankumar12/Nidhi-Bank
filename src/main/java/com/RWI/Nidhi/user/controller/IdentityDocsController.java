@@ -58,5 +58,12 @@ public class IdentityDocsController {
         String string = identityDocsService.getProfilePhoto(id);
         return new ResponseEntity<>(string, HttpStatus.OK);
     }
+
+    @PutMapping("/updateProfilePhoto/{id}")
+    public ResponseEntity<Object> updateProfile(@PathVariable Integer id,
+                                                @RequestParam("profilePhoto") MultipartFile profilePhoto){
+        String url = identityDocsService.updateProfilePhoto(id,profilePhoto);
+        return  new ResponseEntity<>(url,HttpStatus.OK);
+    }
 }
 
