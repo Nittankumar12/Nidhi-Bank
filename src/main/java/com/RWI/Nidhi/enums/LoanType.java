@@ -16,7 +16,6 @@ public enum LoanType {
     Appliances(3),
     Agriculture(4),
     Personal(6.8),
-    Product(2.9),
     Other(2.2),
     Scheme(3.4);
 

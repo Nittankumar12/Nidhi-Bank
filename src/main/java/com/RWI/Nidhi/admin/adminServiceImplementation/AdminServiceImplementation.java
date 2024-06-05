@@ -534,12 +534,14 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                             } else if (loan.getLoanType().equals(LoanType.Other)) {
                                 EmiDetails emiDetails = emiService.calculateEmi(loan.getPrincipalLoanAmount(), loan.getDiscount(), loan.getRePaymentTerm());
                                 loan.setPrincipalLoanAmount(emiDetails.getMrpPrice());
-                                loan.setPayableLoanAmount(emiDetails.getCustomerPrice());
-                                loan.setMonthlyEMI(emiDetails.getEmi9Months());
                                 if (emiDetails.getEmi9Months() == 0) {
                                     loan.setRePaymentTerm(12);
+                                    loan.setMonthlyEMI(emiDetails.getEmi12Months());
+                                    loan.setPayableLoanAmount(loan.getMonthlyEMI()*loan.getRePaymentTerm());
                                 } else if (emiDetails.getEmi12Months() == 0) {
                                     loan.setRePaymentTerm(9);
+                                    loan.setMonthlyEMI(emiDetails.getEmi9Months());
+                                    loan.setPayableLoanAmount(loan.getMonthlyEMI()*loan.getRePaymentTerm());
                                 } else {
                                     throw new IllegalArgumentException("Unsupported EMI duration ");
                                 }
@@ -586,7 +588,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                             loan.getTransactionsList().add(transactions);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
-                            return new ResponseEntity<>(("Status updated to " + changedStatus), HttpStatus.OK);
+                            return new ResponseEntity<>((("Status updated to " + changedStatus)+userLoanService.getLoanInfo(userEmail)), HttpStatus.OK);
                         } else if (previousStatus.equals(LoanStatus.APPROVED) && changedStatus.equals(LoanStatus.PENDING)) {
                             loan.setStatus(changedStatus);
                             loanRepo.save(loan);
@@ -635,10 +637,9 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                         } else {
                             return new ResponseEntity<>("Invalid Change in status", HttpStatus.I_AM_A_TEAPOT);
                         }
-                    } else
-                        return new ResponseEntity<>("Applied Change in status doesn't match recorded status", HttpStatus.I_AM_A_TEAPOT);
+                    }
                 }
-                return new ResponseEntity<>("No Loan List ", HttpStatus.I_AM_A_TEAPOT);
+                return new ResponseEntity<>("Applied Change in status doesn't match recorded status", HttpStatus.I_AM_A_TEAPOT);
             }
         } else
             return new ResponseEntity<>("Invalid Agent", HttpStatus.I_AM_A_TEAPOT);

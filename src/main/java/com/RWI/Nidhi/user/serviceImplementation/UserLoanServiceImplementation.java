@@ -71,7 +71,9 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             loan.setInterestRate(loanApplyDto.getLoanType().getLoanInterestRate());
             loan.setRePaymentTerm(loanApplyDto.getRePaymentTerm());
             loan.setPrincipalLoanAmount(loanApplyDto.getPrincipalLoanAmount());
+            loan.setDiscount(loanApplyDto.getPrincipalLoanAmount()*0.0001);
             loan.setStatus(LoanStatus.APPLIED);
+
 
             //Commission
             Commission commission = new Commission();
@@ -90,12 +92,12 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             user.setAccounts(acc);
             loanRepository.save(loan);
 
-            // Send notification to admin
-            String notificationMessage = "User " + user.getUserName() + " has applied for a loan";
-            simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
-            // Send notification to user
-            String notificationMsg = "User " + user.getUserName() + " has applied for a loan";
-            simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
+//            // Send notification to admin
+//            String notificationMessage = "User " + user.getUserName() + " has applied for a loan";
+//            simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
+//            // Send notification to user
+//            String notificationMsg = "User " + user.getUserName() + " has applied for a loan";
+//            simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
 
 
             accountsRepo.save(acc);
@@ -108,14 +110,17 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                 EmiDetails emiDetails = emiService.calculateEmi(loan.getPrincipalLoanAmount(), loan.getDiscount(), loan.getRePaymentTerm());
                 loanInfoDto.setUserEmail(user.getEmail());
                 loanInfoDto.setLoanType(loan.getLoanType());
-                loanInfoDto.setPayableLoanAmount(emiDetails.getCustomerPrice());
                 loanInfoDto.setPrincipalLoanAmount(emiDetails.getMrpPrice());
                 loanInfoDto.setDiscount(emiDetails.getDiscount());
-                loanInfoDto.setMonthlyEMI(emiDetails.getEmi9Months());
+                loanInfoDto.setInterestRate(loan.getInterestRate());
                 if (emiDetails.getEmi9Months() == 0) {
                     loanInfoDto.setRePaymentTerm(12);
+                    loanInfoDto.setMonthlyEMI(emiDetails.getEmi12Months());
+                    loanInfoDto.setPayableLoanAmount(loanInfoDto.getMonthlyEMI()*loanInfoDto.getRePaymentTerm());
                 } else if (emiDetails.getEmi12Months() == 0) {
                     loanInfoDto.setRePaymentTerm(9);
+                    loanInfoDto.setMonthlyEMI(emiDetails.getEmi9Months());
+                    loanInfoDto.setPayableLoanAmount(loanInfoDto.getMonthlyEMI()*loanInfoDto.getRePaymentTerm());
                 }
                 loanInfoDto.setStartDate(loan.getStartDate());
                 loanInfoDto.setStatus(loan.getStatus());
