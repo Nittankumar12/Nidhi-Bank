@@ -3,6 +3,7 @@ package com.RWI.Nidhi.user.serviceImplementation;
 //import com.nidhi.kyc.KYC.Dto.IdentityDocsDto;
 //import com.nidhi.kyc.KYC.Entity.IdentityDocs;
 //import com.nidhi.kyc.KYC.Repo.IdentityRepo;
+import com.RWI.Nidhi.dto.SaveIdentityDocsDTO;
 import com.RWI.Nidhi.entity.IdentityDocs;
 import com.RWI.Nidhi.repository.IdentityRepo;
 import com.RWI.Nidhi.user.serviceInterface.IdentityDocsService;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Optional;
 
 @Service
@@ -25,41 +25,29 @@ public class IdentityDocsServiceImp implements IdentityDocsService {
 
     @Override
     @Transactional
-    public String uploadFile(Long aadharNumber,
-                             MultipartFile aadharImageFront,
-                             MultipartFile aadharImageBack,
-                             String panNumber,
-                             MultipartFile panImage,
-                             Long accountNumber,
-                             String IFSC_Code,
-                             String bankName,
-                             MultipartFile passbookImage,
-                             String voterIdNo,
-                             MultipartFile voterIdImageFront,
-                             MultipartFile voterIdImageBack,
-                             MultipartFile profilePhoto) {
+    public String uploadFile(SaveIdentityDocsDTO saveIdentityDocsDTO) {
 
         IdentityDocs identityDocs;
         try {
-            String aadharImageFrontUrl = storageService.uploadImage(aadharImageFront);
-            String aadharImageBackUrl = storageService.uploadImage(aadharImageBack);
-            String panImageUrl = storageService.uploadImage(panImage);
-            String passbookImageUrl = storageService.uploadImage(passbookImage);
-            String voterIdImageFrontUrl = storageService.uploadImage(voterIdImageFront);
-            String voterIdImageBackUrl = storageService.uploadImage(voterIdImageBack);
-            String profilePhotoUrl = storageService.uploadImage(panImage);
+            String aadharImageFrontUrl = storageService.uploadImage(saveIdentityDocsDTO.getAadharImageFront());
+            String aadharImageBackUrl = storageService.uploadImage(saveIdentityDocsDTO.getAadharImageBack());
+            String panImageUrl = storageService.uploadImage(saveIdentityDocsDTO.getPanImage());
+            String passbookImageUrl = storageService.uploadImage(saveIdentityDocsDTO.getPassbookImage());
+            String voterIdImageFrontUrl = storageService.uploadImage(saveIdentityDocsDTO.getVoterIdImageFront());
+            String voterIdImageBackUrl = storageService.uploadImage(saveIdentityDocsDTO.getVoterIdImageBack());
+            String profilePhotoUrl = storageService.uploadImage(saveIdentityDocsDTO.getPanImage());
 
             identityDocs = new IdentityDocs();
-            identityDocs.setAadharNumber(aadharNumber);
+            identityDocs.setAadharNumber(saveIdentityDocsDTO.getAadharNumber());
             identityDocs.setAadharImageFront(aadharImageFrontUrl);
             identityDocs.setAadharImageBack(aadharImageBackUrl);
-            identityDocs.setPanNumber(panNumber);
+            identityDocs.setPanNumber(saveIdentityDocsDTO.getPanNumber());
             identityDocs.setPanImage(panImageUrl);
-            identityDocs.setAccountNumber(accountNumber);
-            identityDocs.setIFSC_Code(IFSC_Code);
-            identityDocs.setBankName(bankName);
+            identityDocs.setAccountNumber(saveIdentityDocsDTO.getAccountNumber());
+            identityDocs.setIFSC_Code(saveIdentityDocsDTO.getIFSC_Code());
+            identityDocs.setBankName(saveIdentityDocsDTO.getBankName());
             identityDocs.setPassbookImage(passbookImageUrl);
-            identityDocs.setVoterIdNo(voterIdNo);
+            identityDocs.setVoterIdNo(saveIdentityDocsDTO.getVoterIdNo());
             identityDocs.setVoterIdImageFront(voterIdImageFrontUrl);
             identityDocs.setVoterIdImageBack(voterIdImageBackUrl);
             identityDocs.setProfilePhoto(profilePhotoUrl);
