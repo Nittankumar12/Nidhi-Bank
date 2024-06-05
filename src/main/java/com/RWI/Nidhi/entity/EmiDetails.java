@@ -24,5 +24,4 @@ public class EmiDetails {
     private double customerPrice;
     private double emi9Months;
     private double emi12Months;
-
 }
