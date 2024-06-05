@@ -37,7 +37,7 @@ public class IdentityDocsServiceImp implements IdentityDocsService {
                              String voterIdNo,
                              MultipartFile voterIdImageFront,
                              MultipartFile voterIdImageBack,
-                             MultipartFile profilePhoto){
+                             MultipartFile profilePhoto) {
 
         IdentityDocs identityDocs;
         try {
@@ -75,7 +75,7 @@ public class IdentityDocsServiceImp implements IdentityDocsService {
     @Override
     public String getDownloadUrlForFront(Integer id) {
         Optional<IdentityDocs> identityDocs = identityRepo.findById(id);
-        return identityDocs.map(IdentityDocs :: getAadharImageFront).orElse(null);
+        return identityDocs.map(IdentityDocs::getAadharImageFront).orElse(null);
     }
 
     @Override
@@ -88,5 +88,24 @@ public class IdentityDocsServiceImp implements IdentityDocsService {
     public String getProfilePhoto(Integer id) {
         Optional<IdentityDocs> identityDocs = identityRepo.findById(id);
         return identityDocs.map(IdentityDocs::getProfilePhoto).orElse(null);
+    }
+
+    @Override
+    public String updateProfilePhoto(Integer id, MultipartFile profilePhoto) {
+        IdentityDocs identityDocs = identityRepo
+                .findById(id).orElseThrow(() -> new RuntimeException("doc id is not found"));
+        IdentityDocs identityDocs1;
+        try {
+            String profilePhotoUrl = storageService.uploadImage(profilePhoto);
+            {
+                identityDocs1 = new IdentityDocs();
+                identityDocs1.setProfilePhoto(profilePhotoUrl);
+                identityRepo.save(identityDocs1);
+                return "Uploaded successfully:";
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Failed to upload";
+        }
     }
 }

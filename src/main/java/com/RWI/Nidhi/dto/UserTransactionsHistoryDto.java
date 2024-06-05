@@ -4,15 +4,14 @@ import com.RWI.Nidhi.enums.TransactionStatus;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Data;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.Date;
 @Data
-public class TransactionsHistoryDto {
+public class UserTransactionsHistoryDto {
     private int transactionId;
-    private String bankName;
     private double amount;
-    private String accountNumber;
     private LocalDate date;
     @Enumerated(EnumType.STRING)
     private TransactionStatus transactionStatus;

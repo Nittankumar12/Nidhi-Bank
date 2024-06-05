@@ -77,7 +77,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             rdRepo.save(rd);
 
             Transactions transactions = new Transactions();
-            transactions.setTransactionDate(new Date());
+            transactions.setTransactionDate(LocalDate.now());
             transactions.setTransactionType(TransactionType.CREDITED);
             transactions.setTransactionAmount(rdDto.getMonthlyDepositAmount());
             transactions.setTransactionStatus(TransactionStatus.COMPLETED);
@@ -174,7 +174,7 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             rd.setRdStatus(Status.CLOSED);
 
             Transactions transactions = new Transactions();
-            transactions.setTransactionDate(new Date());
+            transactions.setTransactionDate(LocalDate.now());
             transactions.setTransactionType(TransactionType.DEBITED);
             transactions.setTransactionAmount(currRd.getTotalAmountDeposited());
             transactions.setTransactionStatus(TransactionStatus.COMPLETED);

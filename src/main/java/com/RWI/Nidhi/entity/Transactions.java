@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -23,7 +24,7 @@ public class Transactions {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int transactionId;
     @UpdateTimestamp
-    private Date transactionDate;
+    private LocalDate transactionDate;
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
     private double transactionAmount;

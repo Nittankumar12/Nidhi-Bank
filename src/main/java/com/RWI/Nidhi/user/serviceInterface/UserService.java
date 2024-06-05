@@ -1,10 +1,14 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
-import com.RWI.Nidhi.dto.AddUserDto;
-import com.RWI.Nidhi.dto.UpdateUserDTO;
-import com.RWI.Nidhi.dto.UserResponseDto;
+import com.RWI.Nidhi.dto.*;
+import com.RWI.Nidhi.entity.Transactions;
 import com.RWI.Nidhi.entity.User;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
 
 
 public interface UserService {
@@ -22,6 +26,9 @@ public interface UserService {
 
     User getByEmail(String email);
     ResponseEntity<?> updateUser(UpdateUserDTO updateUserDTO);
+
+    List<UserTransactionsHistoryDto> getTransactionsBetweenDateByUserEmail(String userEmail, LocalDate startDate, LocalDate endDate);
+//    List<Transactions> getTransactionOfToday(String userEmail, LocalDate startDate, LocalDate endDate) throws Exception;
 }
 
 
