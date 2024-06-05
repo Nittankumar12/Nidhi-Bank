@@ -3,6 +3,7 @@ package com.RWI.Nidhi.user.controller;
 //import com.nidhi.kyc.KYC.Dto.IdentityDocsDto;
 //import com.nidhi.kyc.KYC.Service.IdentityDocsService;
 
+import com.RWI.Nidhi.dto.SaveIdentityDocsDTO;
 import com.RWI.Nidhi.user.serviceInterface.IdentityDocsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,26 +19,8 @@ public class IdentityDocsController {
     private IdentityDocsService identityDocsService;
 
     @PostMapping("/identityDocs")
-    public ResponseEntity<String> saveIdentityDocs(@RequestParam("aadharNumber") Long aadharNumber,
-                                                   @RequestParam("aadharImageFront") MultipartFile aadharImageFront,
-                                                   @RequestParam("aadharImageBack") MultipartFile aadharImageBack,
-                                                   @RequestParam("panNumber") String panNumber,
-                                                   @RequestParam("panImage") MultipartFile panImage,
-                                                   @RequestParam("accountNumber") Long accountNumber,
-                                                   @RequestParam("IFSC_Code") String IFSC_Code,
-                                                   @RequestParam("bankName") String bankName,
-                                                   @RequestParam("passbookImage") MultipartFile passbookImage,
-                                                   @RequestParam("voterIdNo") String voterIdNo,
-                                                   @RequestParam("voterIdImageFront") MultipartFile voterIdImageFront,
-                                                   @RequestParam("voterIdImageBack") MultipartFile voterIdImageBack,
-                                                   @RequestParam("profilePhoto") MultipartFile profilePhoto) {
-        return ResponseEntity.ok((identityDocsService.uploadFile(aadharNumber, aadharImageFront,
-                aadharImageBack, panNumber,
-                panImage, accountNumber,
-                IFSC_Code, bankName,
-                passbookImage, voterIdNo,
-                voterIdImageFront, voterIdImageBack,
-                profilePhoto)));
+    public ResponseEntity<String> saveIdentityDocs(@RequestBody SaveIdentityDocsDTO saveIdentityDocsDTO) {
+        return ResponseEntity.ok((identityDocsService.uploadFile(saveIdentityDocsDTO)));
     }
 
     @GetMapping("/front/image-url/{id}")
