@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 public class AccountController {
     @Autowired
     private AccountsServiceInterface accountsServiceInterface;
+
     @GetMapping("/check-accStatus/{email}")
     public ResponseEntity<?> checkStatus(@RequestParam String email){
         return accountsServiceInterface.checkAccount(email);
@@ -54,14 +55,14 @@ public class AccountController {
 
     @PutMapping("/fundTransfer")
     public String fundTransfer(@RequestParam String sourceAccountNumber, @RequestParam String destinationAccountNumber,
-                               double amount) {
+    double amount) {
         accountsServiceInterface.fundTransfer(sourceAccountNumber, destinationAccountNumber, amount);
         return "Money Transfer Done";
     }
 
     @PostMapping("/addBankDetails")
     public ResponseEntity<String> addBankUserDetails(@RequestBody BankRequestDTO bankDto,
-                                                     @RequestParam String emailId) {
+            @RequestParam String emailId) {
         try {
             accountsServiceInterface.addBankUserDetails(bankDto, emailId);
             return ResponseEntity.ok("Bank details added successfully");
