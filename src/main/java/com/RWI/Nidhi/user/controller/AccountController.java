@@ -1,22 +1,27 @@
 package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.BankRequestDTO;
+import com.RWI.Nidhi.entity.Accounts;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.exception.AccountIdNotFoundException;
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import com.twilio.rest.api.v2010.Account;
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/accounts")
 public class AccountController {
     @Autowired
     private AccountsServiceInterface accountsServiceInterface;
+    @GetMapping("/check-accStatus/{userEmail}")
+    public ResponseEntity<?> checkStatus(@RequestParam ("userEmail") String userEmail){
+        return accountsServiceInterface.checkAccount(userEmail);
+    }
 
     // End point to open a new account
     @GetMapping("/open-account")
@@ -31,7 +36,7 @@ public class AccountController {
             Status status = accountsServiceInterface.checkAccountStatus(accountNumber);
             return ResponseEntity.ok(status);
         } catch (AccountIdNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
@@ -71,9 +76,9 @@ public class AccountController {
             accountsServiceInterface.addBalance(accountNumber, amount);
             return ResponseEntity.ok("Balance added successfully");
         } catch (AccountIdNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error occurred while adding balance to the account");
         }
     }

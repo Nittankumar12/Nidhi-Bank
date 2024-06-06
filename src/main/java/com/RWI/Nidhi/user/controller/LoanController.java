@@ -3,6 +3,7 @@ package com.RWI.Nidhi.user.controller;
 import com.RWI.Nidhi.dto.LoanApplyDto;
 import com.RWI.Nidhi.dto.LoanInfoDto;
 import com.RWI.Nidhi.enums.LoanType;
+import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import java.util.Optional;
 @RequestMapping("/loan")
 public class LoanController {
     @Autowired
-    UserService userService;
+    AccountsServiceInterface accountsService;
     @Autowired
     UserLoanServiceInterface userLoanService;
 
@@ -37,6 +38,8 @@ public class LoanController {
 
     @PostMapping("/applyLoan")
     public ResponseEntity<?> applyLoan(@RequestBody LoanApplyDto loanApplyDto) {
+        ResponseEntity<?> acco = accountsService.checkAccount(loanApplyDto.getUserEmail());
+        if(!acco.getStatusCode().equals(HttpStatus.OK)) return acco;
         if (userLoanService.isLoanNotOpen(loanApplyDto.getUserEmail()) == Boolean.TRUE) {
             if (userLoanService.checkForLoanBound(loanApplyDto.getUserEmail(), loanApplyDto.getPrincipalLoanAmount()) == Boolean.TRUE) {
                 LoanInfoDto loanInfoDto = userLoanService.applyLoan(loanApplyDto);

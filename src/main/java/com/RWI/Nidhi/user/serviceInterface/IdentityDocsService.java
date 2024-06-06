@@ -15,6 +15,7 @@ public interface IdentityDocsService {
 
     String updateProfilePhoto(Integer id, MultipartFile profilePhoto);
 
+
 }
 
 
