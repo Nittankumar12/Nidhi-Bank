@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
 
+import com.RWI.Nidhi.dto.LoanSchApplyDto;
 import com.RWI.Nidhi.dto.SchemeApplyDTO;
 import org.springframework.http.ResponseEntity;
 
@@ -17,5 +18,5 @@ public interface SchemeServiceInterface {
 
     ResponseEntity<?> getSchemeLoanInfo(String email);
 
-    ResponseEntity<?> applyForSchemeLoan(String email);
+    ResponseEntity<?> applyForSchemeLoan(LoanSchApplyDto loanSchApplyDto);
 }

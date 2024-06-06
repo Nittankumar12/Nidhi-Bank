@@ -1,5 +1,6 @@
 package com.RWI.Nidhi.user.serviceInterface;
 
+import com.RWI.Nidhi.dto.LoanSchApplyDto;
 import com.RWI.Nidhi.dto.MonthlyEmiDto;
 import com.RWI.Nidhi.dto.SchLoanCalcDto;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ public interface UserSchemeLoanServiceInterface {
 
     Boolean checkForExistingLoan(String email);
 
-    ResponseEntity<?> applySchemeLoan(String email); // apply for schemeLoan
+    ResponseEntity<?> applySchemeLoan(LoanSchApplyDto loanSchApplyDto); // apply for schemeLoan
 
     double calculateFirstPayableSchLoanAmount(SchLoanCalcDto schLoanCalcDto);
 

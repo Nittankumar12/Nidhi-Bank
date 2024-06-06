@@ -1,5 +1,6 @@
 package com.RWI.Nidhi.user.controller;
 
+import com.RWI.Nidhi.dto.LoanSchApplyDto;
 import com.RWI.Nidhi.dto.SchemeApplyDTO;
 import com.RWI.Nidhi.user.serviceImplementation.SchemeServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,9 @@ public class SchemeController {
         return schemeService.getSchemeLoanInfo(email);
     }
 
-    @PutMapping("/applyLoan/{email}")
-    ResponseEntity<?> applyForSchemeLoan(@PathVariable String email) {
-        return schemeService.applyForSchemeLoan(email);
+    @PutMapping("/applyLoan/")
+    ResponseEntity<?> applyForSchemeLoan(@RequestBody LoanSchApplyDto loanSchApplyDto) {
+        return schemeService.applyForSchemeLoan(loanSchApplyDto);
     }
 
 }

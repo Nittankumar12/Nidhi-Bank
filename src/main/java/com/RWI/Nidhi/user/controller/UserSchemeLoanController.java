@@ -1,5 +1,6 @@
 package com.RWI.Nidhi.user.controller;
 
+import com.RWI.Nidhi.dto.LoanSchApplyDto;
 import com.RWI.Nidhi.dto.MonthlyEmiDto;
 import com.RWI.Nidhi.user.serviceInterface.UserSchemeLoanServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,10 @@ public class UserSchemeLoanController {
     }
 
     @PostMapping("/applySchLoan/{email}")
-    public ResponseEntity<?> applyLoan(@PathVariable String email) {
-        if (userSchemeLoanService.checkForExistingLoan(email) == Boolean.TRUE) {
+    public ResponseEntity<?> applyLoan(@RequestBody LoanSchApplyDto loanSchApplyDto) {
+        if (userSchemeLoanService.checkForExistingLoan(loanSchApplyDto.getEmail()) == Boolean.TRUE) {
 
-            return userSchemeLoanService.applySchemeLoan(email);
+            return userSchemeLoanService.applySchemeLoan(loanSchApplyDto);
         } else
             return new ResponseEntity<>("You have another active loan", HttpStatus.BAD_REQUEST);
     }

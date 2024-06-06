@@ -18,7 +18,7 @@ import org.springframework.http.HttpStatus;
 public class AccountController {
     @Autowired
     private AccountsServiceInterface accountsServiceInterface;
-    @GetMapping("/check-accStatus")
+    @GetMapping("/check-accStatus/{email}")
     public ResponseEntity<?> checkStatus(@RequestParam String email){
         return accountsServiceInterface.checkAccount(email);
     }
