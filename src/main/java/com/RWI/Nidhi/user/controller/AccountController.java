@@ -18,11 +18,11 @@ import org.springframework.http.HttpStatus;
 public class AccountController {
     @Autowired
     private AccountsServiceInterface accountsServiceInterface;
-    @GetMapping("/check-accStatus/{userEmail}")
-    public ResponseEntity<?> checkStatus(@RequestParam ("userEmail") String userEmail){
-        return accountsServiceInterface.checkAccount(userEmail);
-    }
 
+    @GetMapping("/check-accStatus/{email}")
+    public ResponseEntity<?> checkStatus(@RequestParam String email) {
+        return accountsServiceInterface.checkAccount(email);
+    }
     // End point to open a new account
     @GetMapping("/open-account")
     public ResponseEntity<?> openAccount(@RequestParam String email) {
