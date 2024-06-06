@@ -9,6 +9,8 @@ import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.enums.KycStatus;
 import com.RWI.Nidhi.repository.*;
+import com.RWI.Nidhi.user.serviceInterface.UserService;
+import com.twilio.rest.api.v2010.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +37,8 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 	KycDetailsRepo kycDetailsRepo;
 	@Autowired
 	private BankRepo bankRepo;
-
+	@Autowired
+	UserService userService;
 	@Autowired
 	private UserRepo userRepo;
 
@@ -103,6 +106,16 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 	public double amountCalc(double commissionRate, double amount){
 		double v = amount * commissionRate / 100;
 		return v;
+	}
+	@Override
+	public ResponseEntity<?> checkAccount(String email){
+		User user = userService.getByEmail(email);
+		if(user==null)return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
+		Accounts account = user.getAccounts();
+		if(account==null)return new ResponseEntity<>("Account doesn't exist", org.springframework.http.HttpStatus.BAD_REQUEST);
+		if(account.getAccountStatus().equals(Account.Status.CLOSED)||account.getAccountStatus().equals(Account.Status.SUSPENDED))return  new ResponseEntity<>("Account ", HttpStatus.BAD_REQUEST);
+		else return new ResponseEntity<>(account.getAccountStatus(), HttpStatus.OK);
+
 	}
 
 	private AccountResponseDTO createAccountResponseDTO(Accounts account) {

@@ -48,5 +48,6 @@ public class IdentityDocsController {
         String url = identityDocsService.updateProfilePhoto(id,profilePhoto);
         return  new ResponseEntity<>(url,HttpStatus.OK);
     }
+
 }
 
