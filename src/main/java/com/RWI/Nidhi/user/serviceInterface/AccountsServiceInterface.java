@@ -5,6 +5,7 @@ import com.RWI.Nidhi.enums.Status;
 import org.springframework.http.ResponseEntity;
 
 public interface AccountsServiceInterface {
+    ResponseEntity<?> checkAccount(String email);
 
     ResponseEntity<?> openAccount(String email);
 
