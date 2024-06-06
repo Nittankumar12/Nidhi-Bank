@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/kyc")
 public class IdentityDocsController {
@@ -19,7 +19,7 @@ public class IdentityDocsController {
     private IdentityDocsService identityDocsService;
 
     @PostMapping("/identityDocs")
-    public ResponseEntity<String> saveIdentityDocs(@RequestBody SaveIdentityDocsDTO saveIdentityDocsDTO) {
+    public ResponseEntity<String> saveIdentityDocs(@ModelAttribute SaveIdentityDocsDTO saveIdentityDocsDTO) {
         return ResponseEntity.ok((identityDocsService.uploadFile(saveIdentityDocsDTO)));
     }
 

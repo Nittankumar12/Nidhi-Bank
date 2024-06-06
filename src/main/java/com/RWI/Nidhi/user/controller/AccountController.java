@@ -1,9 +1,12 @@
 package com.RWI.Nidhi.user.controller;
 
 import com.RWI.Nidhi.dto.BankRequestDTO;
+import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.exception.AccountIdNotFoundException;
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
+import com.RWI.Nidhi.user.serviceInterface.UserService;
+import com.twilio.rest.api.v2010.Account;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

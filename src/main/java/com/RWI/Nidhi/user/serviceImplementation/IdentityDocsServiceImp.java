@@ -80,13 +80,13 @@ public class IdentityDocsServiceImp implements IdentityDocsService {
 
     @Override
     public String updateProfilePhoto(Integer id, MultipartFile profilePhoto) {
-        IdentityDocs identityDocs = identityRepo
+        IdentityDocs identityDocs1 = identityRepo
                 .findById(id).orElseThrow(() -> new RuntimeException("doc id is not found"));
-        IdentityDocs identityDocs1;
+//        IdentityDocs identityDocs;
         try {
             String profilePhotoUrl = storageService.uploadImage(profilePhoto);
             {
-                identityDocs1 = new IdentityDocs();
+//                identityDocs1 = new IdentityDocs();
                 identityDocs1.setProfilePhoto(profilePhotoUrl);
                 identityRepo.save(identityDocs1);
                 return "Uploaded successfully:";

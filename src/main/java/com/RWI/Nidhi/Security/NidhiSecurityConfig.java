@@ -95,15 +95,16 @@ public class NidhiSecurityConfig {
                                         ,"/forget/verifyOtp"
                                         ,"/updateUserPassword"
                                         ,"/ws/**"
-                                        ,"/user/updateProfile/**"
-                                        ,"/Calculator/emi/**"
-//                                        ,"/kyc/kycdetails/**"
-                                        ,"/kyc/identitydocs/**"
-                                        ,"/kyc/address/**"
-                                ,"/fd/createFd/**"
-                                ,"/mis/createMis/**"
-                                ,"/rd/createRd/**"
-                                ,"/loan/applyLoan/**").permitAll().requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+//                                        ,"/user/updateProfile/**"
+//                                        ,"/Calculator/emi/**"
+//                                        ,"/kyc/kycDetails/**"
+//                                        ,"/kyc/identityDocs/**"
+//                                        ,"/kyc/address/**"
+//                                ,"/fd/createFd/**"
+//                                ,"/mis/createMis/**"
+//                                ,"/rd/createRd/**"
+//                                ,"/loan/applyLoan/**", "/kyc/updateProfilePhoto/**"
+                                ).permitAll().requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 
                                 .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                                 .requestMatchers("/agent/**").hasAnyRole("AGENT","ADMIN")
