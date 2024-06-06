@@ -519,6 +519,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
             } else {
                 for (Loan loan : loanList) {
                     if (loan.getStatus().equals(previousStatus)) {
+                        if(loan.getSignUrl().isEmpty()||loan.getSignVideoUrl().isEmpty())return new ResponseEntity<>("No proof",HttpStatus.NOT_FOUND);
                         if (previousStatus.equals(LoanStatus.APPLIED) && changedStatus.equals(LoanStatus.APPROVED)) {
                             loan.setStatus(changedStatus);
                             loan.setStartDate(LocalDate.now());
