@@ -1,8 +1,5 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
-//import com.nidhi.kyc.KYC.Dto.IdentityDocsDto;
-//import com.nidhi.kyc.KYC.Entity.IdentityDocs;
-//import com.nidhi.kyc.KYC.Repo.IdentityRepo;
 import com.RWI.Nidhi.dto.SaveIdentityDocsDTO;
 import com.RWI.Nidhi.entity.IdentityDocs;
 import com.RWI.Nidhi.repository.IdentityRepo;
@@ -95,5 +92,10 @@ public class IdentityDocsServiceImp implements IdentityDocsService {
             e.printStackTrace();
             return "Failed to upload";
         }
+    }
+    @Override
+    public Integer getId(String email) {
+        IdentityDocs identityDocs = identityRepo.findByEmail(email);
+        return identityDocs != null ? identityDocs.getId() : null;
     }
 }

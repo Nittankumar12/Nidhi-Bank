@@ -19,5 +19,7 @@ public class LoanInfoDto {
     private double fine;
     private LoanStatus status;
     private double discount;//only for otherLoan
+    private String signUrl;
+    private String signVideoUrl;
 
 }
