@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IdentityRepo extends JpaRepository<IdentityDocs,Integer> {
+    IdentityDocs findByEmail(String email);
 }
+

@@ -96,4 +96,10 @@ public class IdentityDocsServiceImp implements IdentityDocsService {
             return "Failed to upload";
         }
     }
+
+    @Override
+    public Integer getId(String email) {
+        IdentityDocs identityDocs = identityRepo.findByEmail(email);
+        return identityDocs != null ? identityDocs.getId() : null;
+    }
 }

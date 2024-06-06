@@ -42,11 +42,23 @@ public class IdentityDocsController {
         return new ResponseEntity<>(string, HttpStatus.OK);
     }
 
+    @PutMapping("/updateProfilePhoto/")
+    public ResponseEntity<Object> updateProfile(@RequestParam("email") String email,
+                                                @RequestParam("profilePhoto") MultipartFile profilePhoto){
+        Integer id = identityDocsService.getId((email));
+        String url = identityDocsService.updateProfilePhoto(id,profilePhoto);
+        return  new ResponseEntity<>(url,HttpStatus.OK);
+    }
     @PutMapping("/updateProfilePhoto/{id}")
     public ResponseEntity<Object> updateProfile(@PathVariable Integer id,
                                                 @RequestParam("profilePhoto") MultipartFile profilePhoto){
         String url = identityDocsService.updateProfilePhoto(id,profilePhoto);
         return  new ResponseEntity<>(url,HttpStatus.OK);
+    }
+
+    @GetMapping("getUserId")
+    public Integer getId(@RequestParam String email){
+            return identityDocsService.getId(email);
     }
 
 }
