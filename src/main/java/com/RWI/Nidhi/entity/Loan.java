@@ -30,6 +30,9 @@ public class Loan {
     private double monthlyEMI;
     private double currentFine;
     private LocalDate emiDate;
+    private String signUrl;
+    private String signVideoUrl;
+
     @Enumerated(EnumType.STRING)
     private LoanType loanType;
     @Enumerated(EnumType.STRING)

@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
     EmiCalculatorServiceImplementation emiCalculatorServiceImplementation;
     @Autowired
     AccountsRepo accountsRepo;
+    @Autowired
+    StorageService storageService;
     @Autowired
     AgentRepo agentRepo;
     @Autowired
@@ -58,8 +61,9 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
         }
     }
     @Override
-    public ResponseEntity<?> applySchemeLoan(String email) {
-        User user = userService.getByEmail(email);
+    public ResponseEntity<?> applySchemeLoan(LoanSchApplyDto loanSchApplyDto) {
+        LoanInfoDto loanInfoDto = new LoanInfoDto();
+        User user = userService.getByEmail(loanSchApplyDto.getEmail());
         Accounts acc = user.getAccounts();
         if(acc.getLoanList()==null)acc.setLoanList(new ArrayList<>());
         Agent agent = user.getAgent();
@@ -76,6 +80,19 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
                 Loan loan = new Loan();
                 loan.setLoanType(LoanType.Scheme);
                 loan.setInterestRate(LoanType.Scheme.getLoanInterestRate());
+                try {
+                    String signUrl = storageService.uploadImage(loanSchApplyDto.getSign());
+                    String videoUrl = storageService.uploadImage(loanSchApplyDto.getVideo());
+                    loan.setSignUrl(signUrl);
+                    loan.setSignVideoUrl(videoUrl);
+                    loanInfoDto.setSignUrl(signUrl);
+                    loanInfoDto.setSignVideoUrl(videoUrl);
+                }
+                catch (IOException e){
+                    loanInfoDto.setSignUrl(null);
+                    loanInfoDto.setSignVideoUrl(null);
+                    return new ResponseEntity<>(loanInfoDto,HttpStatus.NOT_ACCEPTABLE);
+                }
                 loan.setRePaymentTerm((scheme.getTenure()- ((int)ChronoUnit.DAYS.between(scheme.getStartDate(), LocalDate.now()))));
                 loan.setPrincipalLoanAmount(schemeLoan - scheme.getTotalDepositAmount());
 
@@ -109,7 +126,6 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
                 simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
 
 
-                LoanInfoDto loanInfoDto = new LoanInfoDto();
                 loanInfoDto.setLoanType(loan.getLoanType());
                 loanInfoDto.setPayableLoanAmount(loan.getPayableLoanAmount());
                 loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());

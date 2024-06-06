@@ -1,5 +1,6 @@
 package com.RWI.Nidhi.user.serviceImplementation;
 
+import com.RWI.Nidhi.dto.LoanSchApplyDto;
 import com.RWI.Nidhi.dto.SchemeApplyDTO;
 import com.RWI.Nidhi.dto.SchemeInfoDto;
 import com.RWI.Nidhi.entity.*;
@@ -177,8 +178,8 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
         return userSchemeLoanService.getLoanInfo(email);
     }
     @Override
-    public ResponseEntity<?> applyForSchemeLoan(String email) {
-        return userSchemeLoanService.applySchemeLoan(email);
+    public ResponseEntity<?> applyForSchemeLoan(LoanSchApplyDto loanSchApplyDto) {
+        return userSchemeLoanService.applySchemeLoan(loanSchApplyDto);
     }
     private LocalDate firstDateOfNextMonth(LocalDate date) {
         LocalDate nextMonth = date.plusMonths(1);

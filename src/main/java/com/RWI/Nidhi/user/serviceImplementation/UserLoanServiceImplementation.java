@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -39,6 +40,8 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     @Autowired
     AccountsServiceInterface accountsService;
     @Autowired
+    StorageService storageService;
+    @Autowired
     AccountsRepo accountsRepo;
     @Autowired
     UserPenaltyServiceImplementation penaltyService;
@@ -58,6 +61,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
 
     @Override
     public LoanInfoDto applyLoan(LoanApplyDto loanApplyDto) {
+        LoanInfoDto loanInfoDto = new LoanInfoDto();
         User user = userService.getByEmail(loanApplyDto.getUserEmail());
         Accounts acc = user.getAccounts();
         if (acc.getLoanList() == null) acc.setLoanList(new ArrayList<>());
@@ -68,6 +72,19 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         } else {
             Loan loan = new Loan();
             loan.setLoanType(loanApplyDto.getLoanType());
+            try {
+                String signUrl = storageService.uploadImage(loanApplyDto.getSign());
+                String videoUrl = storageService.uploadImage(loanApplyDto.getSignVideo());
+                loan.setSignUrl(signUrl);
+                loan.setSignVideoUrl(videoUrl);
+                loanInfoDto.setSignUrl(signUrl);
+                loanInfoDto.setSignVideoUrl(videoUrl);
+            }
+            catch (IOException e){
+                loanInfoDto.setSignUrl(null);
+                loanInfoDto.setSignVideoUrl(null);
+                return loanInfoDto;
+            }
             loan.setInterestRate(loanApplyDto.getLoanType().getLoanInterestRate());
             loan.setRePaymentTerm(loanApplyDto.getRePaymentTerm());
             loan.setPrincipalLoanAmount(loanApplyDto.getPrincipalLoanAmount());
@@ -104,7 +121,6 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             userRepo.save(user);
             agent.getLoanList().add(loan);
             agentRepo.save(agent);
-            LoanInfoDto loanInfoDto = new LoanInfoDto();
 
             if (loan.getLoanType().equals(LoanType.Other)) {
                 EmiDetails emiDetails = emiService.calculateEmi(loan.getPrincipalLoanAmount(), loan.getDiscount(), loan.getRePaymentTerm());
@@ -221,7 +237,8 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             for (Loan loan : loanList) {
                 if (isLoanNotOpen(email) == Boolean.FALSE) {
                     loanInfoDto.setLoanType(loan.getLoanType());
-
+                    loanInfoDto.setSignUrl(loan.getSignUrl());
+                    loanInfoDto.setSignVideoUrl(loan.getSignVideoUrl());
                     loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
                     loanInfoDto.setStatus(loan.getStatus());
                     loanInfoDto.setInterestRate(loan.getInterestRate());

@@ -113,9 +113,9 @@ public class AccountsServiceImplementation implements AccountsServiceInterface {
 		if(user==null)return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
 		Accounts account = user.getAccounts();
 		if(account==null)return new ResponseEntity<>("Account doesn't exist", org.springframework.http.HttpStatus.BAD_REQUEST);
-		if(account.getAccountStatus().equals(Account.Status.CLOSED)||account.getAccountStatus().equals(Account.Status.SUSPENDED))return  new ResponseEntity<>("Account ", HttpStatus.BAD_REQUEST);
+		Status status = account.getAccountStatus();
+		if(status.equals(Account.Status.CLOSED)||status.equals(Account.Status.SUSPENDED))return  new ResponseEntity<>("Account ", HttpStatus.BAD_REQUEST);
 		else return new ResponseEntity<>(account.getAccountStatus(), HttpStatus.OK);
-
 	}
 
 	private AccountResponseDTO createAccountResponseDTO(Accounts account) {
