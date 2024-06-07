@@ -2,7 +2,9 @@ package com.RWI.Nidhi.user.serviceImplementation;
 
 import com.RWI.Nidhi.dto.SaveIdentityDocsDTO;
 import com.RWI.Nidhi.entity.IdentityDocs;
+import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.repository.IdentityRepo;
+import com.RWI.Nidhi.repository.UserRepo;
 import com.RWI.Nidhi.user.serviceInterface.IdentityDocsService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ public class IdentityDocsServiceImp implements IdentityDocsService {
 
     @Autowired
     private IdentityRepo identityRepo;
+    @Autowired
+    UserRepo userRepo;
     @Autowired
     private StorageService storageService;
 
@@ -93,10 +97,10 @@ public class IdentityDocsServiceImp implements IdentityDocsService {
             return "Failed to upload";
         }
     }
-
     @Override
     public Integer getId(String email) {
-        IdentityDocs identityDocs = identityRepo.findByEmail(email);
+        User user = userRepo.findByEmail(email);
+        IdentityDocs identityDocs = identityRepo.findByUser(user);
         return identityDocs != null ? identityDocs.getId() : null;
     }
 }

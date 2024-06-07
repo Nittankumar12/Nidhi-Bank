@@ -30,6 +30,9 @@ public class IdentityDocs {
     private String voterIdImageFront;
     private String voterIdImageBack;
     private String profilePhoto;
+    @OneToOne
+    @JoinColumn
+    private User user;
 
 }
 
