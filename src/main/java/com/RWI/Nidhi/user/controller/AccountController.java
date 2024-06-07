@@ -20,7 +20,7 @@ public class AccountController {
     private AccountsServiceInterface accountsServiceInterface;
 
     @GetMapping("/check-accStatus/{email}")
-    public ResponseEntity<?> checkStatus(@RequestParam String email) {
+    public ResponseEntity<?> checkStatus(@RequestParam String email){
         return accountsServiceInterface.checkAccount(email);
     }
     // End point to open a new account
