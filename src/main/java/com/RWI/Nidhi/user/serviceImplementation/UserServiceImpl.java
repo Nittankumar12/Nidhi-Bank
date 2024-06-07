@@ -232,7 +232,17 @@ public class UserServiceImpl implements UserService {
             temp.setDate(t.getTransactionDate());
             temp.setAmount(t.getTransactionAmount());
             temp.setTransactionStatus(t.getTransactionStatus());
-
+            if(t.getMis() != null){
+                temp.setTransactionCause("MIS");
+            } else if (t.getFd() != null) {
+                temp.setTransactionCause("FD");
+            } else if (t.getRd()!=null) {
+                temp.setTransactionCause("RD");
+            } else if(t.getScheme()!=null){
+                temp.setTransactionCause("SCHEME");
+            } else if(t.getLoan()!=null) {
+                temp.setTransactionCause("LOAN");
+            }
             transactionsHistoryDtoList.add(temp);
         }
         return transactionsHistoryDtoList;
