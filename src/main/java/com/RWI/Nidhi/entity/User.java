@@ -51,4 +51,6 @@ public class User {
         this.userId = userId;
         this.userName = userName;
     }
+    @OneToOne(mappedBy = "user", cascade =  CascadeType.ALL)
+    IdentityDocs identityDocs;
 }
