@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -37,12 +38,15 @@ public class LoanController {
     }
 
     @PostMapping("/applyLoan")
-    public ResponseEntity<?> applyLoan(@RequestBody LoanApplyDto loanApplyDto) {
-        ResponseEntity<?> acco = accountsService.checkAccount(loanApplyDto.getUserEmail());
+    public ResponseEntity<?> applyLoan(@RequestParam MultipartFile sign, @RequestParam MultipartFile signVideo, @RequestBody LoanApplyDto loanApplyDto) {
+        LoanApplyDto loanApplyDto1 = loanApplyDto;
+        loanApplyDto1.setSign(sign);
+        loanApplyDto1.setSignVideo(signVideo);
+        ResponseEntity<?> acco = accountsService.checkAccount(loanApplyDto1.getUserEmail());
         if(!acco.getStatusCode().equals(HttpStatus.OK)) return acco;
-        if (userLoanService.isLoanNotOpen(loanApplyDto.getUserEmail()) == Boolean.TRUE) {
-            if (userLoanService.checkForLoanBound(loanApplyDto.getUserEmail(), loanApplyDto.getPrincipalLoanAmount()) == Boolean.TRUE) {
-                LoanInfoDto loanInfoDto = userLoanService.applyLoan(loanApplyDto);
+        if (userLoanService.isLoanNotOpen(loanApplyDto1.getUserEmail()) == Boolean.TRUE) {
+            if (userLoanService.checkForLoanBound(loanApplyDto1.getUserEmail(), loanApplyDto1.getPrincipalLoanAmount()) == Boolean.TRUE) {
+                LoanInfoDto loanInfoDto = userLoanService.applyLoan(loanApplyDto1);
                 if (loanInfoDto == null)
                     return new ResponseEntity<>("Either user account closed or error while creating Loan", HttpStatus.NOT_ACCEPTABLE);
                 return new ResponseEntity<>(loanInfoDto, HttpStatus.OK);
