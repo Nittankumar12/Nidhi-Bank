@@ -26,8 +26,8 @@ import java.util.List;
 public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServiceInterface {
     @Autowired
     LoanRepo loanRepo;
-//    @Autowired
-    SimpMessagingTemplate simpMessagingTemplate;
+////    @Autowired
+//    SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     EmiCalculatorServiceImplementation emiCalculatorServiceImplementation;
     @Autowired
@@ -118,12 +118,12 @@ public class UserSchemeLoanServiceImplementation implements UserSchemeLoanServic
                 userRepo.save(user);
                 agent.getLoanList().add(loan);
                 agentRepo.save(agent);
-                // Send notification to admin
-                String notificationMessage = "User " + user.getUserName() + " has applied for a scheme loan";
-                simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
-                // Send notification to user
-                String notificationMsg = "User " + user.getUserName() + " has applied for a scheme loan";
-                simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
+//                // Send notification to admin
+//                String notificationMessage = "User " + user.getUserName() + " has applied for a scheme loan";
+//                simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
+//                // Send notification to user
+//                String notificationMsg = "User " + user.getUserName() + " has applied for a scheme loan";
+//                simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
 
 
                 loanInfoDto.setLoanType(loan.getLoanType());
