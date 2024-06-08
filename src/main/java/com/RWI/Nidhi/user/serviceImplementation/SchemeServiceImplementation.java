@@ -28,7 +28,7 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
     @Autowired
     AccountsRepo accountsRepo;
 //    @Autowired
-    SimpMessagingTemplate simpMessagingTemplate;
+//    SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     UserService userService;
     @Autowired
@@ -97,12 +97,12 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
                 scheme.setAgent(user.getAgent());
                 scheme.setTransactionsList(new ArrayList<>());
                 schemeRepo.save(scheme);
-                // Send notification to admin
-                String notificationMessage = "User " + user.getUserName() + " has applied for a scheme";
-                simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
-                // Send notification to user
-                String notificationMsg = "User " + user.getUserName() + " has applied for a scheme";
-                simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
+//                // Send notification to admin
+//                String notificationMessage = "User " + user.getUserName() + " has applied for a scheme";
+//                simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
+//                // Send notification to user
+//                String notificationMsg = "User " + user.getUserName() + " has applied for a scheme";
+//                simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
 
                 return new ResponseEntity<>(getSchemeInfo(schemeApplyDTO.getEmail()), HttpStatus.OK);
             } else {

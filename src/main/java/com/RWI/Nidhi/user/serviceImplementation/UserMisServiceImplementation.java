@@ -29,7 +29,7 @@ import java.util.List;
 @Service
 public class UserMisServiceImplementation implements UserMisServiceInterface {
 //    @Autowired
-    SimpMessagingTemplate simpMessagingTemplate;
+//    SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     AccountsServiceInterface accountsService;
     @Autowired
@@ -93,12 +93,12 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
             accountsRepo.save(user.getAccounts());
 
             misRepo.save(newMis);
-            // Send notification to admin
-            String notificationMessage = "User " + user.getUserName() + " has applied for a Mis";
-            simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
-            // Send notification to user
-            String notificationMsg = "User " + user.getUserName() + " has applied for a Mis";
-            simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
+//            // Send notification to admin
+//            String notificationMessage = "User " + user.getUserName() + " has applied for a Mis";
+//            simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
+//            // Send notification to user
+//            String notificationMsg = "User " + user.getUserName() + " has applied for a Mis";
+//            simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
 
             MisResponseDto misResponseDto = new MisResponseDto();
             misResponseDto.setUserName(newMis.getAccount().getUser().getUserName());
