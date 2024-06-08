@@ -38,15 +38,15 @@ public class LoanController {
     }
 
     @PostMapping("/applyLoan")
-    public ResponseEntity<?> applyLoan(@RequestParam MultipartFile sign, @RequestParam MultipartFile signVideo, @RequestBody LoanApplyDto loanApplyDto) {
-        LoanApplyDto loanApplyDto1 = loanApplyDto;
-        loanApplyDto1.setSign(sign);
-        loanApplyDto1.setSignVideo(signVideo);
-        ResponseEntity<?> acco = accountsService.checkAccount(loanApplyDto1.getUserEmail());
+    public ResponseEntity<?> applyLoan(@ModelAttribute LoanApplyDto loanApplyDto) {
+//        LoanApplyDto loanApplyDto1 = loanApplyDto;
+//        loanApplyDto1.setSign(sign);
+//        loanApplyDto1.setSignVideo(signVideo);
+        ResponseEntity<?> acco = accountsService.checkAccount(loanApplyDto.getUserEmail());
         if(!acco.getStatusCode().equals(HttpStatus.OK)) return acco;
-        if (userLoanService.isLoanNotOpen(loanApplyDto1.getUserEmail()) == Boolean.TRUE) {
-            if (userLoanService.checkForLoanBound(loanApplyDto1.getUserEmail(), loanApplyDto1.getPrincipalLoanAmount()) == Boolean.TRUE) {
-                LoanInfoDto loanInfoDto = userLoanService.applyLoan(loanApplyDto1);
+        if (userLoanService.isLoanNotOpen(loanApplyDto.getUserEmail()) == Boolean.TRUE) {
+            if (userLoanService.checkForLoanBound(loanApplyDto.getUserEmail(), loanApplyDto.getPrincipalLoanAmount()) == Boolean.TRUE) {
+                LoanInfoDto loanInfoDto = userLoanService.applyLoan(loanApplyDto);
                 if (loanInfoDto == null)
                     return new ResponseEntity<>("Either user account closed or error while creating Loan", HttpStatus.NOT_ACCEPTABLE);
                 return new ResponseEntity<>(loanInfoDto, HttpStatus.OK);
@@ -55,7 +55,6 @@ public class LoanController {
         } else
             return new ResponseEntity<>("You have another active loan", HttpStatus.NOT_ACCEPTABLE);
     }
-
 
     @GetMapping("/getLoanInfo/{email}")
     public ResponseEntity<?> getLoanInfo(@PathVariable String email) {
