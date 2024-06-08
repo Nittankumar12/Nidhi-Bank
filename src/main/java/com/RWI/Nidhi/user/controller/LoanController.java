@@ -38,10 +38,8 @@ public class LoanController {
     }
 
     @PostMapping("/applyLoan")
-    public ResponseEntity<?> applyLoan(@RequestParam MultipartFile sign, @RequestParam MultipartFile signVideo, @RequestBody LoanApplyDto loanApplyDto) {
+    public ResponseEntity<?> applyLoan(@RequestBody @ModelAttribute LoanApplyDto loanApplyDto) {
         LoanApplyDto loanApplyDto1 = loanApplyDto;
-        loanApplyDto1.setSign(sign);
-        loanApplyDto1.setSignVideo(signVideo);
         ResponseEntity<?> acco = accountsService.checkAccount(loanApplyDto1.getUserEmail());
         if(!acco.getStatusCode().equals(HttpStatus.OK)) return acco;
         if (userLoanService.isLoanNotOpen(loanApplyDto1.getUserEmail()) == Boolean.TRUE) {
