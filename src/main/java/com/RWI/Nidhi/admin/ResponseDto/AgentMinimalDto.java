@@ -10,4 +10,6 @@ import lombok.Setter;
 public class AgentMinimalDto {
     private int agentId;
     private String name;
+    private String email;
+    private String referralCode;
 }
