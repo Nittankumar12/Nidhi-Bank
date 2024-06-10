@@ -15,5 +15,5 @@ public class UserTransactionsHistoryDto {
     private LocalDate date;
     @Enumerated(EnumType.STRING)
     private TransactionStatus transactionStatus;
-    private String transactionCause;
+    private  String transactionCause;
 }

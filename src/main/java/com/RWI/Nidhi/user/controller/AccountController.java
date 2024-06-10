@@ -23,7 +23,6 @@ public class AccountController {
     public ResponseEntity<?> checkStatus(@RequestParam String email){
         return accountsServiceInterface.checkAccount(email);
     }
-
     // End point to open a new account
     @GetMapping("/open-account")
     public ResponseEntity<?> openAccount(@RequestParam String email) {

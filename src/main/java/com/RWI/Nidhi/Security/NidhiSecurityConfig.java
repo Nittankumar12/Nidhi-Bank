@@ -97,13 +97,9 @@ public class NidhiSecurityConfig {
                                         ,"/ws/**"
                                         ,"/user/updateProfile/**"
                                         ,"/Calculator/emi/**"
-//                                        ,"/kyc/kycdetails/**"
-                                        ,"/kyc/identitydocs/**"
-                                        ,"/kyc/address/**"
-                                ,"/fd/createFd/**"
-                                ,"/mis/createMis/**"
-                                ,"/rd/createRd/**"
-                                ,"/loan/applyLoan/**").permitAll().requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                                ,"/websocket-endpoint/**"
+
+                                ).permitAll().requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 
                                 .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                                 .requestMatchers("/agent/**").hasAnyRole("AGENT","ADMIN")
