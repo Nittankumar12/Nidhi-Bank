@@ -275,10 +275,11 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         List<Agent> allAgents = agentRepo.findAll();
         if (allAgents.size() == 0) return new ResponseEntity<>("No agents Found", HttpStatus.NOT_FOUND);
         List<AgentMinimalDto> idUsernameAgent = allAgents.stream()
-                .map(agent -> new AgentMinimalDto(agent.getAgentId(), agent.getAgentName()))
+                .map(agent -> new AgentMinimalDto(agent.getAgentId(), agent.getAgentName(), agent.getAgentEmail(), agent.getReferralCode()))
                 .collect(Collectors.toList());
         return new ResponseEntity<>(idUsernameAgent, HttpStatus.OK);
     }
+
 
     @Override
     public ResponseEntity<?> getAgentById(int id) {

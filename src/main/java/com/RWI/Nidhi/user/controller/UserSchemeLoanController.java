@@ -23,7 +23,7 @@ public class UserSchemeLoanController {
     }
 
     @PostMapping("/applySchLoan/{email}")
-    public ResponseEntity<?> applyLoan(@RequestBody LoanSchApplyDto loanSchApplyDto) {
+    public ResponseEntity<?> applyLoan(@ModelAttribute LoanSchApplyDto loanSchApplyDto) {
         if (userSchemeLoanService.checkForExistingLoan(loanSchApplyDto.getEmail()) == Boolean.TRUE) {
 
             return userSchemeLoanService.applySchemeLoan(loanSchApplyDto);

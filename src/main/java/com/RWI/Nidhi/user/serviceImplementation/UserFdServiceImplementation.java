@@ -98,12 +98,12 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
                 fd.getTransactionsList().add(transactions);
                 fdRepo.save(fd);
 
-                // Send notification to admin
-              //  String notificationMessage = "User " + user.getUserName() + " has applied for a FD";
-              //  simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
-                // Send notification to user
-             //   String notificationMsg = "User " + user.getUserName() + " has applied for a FD";
-              //  simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
+//                Send notification to admin
+//                String notificationMessage = "User " + user.getUserName() + " has applied for a FD";
+//                simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
+//                // Send notification to user
+//                String notificationMsg = "User " + user.getUserName() + " has applied for a FD";
+//                simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
 
                 FdResponseDto fdResponseDto = new FdResponseDto();
                 fdResponseDto.setUserName(fd.getAccount().getUser().getUserName());
