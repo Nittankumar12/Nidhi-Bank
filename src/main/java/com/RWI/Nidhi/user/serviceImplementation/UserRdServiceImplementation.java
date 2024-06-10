@@ -104,11 +104,11 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             rd.getTransactionsList().add(transactions);
             rdRepo.save(rd);
             // Send notification to admin
-            String notificationMessage = "User " + user.getUserName() + " has applied for a RD";
-            simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
+           // String notificationMessage = "User " + user.getUserName() + " has applied for a RD";
+           // simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
             // Send notification to user
-            String notificationMsg = "User " + user.getUserName() + " has applied for a RD";
-            simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
+           // String notificationMsg = "User " + user.getUserName() + " has applied for a RD";
+           // simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
 
             RdResponseDto rdResponseDto = new RdResponseDto();
             rdResponseDto.setUserName(rd.getAccount().getUser().getUserName());

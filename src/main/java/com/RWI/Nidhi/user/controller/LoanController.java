@@ -56,8 +56,8 @@ public class LoanController {
             return new ResponseEntity<>("You have another active loan", HttpStatus.NOT_ACCEPTABLE);
     }
 
-    @GetMapping("/getLoanInfo/{email}")
-    public ResponseEntity<?> getLoanInfo(@PathVariable String email) {
+    @GetMapping("/getLoanInfo")
+    public ResponseEntity<?> getLoanInfo(@RequestParam String email) {
         return userLoanService.getLoanInfo(email);
     }
 

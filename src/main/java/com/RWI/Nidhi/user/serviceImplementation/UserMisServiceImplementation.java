@@ -94,11 +94,11 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
 
             misRepo.save(newMis);
             // Send notification to admin
-            String notificationMessage = "User " + user.getUserName() + " has applied for a Mis";
-            simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
+            //String notificationMessage = "User " + user.getUserName() + " has applied for a Mis";
+           // simpMessagingTemplate.convertAndSend("/topic/admin", notificationMessage);
             // Send notification to user
-            String notificationMsg = "User " + user.getUserName() + " has applied for a Mis";
-            simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
+          //  String notificationMsg = "User " + user.getUserName() + " has applied for a Mis";
+          //  simpMessagingTemplate.convertAndSend("/topic/user", notificationMsg);
 
             MisResponseDto misResponseDto = new MisResponseDto();
             misResponseDto.setUserName(newMis.getAccount().getUser().getUserName());
