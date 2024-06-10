@@ -231,8 +231,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         Accounts acc = user.getAccounts();
         LoanInfoDto loanInfoDto = new LoanInfoDto();
         List<Loan> loanList = acc.getLoanList();
-        if (loanList.isEmpty())
-            return new ResponseEntity<>("No loan found", HttpStatus.NOT_FOUND);
+        if (loanList.isEmpty()) return new ResponseEntity<>("No loan found", HttpStatus.NOT_FOUND);
         else {
             for (Loan loan : loanList) {
                 if (isLoanNotOpen(email) == Boolean.FALSE) {
@@ -242,16 +241,38 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                     loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
                     loanInfoDto.setStatus(loan.getStatus());
                     loanInfoDto.setInterestRate(loan.getInterestRate());
-                    loanInfoDto.setPayableLoanAmount(loan.getPayableLoanAmount());
                     loanInfoDto.setUserEmail(email);
-                    loanInfoDto.setMonthlyEMI(loan.getMonthlyEMI());
                     loanInfoDto.setFine(loan.getCurrentFine());
-                    loanInfoDto.setStartDate(loan.getStartDate());
                     loanInfoDto.setRePaymentTerm(loan.getRePaymentTerm());
-                } else
-                    return new ResponseEntity<>("No active loan on your account", HttpStatus.NOT_FOUND);
+
+                    if (loan.getLoanType().equals(LoanType.Other)) {
+                        EmiDetails emiDetails = emiService.calculateEmi(loan.getPrincipalLoanAmount(), loan.getDiscount(), loan.getRePaymentTerm());
+                        loanInfoDto.setPrincipalLoanAmount(emiDetails.getMrpPrice());
+                        loanInfoDto.setDiscount(emiDetails.getDiscount());
+                        if (emiDetails.getEmi9Months() == 0) {
+                            loanInfoDto.setRePaymentTerm(12);
+                            loanInfoDto.setMonthlyEMI(emiDetails.getEmi12Months());
+                            loanInfoDto.setPayableLoanAmount(loanInfoDto.getMonthlyEMI() * loanInfoDto.getRePaymentTerm());
+                        } else if (emiDetails.getEmi12Months() == 0) {
+                            loanInfoDto.setRePaymentTerm(9);
+                            loanInfoDto.setMonthlyEMI(emiDetails.getEmi9Months());
+                            loanInfoDto.setPayableLoanAmount(loanInfoDto.getMonthlyEMI() * loanInfoDto.getRePaymentTerm());
+                        }
+                    }
+                    else {
+                            LoanCalcDto loanCalcDto = new LoanCalcDto();
+                            loanCalcDto.setLoanType(loan.getLoanType());
+                            loanCalcDto.setRePaymentTerm(loan.getRePaymentTerm());
+                            loanCalcDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
+                            loanCalcDto.setInterestRate(loan.getLoanType());
+
+                            loanInfoDto.setMonthlyEMI(calculateEMI(loanCalcDto));
+                            loanInfoDto.setPayableLoanAmount(calculateFirstPayableAmount(loanCalcDto));
+                            loanInfoDto.setStartDate(loan.getStartDate());
+                    }
+                }else return new ResponseEntity<>("No active loan on your account", HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity<>(loanInfoDto,HttpStatus.OK);
+            return new ResponseEntity<>(loanInfoDto, HttpStatus.OK);
         }
     }
 
