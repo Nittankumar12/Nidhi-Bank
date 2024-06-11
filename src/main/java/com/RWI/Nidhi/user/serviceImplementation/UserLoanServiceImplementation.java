@@ -225,15 +225,18 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         HashMap<String, Double> map = emiCalculatorServiceImplementation.calculateEMI(p,t,n);
         return map.get("loanEmi");
     }
-    private Boolean isLoanNotOpenn(Loan loan){
-        Boolean b = false;
-        if (loan.getStatus().equals(LoanStatus.CLOSED) || loan.getStatus().equals(LoanStatus.FORECLOSED) || loan.getStatus().equals(LoanStatus.REJECTED)) {
-            b = Boolean.TRUE;
-        } else {
-            b = Boolean.FALSE;
+    private Loan findActiveLoan(String email){
+        User user = userService.getByEmail(email);
+        Accounts acc = user.getAccounts();
+        List<Loan> loanList = acc.getLoanList();
+
+        for(Loan loan : loanList){
+            if(loan.getStatus().equals(LoanStatus.APPLIED) || loan.getStatus().equals(LoanStatus.PENDING) || loan.getStatus().equals(LoanStatus.SANCTIONED)  || loan.getStatus().equals(LoanStatus.APPROVED))
+                return loan;
         }
-        return b;
+        return null;
     }
+
     @Override
     public ResponseEntity<?> getLoanInfo(String email) {
         User user = userService.getByEmail(email);
@@ -242,23 +245,22 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
         List<Loan> loanList = acc.getLoanList();
         if (loanList.isEmpty()) return new ResponseEntity<>("No loan found", HttpStatus.NOT_FOUND);
         else {
-            for (Loan loan : loanList) {
-                if (isLoanNotOpenn(loan) == Boolean.FALSE) {
-                    loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
-                    loanInfoDto.setStatus(loan.getStatus());
-                    loanInfoDto.setInterestRate(loan.getInterestRate());
-                    loanInfoDto.setPayableLoanAmount(loan.getPayableLoanAmount());
-                    loanInfoDto.setUserEmail(email);
-                    loanInfoDto.setMonthlyEMI(loan.getMonthlyEMI());
-                    loanInfoDto.setFine(loan.getCurrentFine());
-                    loanInfoDto.setStartDate(loan.getStartDate());
-                    loanInfoDto.setRePaymentTerm(loan.getRePaymentTerm());
-                }else return new ResponseEntity<>("No active loan on your account", HttpStatus.NOT_FOUND);
+            Loan loan = findActiveLoan(email);
+            if (loan == null) {
+                return new ResponseEntity<>("No active loan on your account", HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity<>(loanInfoDto, HttpStatus.OK);
+            loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
+            loanInfoDto.setStatus(loan.getStatus());
+            loanInfoDto.setInterestRate(loan.getInterestRate());
+            loanInfoDto.setPayableLoanAmount(loan.getPayableLoanAmount());
+            loanInfoDto.setUserEmail(email);
+            loanInfoDto.setMonthlyEMI(loan.getMonthlyEMI());
+            loanInfoDto.setFine(loan.getCurrentFine());
+            loanInfoDto.setStartDate(loan.getStartDate());
+            loanInfoDto.setRePaymentTerm(loan.getRePaymentTerm());
         }
+        return new ResponseEntity<>(loanInfoDto, HttpStatus.OK);
     }
-
     public static boolean verifyLoanType(String test) {
         for (LoanType loanType : LoanType.values()) {
             if (loanType.name().equals(test)) {
