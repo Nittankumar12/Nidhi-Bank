@@ -252,6 +252,7 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             loanInfoDto.setPrincipalLoanAmount(loan.getPrincipalLoanAmount());
             loanInfoDto.setStatus(loan.getStatus());
             loanInfoDto.setInterestRate(loan.getInterestRate());
+            loanInfoDto.setLoanType(loan.getLoanType());
             loanInfoDto.setPayableLoanAmount(loan.getPayableLoanAmount());
             loanInfoDto.setUserEmail(email);
             loanInfoDto.setMonthlyEMI(loan.getMonthlyEMI());
