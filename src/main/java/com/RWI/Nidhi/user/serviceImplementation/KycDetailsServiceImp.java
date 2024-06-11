@@ -30,6 +30,12 @@ public class KycDetailsServiceImp implements KycDetailsService {
         kycDetailsRepo.save(kycDetails);
         return kycDetailsDTO;
     }
+    @Override
+    public KycStatus findKycByEmail(String email){
+        KycDetails kycDetails = kycDetailsRepo.findByEmail(email);
+        if(kycDetails.getKycStatus()==null)return null;
+        else return kycDetails.getKycStatus();
+    }
 
     private KycDetails convertToEntity(KycDetailsDto kycDto) {
         KycDetails kycEntity = new KycDetails();

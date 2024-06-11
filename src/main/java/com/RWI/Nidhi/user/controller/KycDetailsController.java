@@ -3,6 +3,7 @@ package com.RWI.Nidhi.user.controller;
 import com.RWI.Nidhi.dto.KycDetailsDto;
 import com.RWI.Nidhi.dto.ResponseKycDto;
 import com.RWI.Nidhi.entity.KycDetails;
+import com.RWI.Nidhi.enums.KycStatus;
 import com.RWI.Nidhi.user.serviceInterface.KycDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,8 +24,15 @@ public class KycDetailsController {
     @PostMapping("/kycDetails")
     public ResponseEntity<KycDetailsDto> saveKycDetails(@RequestBody KycDetailsDto kycDetailsDTO) {
         KycDetailsDto savedKycDetailsDTO = kycDetailsService.saveKycDetails(kycDetailsDTO);
-        if(savedKycDetailsDTO==null)return new ResponseEntity<>(savedKycDetailsDTO,HttpStatus.NOT_ACCEPTABLE);
+        if (savedKycDetailsDTO == null) return new ResponseEntity<>(savedKycDetailsDTO, HttpStatus.NOT_ACCEPTABLE);
         return new ResponseEntity<>(savedKycDetailsDTO, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/kycDetails/{userEmail}")
+    public Boolean kycDetails(@RequestParam ("userEmail") String email){
+        KycStatus kycStatus = kycDetailsService.findKycByEmail(email);
+        if(kycStatus==null) return Boolean.FALSE;
+        else return Boolean.TRUE;
     }
 
     @GetMapping("/details/{userEmail}")
