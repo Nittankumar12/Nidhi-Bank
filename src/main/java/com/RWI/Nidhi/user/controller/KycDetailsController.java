@@ -28,8 +28,8 @@ public class KycDetailsController {
         return new ResponseEntity<>(savedKycDetailsDTO, HttpStatus.CREATED);
     }
 
-    @GetMapping("/kycDetails/{userEmail}")
-    public Boolean kycDetails(@RequestParam ("userEmail") String email){
+    @GetMapping("/kycDetailsStatus")
+    public Boolean kycDetails(@RequestParam("userEmail") String email){
         KycStatus kycStatus = kycDetailsService.findKycByEmail(email);
         if(kycStatus==null) return Boolean.FALSE;
         else return Boolean.TRUE;
