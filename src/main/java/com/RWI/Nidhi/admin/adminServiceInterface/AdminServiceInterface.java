@@ -47,9 +47,9 @@ public interface AdminServiceInterface {
 
     List<LoanHistoryDto> getLoansByLoanType(LoanType loanType);
 
-    ResponseEntity<?> addBalanceToAccount(double amount);
+    ResponseEntity<?> addBalanceToAccount(double amount, String paymentId, String orderId);
 
-    ResponseEntity<?> deductBalanceToAccount(double amount);
+    ResponseEntity<?> deductBalanceToAccount(double amount,String paymentId, String orderId);
 
     ResponseEntity<?> deactivateAccount(String accountNumber, String agentEmail);
 

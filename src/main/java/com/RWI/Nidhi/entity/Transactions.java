@@ -2,6 +2,7 @@ package com.RWI.Nidhi.entity;
 
 import com.RWI.Nidhi.enums.TransactionStatus;
 import com.RWI.Nidhi.enums.TransactionType;
+import com.RWI.Nidhi.payment.model.Customer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -54,6 +55,9 @@ public class Transactions {
     @ManyToOne
     @JoinColumn
     private Scheme scheme;
+    @OneToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
     public static double getTotalBalance() {
         return totalBalance;

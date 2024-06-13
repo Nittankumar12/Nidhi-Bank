@@ -11,6 +11,8 @@ import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.enums.TransactionStatus;
 import com.RWI.Nidhi.enums.TransactionType;
+import com.RWI.Nidhi.payment.model.Customer;
+import com.RWI.Nidhi.payment.service.PaymentService;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserMisServiceInterface;
@@ -42,6 +44,8 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
     private UserRepo userRepo;
     @Autowired
     private TransactionRepo transactionRepo;
+    @Autowired
+    PaymentService paymentService;
     @Autowired
     private AccountsRepo accountsRepo;
 
@@ -76,6 +80,14 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
             transactions.setAccount(user.getAccounts());
             transactions.setMis(newMis);
             Transactions.addTotalBalance(misDto.getTotalDepositedAmount());
+            Customer customer = new Customer();
+            customer.setAmount(String.valueOf(transactions.getTransactionAmount()));
+            customer.setCustomerName(transactions.getAccount().getUser().getUserName());
+            customer.setEmail(transactions.getAccount().getUser().getEmail());
+            customer.setTransaction(transactions);
+            customer.setPhoneNumber(transactions.getAccount().getUser().getPhoneNumber());
+            paymentService.createOrder(customer);
+            transactions.setCustomer(customer);
             transactionRepo.save(transactions);
 //            accounts.getTransactionsList().add(transactions);
 //            accountsRepo.save(accounts);
@@ -139,6 +151,14 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         transactions.setAccount(currMis.getAccount());
         transactions.setMis(currMis);
         Transactions.deductTotalBalance(currMis.getTotalDepositedAmount());
+        Customer customer = new Customer();
+        customer.setAmount(String.valueOf(transactions.getTransactionAmount()));
+        customer.setCustomerName(transactions.getAccount().getUser().getUserName());
+        customer.setEmail(transactions.getAccount().getUser().getEmail());
+        customer.setTransaction(transactions);
+        customer.setPhoneNumber(transactions.getAccount().getUser().getPhoneNumber());
+        paymentService.createOrder(customer);
+        transactions.setCustomer(customer);
         transactionRepo.save(transactions);
         currMis.getAccount().getTransactionsList().add(transactions);
         currMis.getTransactionsList().add(transactions);
@@ -176,6 +196,14 @@ public class UserMisServiceImplementation implements UserMisServiceInterface {
         transactions.setMis(currMis);
         Transactions.deductTotalBalance(currMis.getMonthlyIncome());
         try {
+            Customer customer = new Customer();
+            customer.setAmount(String.valueOf(transactions.getTransactionAmount()));
+            customer.setCustomerName(transactions.getAccount().getUser().getUserName());
+            customer.setEmail(transactions.getAccount().getUser().getEmail());
+            customer.setTransaction(transactions);
+            customer.setPhoneNumber(transactions.getAccount().getUser().getPhoneNumber());
+            paymentService.createOrder(customer);
+            transactions.setCustomer(customer);
             transactionRepo.save(transactions);
             misRepo.save(currMis);
         } catch (Exception e) {
