@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.dto;
 
 import com.RWI.Nidhi.enums.TransactionStatus;
+import com.RWI.Nidhi.payment.model.Customer;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Data;
@@ -14,6 +15,7 @@ public class TransactionsHistoryDto {
     private double amount;
     private String accountNumber;
     private LocalDate date;
+    private Customer customer;
     @Enumerated(EnumType.STRING)
     private TransactionStatus transactionStatus;
 }

@@ -8,6 +8,8 @@ import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.enums.Status;
 import com.RWI.Nidhi.enums.TransactionStatus;
 import com.RWI.Nidhi.enums.TransactionType;
+import com.RWI.Nidhi.payment.model.Customer;
+import com.RWI.Nidhi.payment.service.PaymentService;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserFdServiceInterface;
@@ -28,6 +30,8 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
     private final int penalty = 500;
     @Autowired
     FixedDepositRepo fdRepo;
+    @Autowired
+    PaymentService paymentService;
 //    @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
@@ -92,6 +96,14 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
                 transactions.setTransactionType(TransactionType.CREDITED);
                 transactions.setTransactionStatus(TransactionStatus.COMPLETED);
                 transactions.setFd(fd);
+                Customer customer = new Customer();
+                customer.setAmount(String.valueOf(transactions.getTransactionAmount()));
+                customer.setCustomerName(transactions.getAccount().getUser().getUserName());
+                customer.setEmail(transactions.getAccount().getUser().getEmail());
+                customer.setTransaction(transactions);
+                customer.setPhoneNumber(transactions.getAccount().getUser().getPhoneNumber());
+                paymentService.createOrder(customer);
+                transactions.setCustomer(customer);
 
                 transactionRepo.save(transactions);
 //                if(fd.getTransactionsList() == null) fd.setTransactionsList(new ArrayList<>());
@@ -157,6 +169,14 @@ public class UserFdServiceImplementation implements UserFdServiceInterface {
             transactions.setAccount(fd.getAccount());
             transactions.setFd(fd);
             Transactions.deductTotalBalance(fd.getAmount());
+            Customer customer = new Customer();
+            customer.setAmount(String.valueOf(transactions.getTransactionAmount()));
+            customer.setCustomerName(transactions.getAccount().getUser().getUserName());
+            customer.setEmail(transactions.getAccount().getUser().getEmail());
+            customer.setTransaction(transactions);
+            customer.setPhoneNumber(transactions.getAccount().getUser().getPhoneNumber());
+            paymentService.createOrder(customer);
+            transactions.setCustomer(customer);
             transactionRepo.save(transactions);
             fd.getAccount().getTransactionsList().add(transactions);
             fd.getTransactionsList().add(transactions);

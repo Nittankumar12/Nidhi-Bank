@@ -8,6 +8,8 @@ import com.RWI.Nidhi.enums.CommissionType;
 import com.RWI.Nidhi.enums.SchemeStatus;
 import com.RWI.Nidhi.enums.TransactionStatus;
 import com.RWI.Nidhi.enums.TransactionType;
+import com.RWI.Nidhi.payment.model.Customer;
+import com.RWI.Nidhi.payment.service.PaymentService;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.SchemeServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
@@ -33,6 +35,8 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
     UserService userService;
     @Autowired
     TransactionRepo transactionRepo;
+    @Autowired
+    PaymentService paymentService;
     @Autowired
     UserRepo userRepo;
     @Autowired
@@ -160,6 +164,17 @@ public class SchemeServiceImplementation implements SchemeServiceInterface {
                 transactions.setTransactionDate(LocalDate.now());
                 transactions.setTransactionType(TransactionType.CREDITED);
                 transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+                Customer customer = new Customer();
+
+                customer.setAmount(String.valueOf(transactions.getTransactionAmount()));
+                customer.setCustomerName(transactions.getAccount().getUser().getUserName());
+                customer.setEmail(transactions.getAccount().getUser().getEmail());
+                customer.setTransaction(transactions);
+                customer.setPhoneNumber(transactions.getAccount().getUser().getPhoneNumber());
+
+                paymentService.createOrder(customer);
+                transactions.setCustomer(customer);
+
                 transactionRepo.save(transactions);
                 scheme.getTransactionsList().add(transactions);
 

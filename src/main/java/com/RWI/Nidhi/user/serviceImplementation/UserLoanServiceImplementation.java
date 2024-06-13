@@ -3,6 +3,8 @@ package com.RWI.Nidhi.user.serviceImplementation;
 import com.RWI.Nidhi.dto.*;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.*;
+import com.RWI.Nidhi.payment.model.Customer;
+import com.RWI.Nidhi.payment.service.PaymentService;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserLoanServiceInterface;
@@ -27,6 +29,8 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
     LoanRepo loanRepository;
     @Autowired
     EmiService emiService;
+    @Autowired
+    PaymentService paymentService;
 //    @Autowired
 //    SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
@@ -329,6 +333,14 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
                     transactions.setTransactionDate(LocalDate.now());
                     transactions.setTransactionType(TransactionType.CREDITED);
                     transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+                    Customer customer = new Customer();
+                    customer.setAmount(String.valueOf(transactions.getTransactionAmount()));
+                    customer.setCustomerName(transactions.getAccount().getUser().getUserName());
+                    customer.setEmail(transactions.getAccount().getUser().getEmail());
+                    customer.setTransaction(transactions);
+                    customer.setPhoneNumber(transactions.getAccount().getUser().getPhoneNumber());
+                    paymentService.createOrder(customer);
+                    transactions.setCustomer(customer);
                     transactionRepo.save(transactions);
                     loan.getTransactionsList().add(transactions);
 
@@ -375,6 +387,14 @@ public class UserLoanServiceImplementation implements UserLoanServiceInterface {
             transactions.setTransactionDate(LocalDate.now());
             transactions.setTransactionType(TransactionType.CREDITED);
             transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+            Customer customer = new Customer();
+            customer.setAmount(String.valueOf(transactions.getTransactionAmount()));
+            customer.setCustomerName(transactions.getAccount().getUser().getUserName());
+            customer.setEmail(transactions.getAccount().getUser().getEmail());
+            customer.setTransaction(transactions);
+            customer.setPhoneNumber(transactions.getAccount().getUser().getPhoneNumber());
+            paymentService.createOrder(customer);
+            transactions.setCustomer(customer);
             transactionRepo.save(transactions);
             loan.getTransactionsList().add(transactions);
             loan.setCurrentFine(0);

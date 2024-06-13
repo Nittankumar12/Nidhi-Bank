@@ -8,6 +8,8 @@ import com.RWI.Nidhi.entity.RecurringDeposit;
 import com.RWI.Nidhi.entity.Transactions;
 import com.RWI.Nidhi.entity.User;
 import com.RWI.Nidhi.enums.*;
+import com.RWI.Nidhi.payment.model.Customer;
+import com.RWI.Nidhi.payment.service.PaymentService;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceInterface.AccountsServiceInterface;
 import com.RWI.Nidhi.user.serviceInterface.UserRdServiceInterface;
@@ -41,6 +43,8 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
     AccountsRepo accountRepo;
     @Autowired
     TransactionRepo transactionRepo;
+    @Autowired
+    PaymentService paymentService;
     @Autowired
     AccountsServiceInterface accountsService;
     @Autowired
@@ -84,6 +88,14 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             transactions.setAccount(user.getAccounts());
             transactions.setRd(rd);
             Transactions.addTotalBalance(rdDto.getMonthlyDepositAmount());
+            Customer customer = new Customer();
+            customer.setAmount(String.valueOf(transactions.getTransactionAmount()));
+            customer.setCustomerName(transactions.getAccount().getUser().getUserName());
+            customer.setEmail(transactions.getAccount().getUser().getEmail());
+            customer.setTransaction(transactions);
+            customer.setPhoneNumber(transactions.getAccount().getUser().getPhoneNumber());
+            paymentService.createOrder(customer);
+            transactions.setCustomer(customer);
             transactionRepo.save(transactions);
 //            accounts.getTransactionsList().add(transactions);
 //            accountRepo.save(accounts);
@@ -182,6 +194,14 @@ public class UserRdServiceImplementation implements UserRdServiceInterface {
             transactions.setAccount(currRd.getAccount());
             transactions.setRd(currRd);
             Transactions.deductTotalBalance(currRd.getMonthlyDepositAmount());
+            Customer customer = new Customer();
+            customer.setAmount(String.valueOf(transactions.getTransactionAmount()));
+            customer.setCustomerName(transactions.getAccount().getUser().getUserName());
+            customer.setEmail(transactions.getAccount().getUser().getEmail());
+            customer.setTransaction(transactions);
+            customer.setPhoneNumber(transactions.getAccount().getUser().getPhoneNumber());
+            paymentService.createOrder(customer);
+            transactions.setCustomer(customer);
             transactionRepo.save(transactions);
             currRd.getAccount().getTransactionsList().add(transactions);
             currRd.getTransactionsList().add(transactions);
