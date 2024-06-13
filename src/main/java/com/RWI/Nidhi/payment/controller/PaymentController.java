@@ -1,33 +1,29 @@
 package com.RWI.Nidhi.payment.controller;
 
 import com.RWI.Nidhi.payment.model.Customer;
-import com.RWI.Nidhi.payment.model.RazorPay;
-import com.RWI.Nidhi.payment.model.Response;
+import com.RWI.Nidhi.payment.model.CustomerReqDto;
 import com.RWI.Nidhi.payment.service.PaymentService;
-import com.google.gson.Gson;
-import com.razorpay.Order;
 import com.razorpay.Payment;
-import com.razorpay.RazorpayClient;
-import com.razorpay.RazorpayException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
-@Controller
-@RequestMapping("/api")
-
+@RestController
+@RequestMapping("/payment")
 public class PaymentController {
     @Autowired
     PaymentService paymentService;
     @PostMapping("/createOrder")
-    public ResponseEntity<String> createOrder(@RequestBody Customer customer) {
+    public ResponseEntity<String> createOrder(@RequestBody CustomerReqDto customerReqDto) {
+        Customer customer = new Customer();
+
+        customer.setOrderId(customerReqDto.getOrderId());
+        customer.setPaymentId(customerReqDto.getPaymentId());
+        customer.setCustomerName(customerReqDto.getCustomerName());
+        customer.setAmount(customerReqDto.getAmount());
+        customer.setEmail(customerReqDto.getEmail());
+        customer.setPhoneNumber(customerReqDto.getPhoneNumber());
         return paymentService.createOrder(customer);
     }
     @PostMapping("/fetch")
