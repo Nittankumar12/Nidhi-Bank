@@ -1,6 +1,7 @@
 package com.RWI.Nidhi.Security.payload.request;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
@@ -9,20 +10,22 @@ import java.util.Set;
 
 public class SignupRequest {
 
+    @NotBlank
     @Size(min = 3, max = 20)
     private String username;
-    @Size(max = 50)
+
+    @NotBlank@Size(max = 50)
     @Email
     private String email;
-    @Size() // Assuming phone number is 10 digits
+    @NotBlank@Size() // Assuming phone number is 10 digits
     private String phoneNumber;
 
     public SignupRequest() {
     }
 
     //removed not blank for all arguments
-    public SignupRequest(@Size(min = 3, max = 20) String username, @Size(max = 50) @Email String email
-                         /*Set<String> role*/  /*@Size(min = 6, max = 40)*//* String password*/, @Size(max = 10) String phoneNumber) {
+    public SignupRequest(@NotBlank@Size(min = 3, max = 20) String username, @NotBlank@Size(max = 50) @Email String email
+                         /*Set<String> role*/  /*@Size(min = 6, max = 40)*//* String password*/, @NotBlank@Size(max = 10) String phoneNumber) {
         super();
         this.username = username;
         this.email = email;
