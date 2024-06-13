@@ -13,6 +13,9 @@ import com.RWI.Nidhi.dto.*;
 import com.RWI.Nidhi.entity.*;
 import com.RWI.Nidhi.enums.*;
 import com.RWI.Nidhi.otpSendAndVerify.OtpServiceImplementation;
+import com.RWI.Nidhi.payment.model.Customer;
+import com.RWI.Nidhi.payment.repo.CustomerRepo;
+import com.RWI.Nidhi.payment.service.PaymentService;
 import com.RWI.Nidhi.repository.*;
 import com.RWI.Nidhi.user.serviceImplementation.*;
 import com.RWI.Nidhi.user.serviceInterface.UserService;
@@ -41,6 +44,8 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     @Autowired
     AgentRepo agentRepo;
     @Autowired
+    CustomerRepo customerRepo;
+    @Autowired
     LoanRepo loanRepo;
    // @Autowired
     AccountsServiceImplementation accountsService;
@@ -52,6 +57,8 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     KycDetailsRepo kycDetailsRepo;
     @Autowired
     TransactionRepo transactionRepo;
+    @Autowired
+    PaymentService paymentService;
     @Autowired
     OtpServiceImplementation otpServiceImplementation;
     @Autowired
@@ -321,7 +328,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
             temp.setDate(t.getTransactionDate());
             temp.setTransactionStatus(t.getTransactionStatus());
             temp.setAccountNumber(t.getAccount().getAccountNumber());
-
+            temp.setCustomer(t.getCustomer());
             transactionsHistoryList.add(temp);
         }
         return new ResponseEntity<>(transactionsHistoryList, HttpStatus.OK);
@@ -340,6 +347,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
             temp.setDate(t.getTransactionDate());
             temp.setTransactionStatus(t.getTransactionStatus());
             temp.setAccountNumber(t.getAccount().getAccountNumber());
+            temp.setCustomer(t.getCustomer());
 
             transactionsHistoryList.add(temp);
         }
@@ -358,6 +366,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
             temp.setDate(t.getTransactionDate());
             temp.setTransactionStatus(t.getTransactionStatus());
             temp.setAccountNumber(t.getAccount().getAccountNumber());
+            temp.setCustomer(t.getCustomer());
             transactionsHistoryList.add(temp);
         }
         return new ResponseEntity<>(transactionsHistoryList, HttpStatus.OK);
@@ -376,6 +385,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
             temp.setDate(t.getTransactionDate());
             temp.setTransactionStatus(t.getTransactionStatus());
             temp.setAccountNumber(t.getAccount().getAccountNumber());
+            temp.setCustomer(t.getCustomer());
             transactionsHistoryList.add(temp);
         }
         return new ResponseEntity<>(transactionsHistoryList, HttpStatus.OK);
@@ -407,7 +417,7 @@ public class AdminServiceImplementation implements AdminServiceInterface {
     }
 
     @Override
-    public ResponseEntity<?> addBalanceToAccount(double amount) {
+    public ResponseEntity<?> addBalanceToAccount(double amount,String paymentId, String orderId) {
         Transactions.addTotalBalance(amount);
         Transactions newTransaction = new Transactions();
         newTransaction.setTransactionDate(LocalDate.now());
@@ -415,12 +425,24 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         newTransaction.setTransactionAmount(amount);
         newTransaction.setTransactionStatus(TransactionStatus.COMPLETED);
 
+        Customer customer = new Customer();
+        customer.setAmount(String.valueOf(amount));
+        customer.setCustomerName(newTransaction.getAccount().getUser().getUserName());
+        customer.setEmail(newTransaction.getAccount().getUser().getEmail());
+        customer.setTransaction(newTransaction);
+        customer.setOrderId(orderId);
+        customer.setPaymentId(paymentId);
+        customer.setPhoneNumber(newTransaction.getAccount().getUser().getPhoneNumber());
+
+        paymentService.createOrder(customer);
+
+        newTransaction.setCustomer(customer);
         transactionRepo.save(newTransaction);
         return new ResponseEntity<>(newTransaction, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<?> deductBalanceToAccount(double amount) {
+    public ResponseEntity<?> deductBalanceToAccount(double amount,String paymentId, String orderId) {
         Transactions.addTotalBalance(amount);
         Transactions newTransaction = new Transactions();
         newTransaction.setTransactionDate(LocalDate.now());
@@ -428,6 +450,19 @@ public class AdminServiceImplementation implements AdminServiceInterface {
         newTransaction.setTransactionAmount(amount);
         newTransaction.setTransactionStatus(TransactionStatus.COMPLETED);
 
+        Customer customer = new Customer();
+        customer.setAmount(String.valueOf(amount));
+        customer.setCustomerName(newTransaction.getAccount().getUser().getUserName());
+        customer.setEmail(newTransaction.getAccount().getUser().getEmail());
+        customer.setTransaction(newTransaction);
+        customer.setOrderId(orderId);
+        customer.setPaymentId(paymentId);
+        customer.setPhoneNumber(newTransaction.getAccount().getUser().getPhoneNumber());
+
+        paymentService.createOrder(customer);
+
+        newTransaction.setCustomer(customer);
+        customerRepo.save(customer);
         transactionRepo.save(newTransaction);
         return new ResponseEntity<>(newTransaction, HttpStatus.OK);
     }
@@ -586,7 +621,20 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                             transactions.setTransactionDate(LocalDate.now());
                             transactions.setTransactionType(TransactionType.DEBITED);
                             transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+
+                            Customer customer = new Customer();
+                            customer.setAmount(String.valueOf(transactions.getTransactionAmount()));
+                            customer.setCustomerName(transactions.getAccount().getUser().getUserName());
+                            customer.setEmail(transactions.getAccount().getUser().getEmail());
+                            customer.setTransaction(transactions);
+                            customer.setPhoneNumber(transactions.getAccount().getUser().getPhoneNumber());
+
+                            paymentService.createOrder(customer);
+
+                            transactions.setCustomer(customer);
+
                             transactionRepo.save(transactions);
+                            customerRepo.save(customer);
                             loan.getTransactionsList().add(transactions);
                             loanRepo.save(loan);
                             sendStatusEmail(loan);
@@ -695,7 +743,20 @@ public class AdminServiceImplementation implements AdminServiceInterface {
                                 transactions.setTransactionDate(LocalDate.now());
                                 transactions.setTransactionType(TransactionType.DEBITED);
                                 transactions.setTransactionStatus(TransactionStatus.COMPLETED);
+
+                                Customer customer = new Customer();
+                                customer.setAmount(String.valueOf(transactions.getTransactionAmount()));
+                                customer.setCustomerName(transactions.getAccount().getUser().getUserName());
+                                customer.setEmail(transactions.getAccount().getUser().getEmail());
+                                customer.setTransaction(transactions);
+                                customer.setPhoneNumber(transactions.getAccount().getUser().getPhoneNumber());
+
+                                paymentService.createOrder(customer);
+
+                                transactions.setCustomer(customer);
+
                                 transactionRepo.save(transactions);
+                                customerRepo.save(customer);
                                 scheme.getTransactionsList().add(transactions);
                                 schemeRepo.save(scheme);
                                 sendStatusEmail(scheme);

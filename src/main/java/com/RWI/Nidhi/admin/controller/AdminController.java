@@ -112,12 +112,12 @@ public class AdminController {
         return new ResponseEntity<>(loanHistoryDto, HttpStatus.OK);
     }
 
-    ResponseEntity<?> addBalanceToAccount(double amount) {
-        return adminService.addBalanceToAccount(amount);
+    ResponseEntity<?> addBalanceToAccount(double amount,String paymentId, String orderId) {
+        return adminService.addBalanceToAccount(amount,paymentId,orderId);
     }
 
-    ResponseEntity<?> deductBalanceToAccount(double amount) {
-        return adminService.deductBalanceToAccount(amount);
+    ResponseEntity<?> deductBalanceToAccount(double amount,String paymentId, String orderId) {
+        return adminService.deductBalanceToAccount(amount, paymentId,  orderId);
     }
 
     @PutMapping("/deactivateAccount")
